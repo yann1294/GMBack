@@ -1,0 +1,36 @@
+src/
+├── shared/
+│   ├── services/
+│      ├── data.service.ts
+│      ├── file.service.ts
+|
+├── auth/
+│   ├── auth.controller.ts
+│   ├── auth.service.ts
+│   ├── auth.module.ts
+│   ├── strategies/
+│   │   └── jwt.strategy.ts
+│   │   └── email.strategy.ts
+│   │   └── google.strategy.ts
+│   ├── guards/
+│   │   └── jwt-auth.guard.ts
+│   └── auth.controller.spec.ts
+│
+├── users/
+│   ├── user.controller.ts
+│   ├── user.service.ts
+│   ├── user.module.ts
+│   ├── dto/
+│   ├── entities/
+│   └── user.controller.spec.ts
+│
+├── tours/
+│   ├── tour.controller.ts
+│   ├── tour.service.ts
+│   ├── tour.module.ts
+│   ├── dto/
+│   ├── entities/
+│   └── tour.controller.spec.ts
+|
+├── app.module.ts
+└── main.ts

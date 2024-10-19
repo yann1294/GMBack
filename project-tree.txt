@@ -26,7 +26,10 @@ src/
 │
 ├── tours/
 │   ├── tour.controller.ts
-│   ├── tour.service.ts
+│   ├── service/
+│   |   ├── tour.service.ts 
+|   |---(repository/)
+│   |   ├── tour.repository.ts
 │   ├── tour.module.ts
 │   ├── dto/
 │   ├── entities/

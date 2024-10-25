@@ -1,19 +1,19 @@
 import { Controller, Post } from '@nestjs/common';
-import { log } from 'console';
-import { FirebaseRepository } from 'src/shared/firebase/firebase.service';
+import { DataService } from 'src/shared/services/data.service';
+import { DataServiceResponse } from 'src/types';
 
 @Controller('tours')
 export class TourController {
   // inject firebase repository
-  constructor(private firebaseRepository: FirebaseRepository) {}
+  constructor(private dataService: DataService) {}
 
   @Post('create')
-  async createTour(): Promise<string> {
+  async createTour(): Promise<DataServiceResponse> {
     // create dummy tour
-    const result = await this.firebaseRepository.guideMeDb
-      .collection('tour')
-      .add({ name: 'Test repo' });
-    log('Document created');
-    return result.id;
+    const result = await this.dataService.createRecord(
+      { name: 'Test repo' },
+      'tours',
+    );
+    return result;
   }
 }

@@ -32,3 +32,8 @@ export declare interface Activity {
   transportation: Transportation;
   accommodation: Accommodation;
 }
+
+export type DataServiceResponse = {
+  status: string;
+  statusCode: number;
+};

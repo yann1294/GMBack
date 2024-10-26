@@ -22,9 +22,9 @@ export class DataService {
   }
 
   /**
-    Creates a document on firestore.
+    Creates a document in a firestore collection.
     @param data The data to be stored in the document.
-    @param path Firestore path where the data should be stored.
+    @param collectionName Firestore collection name or collection path where the documents should be created.
     @returns A [DataServiceResponse] containing the status and document path of the created document.
   */
   async createRecord(
@@ -58,17 +58,21 @@ export class DataService {
   }
 
   /**
-    Creates multiple documents on firestore.
+    Creates multiple documents in a firebase collection.
     @param data[] A list of objects representing each document's data.
-    @param path Firestore path where the documents should be stored.
-    @returns A [DataServiceResponse] containing the status and status code. If successful, status code is 200 other wise its different.
-  */
+    @param collectionName Firestore collection name or collection path where the documentions should be created.
+    @returns A [DataServiceResponse] containing the status and document paths of the created documents.
+    data is empty in case of an error.
+*/
   async createRecords(
     data: object[],
     collectionName: string,
   ): Promise<DataServiceResponse> {
     try {
       // instantiate a batch
+      // By using a batch, we can automatically group multiple
+      // operations and execute them as one package thus multiple writes
+      // in a batch will be recognized as a single write operation.
       const batch: WriteBatch = this.firestore.batch();
 
       // adding write tasks for each data
@@ -86,6 +90,8 @@ export class DataService {
       await batch.commit();
 
       // return success status
+      // commit(): returns WriteResult which contains only the write time.
+      // To get the document ids, we have to use the WriteBatch object from batch.set().
       return {
         status: 'success',
         message: 'Documents created successfully',

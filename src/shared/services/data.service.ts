@@ -6,6 +6,8 @@ import {
   DocumentSnapshot,
   FirebaseFirestoreError,
   Firestore,
+  QueryDocumentSnapshot,
+  QuerySnapshot,
   WriteBatch,
   WriteResult,
 } from 'firebase-admin/firestore';
@@ -131,6 +133,30 @@ export class DataService {
         status: 'success',
         message: 'Successfully feteched document.',
         data: [result.data()],
+      };
+    } catch (e: unknown) {
+      // log error
+      log((e as FirebaseFirestoreError).code);
+      return {
+        status: (e as FirebaseFirestoreError).code,
+        message: (e as FirebaseFirestoreError).message,
+        data: null,
+      } as DataServiceResponse;
+    }
+  }
+
+  async readAllDocs(collectionName: string): Promise<DataServiceResponse> {
+    try {
+      // read specific document
+      const results: QuerySnapshot = await this.firestore
+        .collection(collectionName)
+        .get();
+
+      // return document data
+      return {
+        status: 'success',
+        message: 'Successfully feteched document.',
+        data: results.docs.map((doc: QueryDocumentSnapshot) => doc.data()),
       };
     } catch (e: unknown) {
       // log error

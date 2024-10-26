@@ -1,11 +1,30 @@
-import { Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { DataService } from 'src/shared/services/data.service';
-import { DataServiceCondition, DataServiceResponse } from 'src/types';
+// import { FileService } from 'src/shared/services/file.service';
+import { DataServiceResponse, FileServiceResponse } from 'src/types';
 
 @Controller('tours')
 export class TourController {
   // inject firebase repository
-  constructor(private dataService: DataService) {}
+  constructor(
+    private readonly dataService: DataService,
+    // private readonly fileService: FileService,
+  ) {}
+
+  // @Post('upload')
+  // @UseInterceptors(FileInterceptor('file'))
+  // async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<FileServiceResponse> {
+  //   const result = this.fileService.uploadFile(file.buffer, file.m 'tours/file.jpg', file. )
+  // }
 
   @Post('create')
   async createTour(): Promise<DataServiceResponse> {

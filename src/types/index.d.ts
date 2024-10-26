@@ -61,3 +61,9 @@ export type DataServiceCondition = {
   operationString: WhereFilterOp;
   value: any;
 };
+
+export type FileServiceResponse = {
+  status: string;
+  message: string;
+  data: string[] | null;
+};

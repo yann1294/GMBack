@@ -17,8 +17,14 @@ export class FileService {
     this.storageRef = firebaseRepository.storage;
   }
 
+  /**
+   * Logs and returns FileService errors.
+   *
+   * @param e - Error object.
+   * @returns A promise that resolves to a FileServiceResponse containing the error message.
+   */
   private errorHandler(e: unknown): FileServiceResponse {
-    log();
+    log(e['message']);
     return {
       status: 'failure',
       code: e['code'],
@@ -27,6 +33,12 @@ export class FileService {
     } as FileServiceResponse;
   }
 
+  /**
+   * Finds the file path from a Cloud Storage download URL.
+   *
+   * @param fileURL - The Cloud Storage download URL.
+   * @returns The file path if found; otherwise, null for an invalid Cloud Storage URL.
+   */
   public getPathFromURL(fileURL: string): string | null {
     // get file path from url
     const match: RegExpMatchArray = fileURL.match(/\/o\/(.*?)\?/);
@@ -40,11 +52,19 @@ export class FileService {
     return match[1].replaceAll('%2F', '/');
   }
 
+  /**
+   * Uploads a file to Cloud Storage.
+   *
+   * @param fileBuffer - The file content buffer.
+   * @param contentType - The file's MIME type.
+   * @param destination - The file path from root to filename.
+   * @returns A promise that resolves to a FileServiceResponse containing the download URL or an error message.
+   */
   async uploadFile(
     fileBuffer: Buffer,
     contentType: string,
     destination: string,
-  ) {
+  ): Promise<FileServiceResponse> {
     try {
       const file: File = this.storageRef.file(destination);
       await file.save(fileBuffer, { contentType: contentType });
@@ -59,6 +79,13 @@ export class FileService {
     }
   }
 
+  /**
+   * Uploads multiple files to Cloud Storage.
+   *
+   * @param files - The file content buffer.
+   * @param destination - Folder path where files should be uploaded.
+   * @returns A promise that resolves to a FileServiceResponse containing download URLs or an error message.
+   */
   async uploadFiles(
     files: AsyncIterableIterator<MultipartFile>,
     destination: string,
@@ -96,6 +123,12 @@ export class FileService {
     }
   }
 
+  /**
+   * Deletes a file from Cloud Storage.
+   *
+   * @param fileURL - Cloud Storage download URL of a file.
+   * @returns A promise that resolves to a FileServiceResponse containing a success message or an error message.
+   */
   async deleteFile(fileURL: string) {
     try {
       // get path from url

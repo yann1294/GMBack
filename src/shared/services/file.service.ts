@@ -42,4 +42,35 @@ export class FileService {
       return this.errorHandler(e);
     }
   }
+
+  async deleteFile(fileUrl: string) {
+    try {
+      // get file path from url
+      const match: RegExpMatchArray = fileUrl.match(/\/o\/(.*?)\?/);
+
+      // checking whether patterns found
+      if (!(match[0] && match[1])) {
+        return {
+          status: 'invalid-url',
+          message: 'Invalid Firebase Storage URL',
+          data: null,
+        } as FileServiceResponse;
+      }
+
+      // get file path
+      const filePath = match[1].replaceAll('%2F', '/');
+
+      // delete file
+      const file: File = this.storageRef.file(filePath);
+      await file.delete();
+
+      return {
+        status: 'success',
+        message: 'Successfully deleted file.',
+        data: null,
+      } as FileServiceResponse;
+    } catch (e) {
+      return this.errorHandler(e);
+    }
+  }
 }

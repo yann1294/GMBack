@@ -10,8 +10,8 @@ export class TourController {
   @Post('create')
   async createTour(): Promise<DataServiceResponse> {
     // create dummy tour
-    const result = await this.dataService.createRecord(
-      { name: 'Test repo' },
+    const result = await this.dataService.createRecords(
+      [{ name: 'Test repo' }, { name: 'Test repo' }, { name: 'Test repo' }],
       'tours',
     );
     return result;

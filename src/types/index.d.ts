@@ -35,5 +35,6 @@ export declare interface Activity {
 
 export type DataServiceResponse = {
   status: string;
-  statusCode: number;
+  message: string;
+  data: string[] | null;
 };

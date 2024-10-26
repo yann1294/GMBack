@@ -81,6 +81,9 @@ export class DataService {
       // in a batch will be recognized as a single write operation.
       const batch: WriteBatch = this.firestore.batch();
 
+      // holds document references
+      let docRefs: string[];
+
       // adding write tasks for each data
       data.forEach((docData) => {
         // create a document reference for the current doc
@@ -90,6 +93,9 @@ export class DataService {
 
         // add document and data to batch
         batch.set(docRef, docData);
+
+        // save doc ref
+        docRefs.push(docRef.path);
       });
 
       // commit batch job: All writes are committed as a single write job
@@ -101,7 +107,7 @@ export class DataService {
       return {
         status: 'success',
         message: 'Documents created successfully',
-        data: batch['_ops'].map((doc: object) => doc['docPath']),
+        data: docRefs,
       } as DataServiceResponse;
     } catch (e: unknown) {
       // return error

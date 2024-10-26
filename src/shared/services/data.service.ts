@@ -134,6 +134,15 @@ export class DataService {
         .doc(docId)
         .get();
 
+      // check whether document exists
+      if (!result.exists) {
+        return {
+          status: 'not-found',
+          message: 'Document not found.',
+          data: null,
+        };
+      }
+
       // return document data
       return {
         status: 'success',

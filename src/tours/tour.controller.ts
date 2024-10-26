@@ -20,11 +20,10 @@ export class TourController {
   @Get('read')
   async getTour(): Promise<DataServiceResponse> {
     // create dummy tour
-    const result = await this.dataService.readDocsWithCondition('tours', {
-      fieldPath: 'name',
-      operationString: '==',
-      value: 'Test repok',
-    } as DataServiceCondition);
+    const result = await this.dataService.readDoc(
+      'tours',
+      'srntBzfHL3sP4gzqKrOus',
+    );
     return result;
   }
 }

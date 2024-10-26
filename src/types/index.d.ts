@@ -1,3 +1,5 @@
+import { WhereFilterOp } from 'firebase-admin/firestore';
+
 export declare interface ActivityLocation {
   name: string;
   city: string;
@@ -45,4 +47,10 @@ export type DataServiceResponse = {
   status: string;
   message: string;
   data: string[] | object[] | null;
+};
+
+export type DataServiceCondition = {
+  fieldPath: string;
+  operationString: WhereFilterOp;
+  value: any;
 };

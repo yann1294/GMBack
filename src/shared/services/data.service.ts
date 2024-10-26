@@ -12,7 +12,7 @@ import {
   WriteResult,
 } from 'firebase-admin/firestore';
 import { log } from 'console';
-import { DataServiceResponse } from 'src/types';
+import { DataServiceCondition, DataServiceResponse } from 'src/types';
 
 @Injectable()
 export class DataService {
@@ -150,6 +150,34 @@ export class DataService {
       // read specific document
       const results: QuerySnapshot = await this.firestore
         .collection(collectionName)
+        .get();
+
+      // return document data
+      return {
+        status: 'success',
+        message: 'Successfully feteched document.',
+        data: results.docs.map((doc: QueryDocumentSnapshot) => doc.data()),
+      };
+    } catch (e: unknown) {
+      // log error
+      log((e as FirebaseFirestoreError).code);
+      return {
+        status: (e as FirebaseFirestoreError).code,
+        message: (e as FirebaseFirestoreError).message,
+        data: null,
+      } as DataServiceResponse;
+    }
+  }
+
+  async readDocsWithCondition(
+    collectionName: string,
+    condition: DataServiceCondition,
+  ) {
+    try {
+      // read specific document
+      const results: QuerySnapshot = await this.firestore
+        .collection(collectionName)
+        .where(condition.fieldPath, condition.operationString, condition.value)
         .get();
 
       // return document data

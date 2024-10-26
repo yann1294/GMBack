@@ -28,7 +28,7 @@ export class DataService {
     @param collectionName Firestore collection name or collection path where the documents should be created.
     @returns A [DataServiceResponse] containing the status and document path of the created document.
   */
-  async createRecord(
+  async createDoc(
     data: object,
     collectionName: string,
   ): Promise<DataServiceResponse> {
@@ -65,7 +65,7 @@ export class DataService {
     @returns A [DataServiceResponse] containing the status and document paths of the created documents.
     data is empty in case of an error.
 */
-  async createRecords(
+  async createDocs(
     data: object[],
     collectionName: string,
   ): Promise<DataServiceResponse> {
@@ -115,7 +115,7 @@ export class DataService {
   @param collectionName Firestore collection name/path from which the document should be read.
   @param docId The id of the document to be read.
   */
-  async readRecord(
+  async readDoc(
     collectionName: string,
     docId: string,
   ): Promise<DataServiceResponse> {

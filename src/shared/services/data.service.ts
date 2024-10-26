@@ -22,6 +22,12 @@ export class DataService {
     this.firestore = firebaseRepository.guideMeDb;
   }
 
+  /**
+   * Logs and returns DataService errors.
+   *
+   * @param e - Error object.
+   * @returns A promise that resolves to a DataServiceResponse containing the error message.
+   */
   private errorHandler(e: unknown): DataServiceResponse {
     const error = e as FirebaseFirestoreError;
     log(`Error: ${error.code}`);
@@ -34,11 +40,12 @@ export class DataService {
   }
 
   /**
-    Creates a document in a firestore collection.
-    @param data The data to be stored in the document.
-    @param collectionName Firestore collection name or collection path where the documents should be created.
-    @returns A [DataServiceResponse] containing the status and document path of the created document.
-  */
+   * Creates a document in a Firestore collection.
+   *
+   * @param collectionName - The Firestore collection name or path for the document.
+   * @param data - The data to be stored in the document.
+   * @returns A promise that resolves to a DataServiceResponse containing the document ID or an error message.
+   */
   async createDoc(
     data: object,
     collectionName: string,
@@ -63,12 +70,12 @@ export class DataService {
   }
 
   /**
-    Creates multiple documents in a firebase collection.
-    @param data[] A list of objects representing each document's data.
-    @param collectionName Firestore collection name or collection path where the documentions should be created.
-    @returns A [DataServiceResponse] containing the status and document paths of the created documents.
-    data is empty in case of an error.
-*/
+   * Creates multiple documents in a Firebase collection.
+   *
+   * @param collectionName - The Firestore collection name or path for the documents.
+   * @param data[] - A list of data to be stored in each document.
+   * @returns A promise that resolves to a DataServiceResponse containing document IDs or an error message.
+   */
   async createDocs(
     data: object[],
     collectionName: string,
@@ -115,13 +122,12 @@ export class DataService {
   }
 
   /**
-  Reads a specific firestore document from a given collection.
-
-  @param collectionName Firestore collection name/path from which the document should be read.
-  @param docId The id of the document to be read.
-  @returns Returns an object containing a success status, message and retreived data. Returns error status in case of
-  failure.
-  */
+   * Read a document from a Firestore collection.
+   *
+   * @param collectionName - The Firestore collection name or path for the document.
+   * @param docId - The id of the document to be read.
+   * @returns A promise that resolves to a DataServiceResponse containing the document data or an error message.
+   */
   async readDoc(
     collectionName: string,
     docId: string,
@@ -157,11 +163,11 @@ export class DataService {
   }
 
   /**
-  Reads all documents in a given collection.
-
-  @param collectionName Firestore collection name/path from which the document should be read.
-  @returns Returns all read documents in a DataServiceResponse object. Or error message in case of failure.
-  */
+   * Reads all documents in a given Firestore collection.
+   *
+   * @param collectionName - The Firestore collection name or path for the documents.
+   * @returns A promise that resolves to a DataServiceResponse containing documents or an error message.
+   */
   async readAllDocs(collectionName: string): Promise<DataServiceResponse> {
     try {
       // read specific document
@@ -183,12 +189,12 @@ export class DataService {
   }
 
   /**
-  Reads documents in a collection based on a given condition.
-
-  @param collectionName Firestore collection name/path from which the document should be read.
-  @param condition A `DataServiceCondition` object specifying the conditions for retreiving a document.
-  @returns Returns all documents that fulfill `condition` or returns error object.
-  */
+   * Reads documents in a collection based on a given condition.
+   *
+   * @param collectionName - The Firestore collection name or path.
+   * @param condition - A `DataServiceCondition` object specifying the retrieval conditions.
+   * @returns A promise resolving to the documents that fulfill the condition or an error object on failure.
+   */
   async readDocsWithCondition(
     collectionName: string,
     condition: DataServiceCondition,
@@ -213,13 +219,12 @@ export class DataService {
   }
 
   /**
-  Deletes a specific document from a given collection.
-
-  @param collectionName Collection name/path from which the document should be deleted.
-  @param docId Id of the document to be deleted.
-
-  @returns Returns the id of the deleted document or an error in the case of an error.
-  */
+   * Deletes a specific document from a given collection.
+   *
+   * @param collectionName - The collection name or path from which to delete the document.
+   * @param docId - The ID of the document to be deleted.
+   * @returns A promise resolving to the ID of the deleted document or an error on failure.
+   */
   async deleteDoc(collectionName: string, docId: string) {
     try {
       // delete document
@@ -236,13 +241,12 @@ export class DataService {
   }
 
   /**
-  Updates a specific document from a given collection.
-
-  @param collectionName Collection name/path from which the document should be updated.
-  @param docId Id of the document to be deleted.
-
-  @returns Returns the id of the updated document or an error in the case of an error.
-  */
+   * Updates a specific document in a given collection.
+   *
+   * @param collectionName - The collection name or path where the document is located.
+   * @param docId - The ID of the document to be updated.
+   * @returns A promise resolving to the ID of the updated document or an error on failure.
+   */
   async updateDoc(
     collectionName: string,
     docId: string,

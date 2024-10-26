@@ -116,6 +116,8 @@ export class DataService {
 
   @param collectionName Firestore collection name/path from which the document should be read.
   @param docId The id of the document to be read.
+  @returns Returns an object containing a success status, message and retreived data. Returns error status in case of
+  failure.
   */
   async readDoc(
     collectionName: string,
@@ -145,6 +147,12 @@ export class DataService {
     }
   }
 
+  /**
+  Reads all documents in a given collection.
+
+  @param collectionName Firestore collection name/path from which the document should be read.
+  @returns Returns all read documents in a DataServiceResponse object. Or error message in case of failure.
+  */
   async readAllDocs(collectionName: string): Promise<DataServiceResponse> {
     try {
       // read specific document
@@ -169,6 +177,13 @@ export class DataService {
     }
   }
 
+  /**
+  Reads documents in a collection based on a given condition.
+
+  @param collectionName Firestore collection name/path from which the document should be read.
+  @param condition A `DataServiceCondition` object specifying the conditions for retreiving a document.
+  @returns Returns all documents that fulfill `condition` or returns error object.
+  */
   async readDocsWithCondition(
     collectionName: string,
     condition: DataServiceCondition,

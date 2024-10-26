@@ -49,6 +49,13 @@ export type DataServiceResponse = {
   data: string[] | object[] | null;
 };
 
+/**
+Condition object for `DataService` operations.
+
+@param fieldPath The path/field to compare.
+@param operationString The operation string from `WhereFilterOp` - {@link https://firebase.google.com/docs/reference/node/firebase.firestore.CollectionReference}
+@param value The value to be used for comparison.
+*/
 export type DataServiceCondition = {
   fieldPath: string;
   operationString: WhereFilterOp;

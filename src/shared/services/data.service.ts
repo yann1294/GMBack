@@ -225,4 +225,26 @@ export class DataService {
       return this.errorHandler(e);
     }
   }
+
+  async updateDoc(
+    collectionName: string,
+    docId: string,
+    newData: object,
+  ): Promise<DataServiceResponse> {
+    try {
+      // update document
+      await this.firestore
+        .collection(collectionName)
+        .doc(docId)
+        .update(newData);
+
+      return {
+        status: 'success',
+        message: 'Document updated successfully',
+        data: [docId],
+      } as DataServiceResponse;
+    } catch (e) {
+      return this.errorHandler(e);
+    }
+  }
 }

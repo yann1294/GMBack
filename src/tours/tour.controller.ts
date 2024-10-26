@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, Post } from '@nestjs/common';
+import { Controller, Delete, Get, Post, Put } from '@nestjs/common';
 import { DataService } from 'src/shared/services/data.service';
 import { DataServiceCondition, DataServiceResponse } from 'src/types';
 
@@ -33,6 +33,17 @@ export class TourController {
     const result = await this.dataService.deleteDoc(
       'tours',
       'srntBzfHL3sP4gzqKrOus',
+    );
+    return result;
+  }
+
+  @Put('update')
+  async updateTour(): Promise<DataServiceResponse> {
+    // create dummy tour
+    const result = await this.dataService.updateDoc(
+      'tours',
+      '10h7La8JE2FuKnWAVYu8',
+      { name: 'New name' },
     );
     return result;
   }

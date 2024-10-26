@@ -14,7 +14,7 @@ const firebaseProvider = {
 
     return admin.initializeApp({
       credential: admin.credential.cert(firebaseConfig),
-      //storageBucket: `${firebaseConfig.projectId}.appspot.com`,
+      storageBucket: `${process.env.PROJECT_ID}.appspot.com`,
     });
   },
 };

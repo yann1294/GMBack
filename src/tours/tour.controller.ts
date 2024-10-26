@@ -1,30 +1,32 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  Post,
-  Put,
-  UploadedFile,
-  UseInterceptors,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
 import { DataService } from 'src/shared/services/data.service';
-// import { FileService } from 'src/shared/services/file.service';
+import { FileService } from 'src/shared/services/file.service';
+import { FastifyRequest } from 'fastify';
 import { DataServiceResponse, FileServiceResponse } from 'src/types';
+import { MultipartFile } from '@fastify/multipart';
+import { log } from 'console';
 
 @Controller('tours')
 export class TourController {
   // inject firebase repository
   constructor(
     private readonly dataService: DataService,
-    // private readonly fileService: FileService,
+    private readonly fileService: FileService,
   ) {}
 
-  // @Post('upload')
-  // @UseInterceptors(FileInterceptor('file'))
-  // async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<FileServiceResponse> {
-  //   const result = this.fileService.uploadFile(file.buffer, file.m 'tours/file.jpg', file. )
-  // }
+  @Post('upload')
+  async uploadFile(@Req() req: FastifyRequest): Promise<FileServiceResponse> {
+    // get file from request
+    const file: MultipartFile | undefined = await req.file();
+
+    const result = this.fileService.uploadFile(
+      await file.toBuffer(),
+      file.mimetype,
+      'tours/file.jpg',
+    );
+
+    return result;
+  }
 
   @Post('create')
   async createTour(): Promise<DataServiceResponse> {

@@ -9,6 +9,6 @@ export class FirebaseRepository {
 
   constructor(@Inject('FIREBASE_APP') private firebaseApp: app.App) {
     this.guideMeDb = firebaseApp.firestore();
-    this.storage = firebaseApp.storage().bucket('guideme');
+    this.storage = firebaseApp.storage().bucket();
   }
 }

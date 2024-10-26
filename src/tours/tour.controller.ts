@@ -37,6 +37,13 @@ export class TourController {
     return result;
   }
 
+  @Post('uploads')
+  async uploadFiles(@Req() req: FastifyRequest): Promise<FileServiceResponse> {
+    const result = this.fileService.uploadFiles(req.files(), 'tours');
+
+    return result;
+  }
+
   @Post('create')
   async createTour(): Promise<DataServiceResponse> {
     // create dummy tour

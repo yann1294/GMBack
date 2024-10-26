@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Bucket, File } from '@google-cloud/storage';
+import { Bucket, File, TransferManager } from '@google-cloud/storage';
 import { getDownloadURL } from 'firebase-admin/storage';
 import { FirebaseRepository } from '../firebase/firebase.service';
 import { FileServiceResponse } from 'src/types';
 import { log } from 'console';
+import { MultipartFile } from '@fastify/multipart';
+import { Timestamp } from 'firebase-admin/firestore';
 
 @Injectable()
 export class FileService {
@@ -51,6 +53,43 @@ export class FileService {
         status: 'success',
         message: 'File uploaded successfully',
         data: [await getDownloadURL(file)],
+      } as FileServiceResponse;
+    } catch (e) {
+      return this.errorHandler(e);
+    }
+  }
+
+  async uploadFiles(
+    files: AsyncIterableIterator<MultipartFile>,
+    destination: string,
+  ): Promise<FileServiceResponse> {
+    try {
+      // hold ref to uploaded files
+      const downloadUrls: string[] = [];
+
+      for await (const file of files) {
+        // concat file destination with file name
+        const filePath =
+          destination +
+          `/${Timestamp.now().toMillis()}.${file.filename.split('.').slice(-1)[0]}`;
+
+        // create file
+        const fileRef: File = this.storageRef.file(filePath);
+
+        // add save promise to save promises
+        await fileRef.save(await file.toBuffer(), {
+          contentType: file.mimetype,
+        });
+
+        // get download url
+        downloadUrls.push(await getDownloadURL(fileRef));
+      }
+
+      return {
+        status: 'success',
+        code: 200,
+        message: 'Files successfully uploaded',
+        data: downloadUrls,
       } as FileServiceResponse;
     } catch (e) {
       return this.errorHandler(e);

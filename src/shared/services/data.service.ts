@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { FirebaseRepository } from '../firebase/firebase.service';
 import {
-  DocumentData,
   DocumentReference,
   DocumentSnapshot,
   FirebaseFirestoreError,
@@ -9,11 +8,9 @@ import {
   QueryDocumentSnapshot,
   QuerySnapshot,
   WriteBatch,
-  WriteResult,
 } from 'firebase-admin/firestore';
 import { log } from 'console';
 import { DataServiceCondition, DataServiceResponse } from 'src/types';
-import { DatabaseService } from 'firebase-admin/lib/database/database';
 
 @Injectable()
 export class DataService {

@@ -13,6 +13,7 @@ import {
 } from 'firebase-admin/firestore';
 import { log } from 'console';
 import { DataServiceCondition, DataServiceResponse } from 'src/types';
+import { DatabaseService } from 'firebase-admin/lib/database/database';
 
 @Injectable()
 export class DataService {
@@ -206,6 +207,21 @@ export class DataService {
       };
     } catch (e: unknown) {
       // return error
+      return this.errorHandler(e);
+    }
+  }
+
+  async deleteDoc(collectionName: string, docId: string) {
+    try {
+      // delete document
+      await this.firestore.collection(collectionName).doc(docId).delete();
+
+      return {
+        status: 'success',
+        message: 'Document deleted successfully',
+        data: [docId],
+      } as DataServiceResponse;
+    } catch (e) {
       return this.errorHandler(e);
     }
   }

@@ -24,6 +24,16 @@ export class DataService {
     this.firestore = firebaseRepository.guideMeDb;
   }
 
+  private errorHandler(e: unknown): DataServiceResponse {
+    const error = e as FirebaseFirestoreError;
+    log(`Error: ${error.code}`);
+    return {
+      status: error.code,
+      message: error.message,
+      data: null,
+    };
+  }
+
   /**
     Creates a document in a firestore collection.
     @param data The data to be stored in the document.
@@ -48,15 +58,8 @@ export class DataService {
         data: [result.path],
       } as DataServiceResponse;
     } catch (e: unknown) {
-      // log error
-      log((e as FirebaseFirestoreError).code);
-
       // return error
-      return {
-        status: (e as FirebaseFirestoreError).code,
-        message: (e as FirebaseFirestoreError).message,
-        data: null,
-      } as DataServiceResponse;
+      return this.errorHandler(e);
     }
   }
 
@@ -101,13 +104,8 @@ export class DataService {
         data: batch['_ops'].map((doc: object) => doc['docPath']),
       } as DataServiceResponse;
     } catch (e: unknown) {
-      log(e);
       // return error
-      return {
-        status: (e as FirebaseFirestoreError).code,
-        message: (e as FirebaseFirestoreError).message,
-        data: null,
-      } as DataServiceResponse;
+      return this.errorHandler(e);
     }
   }
 
@@ -137,13 +135,8 @@ export class DataService {
         data: [result.data()],
       };
     } catch (e: unknown) {
-      // log error
-      log((e as FirebaseFirestoreError).code);
-      return {
-        status: (e as FirebaseFirestoreError).code,
-        message: (e as FirebaseFirestoreError).message,
-        data: null,
-      } as DataServiceResponse;
+      // return error
+      return this.errorHandler(e);
     }
   }
 
@@ -167,13 +160,8 @@ export class DataService {
         data: results.docs.map((doc: QueryDocumentSnapshot) => doc.data()),
       };
     } catch (e: unknown) {
-      // log error
-      log((e as FirebaseFirestoreError).code);
-      return {
-        status: (e as FirebaseFirestoreError).code,
-        message: (e as FirebaseFirestoreError).message,
-        data: null,
-      } as DataServiceResponse;
+      // return error
+      return this.errorHandler(e);
     }
   }
 
@@ -202,13 +190,8 @@ export class DataService {
         data: results.docs.map((doc: QueryDocumentSnapshot) => doc.data()),
       };
     } catch (e: unknown) {
-      // log error
-      log((e as FirebaseFirestoreError).code);
-      return {
-        status: (e as FirebaseFirestoreError).code,
-        message: (e as FirebaseFirestoreError).message,
-        data: null,
-      } as DataServiceResponse;
+      // return error
+      return this.errorHandler(e);
     }
   }
 }

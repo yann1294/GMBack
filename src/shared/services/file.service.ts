@@ -50,7 +50,7 @@ export class FileService {
       const match: RegExpMatchArray = fileUrl.match(/\/o\/(.*?)\?/);
 
       // checking whether patterns found
-      if (!(match[0] && match[1])) {
+      if (match === null || !(match[0] && match[1])) {
         return {
           status: 'invalid-url',
           message: 'Invalid Firebase Storage URL',

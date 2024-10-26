@@ -211,6 +211,14 @@ export class DataService {
     }
   }
 
+  /**
+  Deletes a specific document from a given collection.
+
+  @param collectionName Collection name/path from which the document should be deleted.
+  @param docId Id of the document to be deleted.
+
+  @returns Returns the id of the deleted document or an error in the case of an error.
+  */
   async deleteDoc(collectionName: string, docId: string) {
     try {
       // delete document
@@ -226,6 +234,14 @@ export class DataService {
     }
   }
 
+  /**
+  Updates a specific document from a given collection.
+
+  @param collectionName Collection name/path from which the document should be updated.
+  @param docId Id of the document to be deleted.
+
+  @returns Returns the id of the updated document or an error in the case of an error.
+  */
   async updateDoc(
     collectionName: string,
     docId: string,

@@ -25,6 +25,19 @@ export class FileService {
     } as FileServiceResponse;
   }
 
+  public getPathFromURL(fileURL: string): string | null {
+    // get file path from url
+    const match: RegExpMatchArray = fileURL.match(/\/o\/(.*?)\?/);
+
+    // checking whether patterns found
+    if (match === null || !(match[0] && match[1])) {
+      return null;
+    }
+
+    // return file path
+    return match[1].replaceAll('%2F', '/');
+  }
+
   async uploadFile(
     fileBuffer: Buffer,
     contentType: string,
@@ -44,22 +57,19 @@ export class FileService {
     }
   }
 
-  async deleteFile(fileUrl: string) {
+  async deleteFile(fileURL: string) {
     try {
-      // get file path from url
-      const match: RegExpMatchArray = fileUrl.match(/\/o\/(.*?)\?/);
+      // get path from url
+      const filePath = this.getPathFromURL(fileURL);
 
       // checking whether patterns found
-      if (match === null || !(match[0] && match[1])) {
+      if (!filePath) {
         return {
           status: 'invalid-url',
           message: 'Invalid Firebase Storage URL',
           data: null,
         } as FileServiceResponse;
       }
-
-      // get file path
-      const filePath = match[1].replaceAll('%2F', '/');
 
       // delete file
       const file: File = this.storageRef.file(filePath);

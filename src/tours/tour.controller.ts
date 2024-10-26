@@ -4,6 +4,7 @@ import { FileService } from 'src/shared/services/file.service';
 import { FastifyRequest } from 'fastify';
 import { DataServiceResponse, FileServiceResponse } from 'src/types';
 import { MultipartFile } from '@fastify/multipart';
+import { log } from 'console';
 
 @Controller('tours')
 export class TourController {
@@ -16,7 +17,7 @@ export class TourController {
   @Delete('image/delete')
   async deleteFile(): Promise<FileServiceResponse> {
     const result = this.fileService.deleteFile(
-      'https://firebasestorage.googleapis.com/v0/b/gmback-206ae.appspot.com/tours%2Fimages%2Ffile.jpg?alt=media&token=b0d0c80e-9bab-4d0c-9945-ccf7e6301685',
+      'https://firebasestorage.googleapis.com/v0/b/gmback-206ae.appspot.com/o/tours%2Ffile.jpg?alt=media&token=b0d0c80e-9bab-4d0c-9945-ccf7e6301685',
     );
 
     return result;

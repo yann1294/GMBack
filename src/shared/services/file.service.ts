@@ -18,7 +18,8 @@ export class FileService {
   private errorHandler(e: unknown): FileServiceResponse {
     log();
     return {
-      status: e['code'],
+      status: 'failure',
+      code: e['code'],
       message: e['message'],
       data: null,
     } as FileServiceResponse;

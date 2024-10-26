@@ -4,7 +4,6 @@ import { FileService } from 'src/shared/services/file.service';
 import { FastifyRequest } from 'fastify';
 import { DataServiceResponse, FileServiceResponse } from 'src/types';
 import { MultipartFile } from '@fastify/multipart';
-import { log } from 'console';
 
 @Controller('tours')
 export class TourController {

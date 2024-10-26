@@ -26,7 +26,8 @@ export class DataService {
     const error = e as FirebaseFirestoreError;
     log(`Error: ${error.code}`);
     return {
-      status: error.code,
+      status: 'failure',
+      code: error.code,
       message: error.message,
       data: null,
     };
@@ -136,6 +137,7 @@ export class DataService {
       if (!result.exists) {
         return {
           status: 'not-found',
+          code: 404,
           message: 'Document not found.',
           data: null,
         };
@@ -144,6 +146,7 @@ export class DataService {
       // return document data
       return {
         status: 'success',
+        code: 200,
         message: 'Successfully feteched document.',
         data: [result.data()],
       };
@@ -169,6 +172,7 @@ export class DataService {
       // return document data
       return {
         status: 'success',
+        code: 200,
         message: 'Successfully feteched document.',
         data: results.docs.map((doc: QueryDocumentSnapshot) => doc.data()),
       };

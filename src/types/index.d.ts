@@ -45,6 +45,7 @@ unsuccessful.
 */
 export type DataServiceResponse = {
   status: string;
+  code: string | number;
   message: string;
   data: string[] | object[] | null;
 };
@@ -64,6 +65,7 @@ export type DataServiceCondition = {
 
 export type FileServiceResponse = {
   status: string;
+  code: string | number;
   message: string;
   data: string[] | null;
 };

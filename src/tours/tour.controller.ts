@@ -1,6 +1,6 @@
 import { Controller, Get, Post } from '@nestjs/common';
 import { DataService } from 'src/shared/services/data.service';
-import { DataServiceResponse } from 'src/types';
+import { DataServiceCondition, DataServiceResponse } from 'src/types';
 
 @Controller('tours')
 export class TourController {
@@ -10,7 +10,7 @@ export class TourController {
   @Post('create')
   async createTour(): Promise<DataServiceResponse> {
     // create dummy tour
-    const result = await this.dataService.createRecords(
+    const result = await this.dataService.createDocs(
       [{ name: 'Test repo' }, { name: 'Test repo' }, { name: 'Test repo' }],
       'tours',
     );
@@ -20,10 +20,11 @@ export class TourController {
   @Get('read')
   async getTour(): Promise<DataServiceResponse> {
     // create dummy tour
-    const result = await this.dataService.readRecord(
-      'tours',
-      'srntBzfHL3sP4gzqKrOu',
-    );
+    const result = await this.dataService.readDocsWithCondition('tours', {
+      fieldPath: 'name',
+      operationString: '==',
+      value: 'Test repok',
+    } as DataServiceCondition);
     return result;
   }
 }

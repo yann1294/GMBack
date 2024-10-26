@@ -3,6 +3,7 @@ import { FirebaseRepository } from '../firebase/firebase.service';
 import {
   DocumentData,
   DocumentReference,
+  DocumentSnapshot,
   FirebaseFirestoreError,
   Firestore,
   WriteBatch,
@@ -100,6 +101,40 @@ export class DataService {
     } catch (e: unknown) {
       log(e);
       // return error
+      return {
+        status: (e as FirebaseFirestoreError).code,
+        message: (e as FirebaseFirestoreError).message,
+        data: null,
+      } as DataServiceResponse;
+    }
+  }
+
+  /**
+  Reads a specific firestore document from a given collection.
+
+  @param collectionName Firestore collection name/path from which the document should be read.
+  @param docId The id of the document to be read.
+  */
+  async readRecord(
+    collectionName: string,
+    docId: string,
+  ): Promise<DataServiceResponse> {
+    try {
+      // read specific document
+      const result: DocumentSnapshot = await this.firestore
+        .collection(collectionName)
+        .doc(docId)
+        .get();
+
+      // return document data
+      return {
+        status: 'success',
+        message: 'Successfully feteched document.',
+        data: [result.data()],
+      };
+    } catch (e: unknown) {
+      // log error
+      log((e as FirebaseFirestoreError).code);
       return {
         status: (e as FirebaseFirestoreError).code,
         message: (e as FirebaseFirestoreError).message,

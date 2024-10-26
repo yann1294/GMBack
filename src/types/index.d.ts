@@ -39,10 +39,10 @@ Response object for dataservice operations.
 firebase error code when operation is unsuccessful.
 @param message A message about the completed operation. Will be a firebase error message if operation is
 unsuccessful.
-@param data Holds the document paths of the created documents or `null` in case of an error.
+@param data Holds the document paths/data of the created documents or `null` in case of an error.
 */
 export type DataServiceResponse = {
   status: string;
   message: string;
-  data: string[] | null;
+  data: string[] | object[] | null;
 };

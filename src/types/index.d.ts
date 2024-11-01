@@ -1,33 +1,32 @@
-import { WhereFilterOp } from 'firebase-admin/firestore';
+import { GeoPoint, WhereFilterOp } from 'firebase-admin/firestore';
 
-export declare interface ActivityLocation {
+export declare interface IActivityLocation {
   name: string;
   city: string;
   country: string;
   address: string;
-  latitude: string;
-  longitude: string;
+  location: GeoPoint;
 }
 
-export declare interface TourLocation {
+export declare interface ITourLocation {
   name: string;
   city: string;
   country: string;
 }
 
-export declare interface Transportation {
+export declare interface ITransportation {
   arrivalTime: Date;
   departureTime: Date;
   type: string;
 }
 
-export declare interface Accommodation {
+export declare interface IAccommodation {
   type: string;
   name: string;
 }
 
-export declare interface Activity {
-  id: string;
+export declare interface IActivity {
+  id: number;
   name: string;
   durationHours: number;
   location: ActivityLocation;
@@ -49,6 +48,7 @@ export type DataServiceResponse = {
   message: string;
   data: string[] | object[] | null;
 };
+//TODO: return only string when only one object is created
 
 /**
  * Condition object for DataService operations.
@@ -77,3 +77,7 @@ export type FileServiceResponse = {
   message: string;
   data: string[] | null;
 };
+
+export interface IUser {
+  name: string;
+}

@@ -61,6 +61,43 @@ export class TourVO {
     return this._activities;
   }
 
+  // Setters
+  set id(value: string) {
+    this._id = value;
+  }
+
+  set name(value: string) {
+    this._name = value;
+  }
+
+  set location(value: TourLocation) {
+    this._location = value;
+  }
+
+  set price(value: number) {
+    this._price = value;
+  }
+
+  set durationDays(value: number) {
+    this._durationDays = value;
+  }
+
+  set discount(value: number) {
+    this._discount = value;
+  }
+
+  set isAvailable(value: boolean) {
+    this._isAvailable = value;
+  }
+
+  set guide(value: User) {
+    this._guide = value;
+  }
+
+  set activities(value: Map<number, Activity>) {
+    this._activities = value;
+  }
+
   toEntity(): Tour {
     return new Tour(
       this._id,

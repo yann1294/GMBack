@@ -242,7 +242,7 @@ export class DataService {
       return {
         status: 'success',
         message: 'Document deleted successfully',
-        data: [docId],
+        data: docId,
       } as DataServiceResponse;
     } catch (e) {
       return this.errorHandler(e);
@@ -271,7 +271,7 @@ export class DataService {
       return {
         status: 'success',
         message: 'Document updated successfully',
-        data: [docId],
+        data: docId,
       } as DataServiceResponse;
     } catch (e) {
       return this.errorHandler(e);

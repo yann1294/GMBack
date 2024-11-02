@@ -1,48 +1,18 @@
-import { Type } from 'class-transformer';
-import {
-  IsBoolean,
-  IsNumber,
-  IsString,
-  Max,
-  Min,
-  ValidateNested,
-} from 'class-validator';
 import { Activity, TourLocation, User } from '../classes';
 import { GeoPoint, Timestamp } from 'firebase-admin/firestore';
 
 export class Tour {
-  @IsString()
-  public id: string;
-
-  @IsString()
-  public name: string;
-
-  @ValidateNested()
-  @Type(() => TourLocation)
-  public location: TourLocation;
-
-  @IsNumber()
-  public price: number;
-
-  @IsNumber()
-  @Min(0)
-  public durationDays: number;
-
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  public discount: number;
-
-  @IsBoolean()
-  public isAvailable: boolean;
-
-  @ValidateNested()
-  @Type(() => User)
-  public guide: User;
-
-  @ValidateNested({ each: true })
-  @Type(() => Activity)
-  public activities: Map<number, Activity>;
+  constructor(
+    public id: string,
+    public name: string,
+    public location: TourLocation,
+    public price: number,
+    public durationDays: number,
+    public discount: number,
+    public isAvailable: boolean,
+    public guide: User,
+    public activities: Map<number, Activity>,
+  ) {}
 
   addActivity(activity: Activity): void {
     this.activities.set(activity.id, activity);

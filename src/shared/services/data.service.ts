@@ -179,7 +179,7 @@ export class DataService {
       return {
         status: 'success',
         code: 200,
-        message: 'Successfully feteched document.',
+        message: 'Successfully feteched documents.',
         data: results.docs.map((doc: QueryDocumentSnapshot) => doc.data()),
       };
     } catch (e: unknown) {

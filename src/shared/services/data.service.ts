@@ -51,17 +51,23 @@ export class DataService {
     collectionName: string,
   ): Promise<DataServiceResponse> {
     try {
-      // adding data to collection
-      const result: DocumentReference = await this.firestore
+      // create doc to auto generate doc id
+      const doc: DocumentReference = this.firestore
         .collection(collectionName)
-        .add(data);
+        .doc();
+
+      // update data with doc id
+      data['id'] = doc.id;
+
+      // adding data to doc
+      await doc.set(data);
 
       // return success status
       // .path -> A string representing the path of the referenced document (relative to the root of the database).
       return {
         status: 'success',
         message: 'Document successfully created.',
-        data: [result.path],
+        data: doc.path,
       } as DataServiceResponse;
     } catch (e: unknown) {
       // return error

@@ -46,7 +46,7 @@ export type DataServiceResponse = {
   status: string;
   code: string | number;
   message: string;
-  data: string[] | object[] | null;
+  data: string[] | object[] | string | null;
 };
 //TODO: return only string when only one object is created
 

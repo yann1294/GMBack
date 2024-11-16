@@ -13,8 +13,9 @@ import {
 } from '@nestjs/common';
 import { TourValidationPipe } from './validation.pipe';
 import { log } from 'console';
-import { TourVO } from './vo/tour.vo';
-import { Tour } from './entities/tour.entity';
+import { TourVO } from '../vo/tour.master.vo';
+import { Tour } from '../entities/tour.entity';
+import { ITourService } from '../services/tour.service.interface';
 
 @Controller('tours')
 export class TourController {
@@ -24,6 +25,7 @@ export class TourController {
   constructor(
     private readonly dataService: DataService,
     private readonly fileService: FileService,
+    private readonly tourService: ITourService,
   ) {}
 
   @Post()
@@ -38,6 +40,11 @@ export class TourController {
       tour.toObject(),
       this.collectionName,
     );
+  }
+
+  @Patch()
+  update() {
+    this.tourService.updateTour('name', 'id');
   }
 
   @Get(':id')

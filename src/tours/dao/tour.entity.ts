@@ -1,4 +1,4 @@
-import { Activity, TourLocation, User } from '../classes';
+import { Activity, TourLocation, User } from '../vo/helper.vo';
 import { GeoPoint, Timestamp } from 'firebase-admin/firestore';
 
 export class Tour {

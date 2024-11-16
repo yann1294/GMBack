@@ -7,8 +7,8 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { log } from 'console';
-import { TourDTO } from './dto/tour.dto';
-import { TourVO } from './vo/tour.vo';
+import { TourDTO } from '../controller/dto/tour.dto';
+import { TourVO } from '../vo/tour.master.vo';
 
 @Injectable()
 export class TourValidationPipe implements PipeTransform<any, Promise<TourVO>> {
@@ -19,7 +19,7 @@ export class TourValidationPipe implements PipeTransform<any, Promise<TourVO>> {
       throw new BadRequestException('Request body cannot be empty');
     }
 
-    // validate input data across TourDTO
+    // validate input data against TourDTO
     const tourDto = plainToInstance(TourDTO, value);
     const errors = await validate(tourDto);
 

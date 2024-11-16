@@ -1,9 +1,17 @@
+Notes:
+- The DTOs will be used only for reponse and request validation.
+- Entities will be used when persisting data (database).
+- Services: Will contain business logic... any processing or algorithms
+- VO (view object): Defines the data structure of data to be moved within the application.
+
+
+
 src/
 ├── shared/
 │   ├── services/
 │      ├── data.service.ts
 │      ├── file.service.ts
-|
+│
 ├── auth/
 │   ├── auth.controller.ts
 │   ├── auth.service.ts
@@ -26,14 +34,18 @@ src/
 │
 ├── tours/
 │   ├── tour.controller.ts
+│   ├── tour.validation.pipe.ts
 │   ├── service/
-│   |   ├── tour.service.ts 
-|   |---(repository/)
-│   |   ├── tour.repository.ts
+│   │   ├── tour.service.ts
+│   │---(repository/)
+│   │   ├── tour.repository.ts
 │   ├── tour.module.ts
 │   ├── dto/
+│   ├── vo/
+│   │   ├── helper.vo.ts
+│   │   ├── tour.master.vo.ts
 │   ├── entities/
 │   └── tour.controller.spec.ts
-|
+│
 ├── app.module.ts
 └── main.ts

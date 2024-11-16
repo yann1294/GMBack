@@ -7,7 +7,7 @@ import {
   Max,
   IsBoolean,
 } from 'class-validator';
-import { TourLocation, Activity, User } from '../classes';
+import { TourLocation, Activity, User } from '../../vo/helper.vo';
 
 export class TourDTO {
   @IsString()

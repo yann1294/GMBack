@@ -1,9 +1,46 @@
+Notes:
+- The DTOs will be used only for reponse and request validation. They would not have constructors, only accessors.
+ Help transfer only necessary data to avoid security leak,to prevent network overhead, 
+ avoid heavily loaded request where we transfer the unnecessary data around again and again.
+ With DTOs, we can build different views from our domain models, allowing us to create other representations of 
+ the same domain but optimizing them to the client’s needs without affecting our domain design. 
+ Such flexibility is a powerful tool to solve complex problems.  
+    - TourDTO will be broken down into -> TourLocationDTO, UserDTO, ActivityDTO
+- Entities will be used when persisting data (database).
+- Services: Will contain business logic... any processing or algorithms
+- VO (view object): Defines the data structure of data to be moved within the application. They are the actual 
+ domain objects. 
+- Types would be used to shape all models such as VO & entities 
+-
+
+Processes (through containers): 
+- guide creation 
+- guide assignment 
+- booking : start from User Management (selecting tour or package), goes through Tour Management 
+  (tour or package creation, guide assignment) and booking (core business logic of booking), ends at paymnent 
+- authentication 
+- logging  
+- payment 
+
+Assumptions and Constraints for Beta version:
+- This structure balances modularity with maintainability and follows a clean, scalable design.
+- Guides are by default assigned to tours/packages 
+- A user will log in then he will be redirected to the user management space.
+   From there, he can book tours or packages.
+   After booking a tour, the flow of the app will to go to the tour management component.
+   That is :
+    - adding the user to the tour while he is waiting the confirmation from the guide.
+    - Notifications will be sent to the guide so that he can accept the user.
+   After the guide accepts the request from the user, a signal is sent to the user space allowing him to pay for the tour.   
+- Price could be static
+
+
 src/
 ├── shared/
 │   ├── services/
 │      ├── data.service.ts
 │      ├── file.service.ts
-|
+│
 ├── auth/
 │   ├── auth.controller.ts
 │   ├── auth.service.ts
@@ -25,15 +62,44 @@ src/
 │   └── user.controller.spec.ts
 │
 ├── tours/
-│   ├── tour.controller.ts
+│   ├── components 
+│   │   ├── tour engine 
+│   │   ├── tour request handler 
+│   │   ├── tour package handler 
+│   │   ├── path finder
+│   ├── controller/
+│   │   ├── tour.validation.pipe.ts
+│   │   ├── tour.core.controller.ts
+│   │   ├── pathfinder.controller.ts
+│   │   ├── package.controller.ts
+│   │   ├── dto/
+│   │   │   ├── tour.locationdto.ts 
+│   │   │   ├── tour.userdto.ts
+│   │   │   ├── tour.activitydto.ts
+│   │   │   ├── tour.updatedto.ts
+│   │   │   ├── tour.createdto.ts
 │   ├── service/
-│   |   ├── tour.service.ts 
-|   |---(repository/)
-│   |   ├── tour.repository.ts
+│   │   ├── tour.engineandrequest.service.ts
+│   │   ├── pathfinder.service.ts
+│   │   ├── package.service.ts
+│   │   ├── tour.engineandrequest.service.interface.ts
+│   │   ├── pathfinder.service.interface.ts
+│   │   ├── package.service.interface.ts
+│   ├── repository/
+│   │   ├── tour.engineandrequest.dao.ts
+│   │   ├── pathfinder.dao.ts
+│   │   ├── package.dao.ts
+│   │   ├── tour.engineandrequest.dao.interface.ts
+│   │   ├── pathfinder.dao.interface.ts
+│   │   ├── package.dao.interface.ts
+│   │   ├── entities/
+│   ├── vo/
+│   │   ├── helper.vo.ts
+│   │   ├── tour.master.vo.ts
+│   ├── utilitary/
+│   │   ├── tour.X.ts (to define)
 │   ├── tour.module.ts
-│   ├── dto/
-│   ├── entities/
 │   └── tour.controller.spec.ts
-|
+│
 ├── app.module.ts
 └── main.ts

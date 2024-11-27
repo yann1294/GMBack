@@ -79,17 +79,17 @@ src/
 │   │   │   ├── tour.updatedto.ts
 │   │   │   ├── tour.createdto.ts
 │   ├── service/
-│   │   ├── tour.engineandrequest.service.ts
+│   │   ├── tour.core.service.ts
 │   │   ├── pathfinder.service.ts
 │   │   ├── package.service.ts
-│   │   ├── tour.engineandrequest.service.interface.ts
+│   │   ├── tour.core.service.interface.ts
 │   │   ├── pathfinder.service.interface.ts
 │   │   ├── package.service.interface.ts
 │   ├── repository/
-│   │   ├── tour.engineandrequest.dao.ts
+│   │   ├── tour.core.dao.ts
 │   │   ├── pathfinder.dao.ts
 │   │   ├── package.dao.ts
-│   │   ├── tour.engineandrequest.dao.interface.ts
+│   │   ├── tour.core.dao.interface.ts
 │   │   ├── pathfinder.dao.interface.ts
 │   │   ├── package.dao.interface.ts
 │   │   ├── entities/

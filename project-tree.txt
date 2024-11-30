@@ -4,8 +4,6 @@ Notes:
 - Services: Will contain business logic... any processing or algorithms
 - VO (view object): Defines the data structure of data to be moved within the application.
 
-
-
 src/
 ├── shared/
 │   ├── services/

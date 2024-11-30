@@ -7,18 +7,15 @@ import {
   Max,
   IsBoolean,
 } from 'class-validator';
-import { TourLocation, Activity, User } from '../../vo/helper.vo';
+import { TourLocationDTO } from './tour.location.dto';
+import { ActivityDTO } from './tour.activity.dto';
 
-export class TourDTO {
+export class CreateTourDTO {
   @IsString()
   public readonly id: string;
 
   @IsString()
   public readonly name: string;
-
-  @ValidateNested()
-  @Type(() => TourLocation)
-  public readonly location: TourLocation;
 
   @IsNumber()
   public readonly price: number;
@@ -32,14 +29,21 @@ export class TourDTO {
   @Max(100)
   public readonly discount: number;
 
+  @IsNumber()
+  public readonly numberOfSeats: number;
+
+  @IsString()
+  public readonly description: number
+
   @IsBoolean()
   public readonly isAvailable: boolean;
 
   @ValidateNested()
-  @Type(() => User)
-  public readonly guide: User;
+  @Type(() => TourLocationDTO)
+  location: TourLocationDTO
 
-  @ValidateNested({ each: true })
-  @Type(() => Activity)
-  public readonly activities: Map<number, Activity>;
+  @ValidateNested()
+  @Type(() => ActivityDTO)
+  activity: ActivityDTO
 }
+

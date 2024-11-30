@@ -1,33 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { CoreDAOInterface } from './tour.core.dao.interface';
-import { CreateTourDTO, UpdateTourDTO } from './dtos/tour.dto';
+import { DataService } from 'src/shared/services/data.service';
+import { TourVO } from '../vo/tour.master.vo';
+import { Tour } from './tour.entity';
+import { UpdateTourDTO } from '../controller/dto/tour.update.dto';
 
 @Injectable()
 export class CoreDAO implements CoreDAOInterface {
-  private readonly tours = new Map<string, any>(); // Example in-memory storage
+  private readonly collectionName = 'tours';
 
-  async findAll(): Promise<any[]> {
-    return Array.from(this.tours.values());
+  // private readonly tours = new Map<string, any>(); // Example in-memory storage
+ 
+  constructor(private readonly dataService: DataService) {}
+
+  // FIRST USE CASE:  CREATE A TOUR
+  async create(data: Tour): Promise<any> {
+    return this.dataService.createDoc(data, this.collectionName);
+  }
+
+
+  async findAll(): Promise<any> {
+    return await this.dataService.readAllDocs(this.collectionName);
   }
 
   async findById(id: string): Promise<any> {
-    return this.tours.get(id) || null;
+    return await this.dataService.readDoc(this.collectionName, id);
   }
 
-  async create(data: CreateTourDTO): Promise<any> {
-    this.tours.set(data.id, data);
-    return data;
-  }
 
+  
   async update(id: string, data: UpdateTourDTO): Promise<any> {
-    const existing = this.tours.get(id);
-    if (!existing) throw new Error('Tour not found');
-    const updated = { ...existing, ...data };
-    this.tours.set(id, updated);
-    return updated;
+    return;
   }
 
   async delete(id: string): Promise<void> {
-    this.tours.delete(id);
+    return;
   }
 }

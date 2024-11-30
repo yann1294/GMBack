@@ -71,31 +71,13 @@ export class ActivityLocation implements IActivityLocation {
 
 export class TourLocation implements ITourLocation {
   @IsString()
-  private _name: string;
-  public get name(): string {
-    return this._name;
-  }
-  public set name(value: string) {
-    this._name = value;
-  }
+  name: string;
 
   @IsString()
-  private _city: string;
-  public get city(): string {
-    return this._city;
-  }
-  public set city(value: string) {
-    this._city = value;
-  }
+  city: string;
 
   @IsString()
-  private _country: string;
-  public get country(): string {
-    return this._country;
-  }
-  public set country(value: string) {
-    this._country = value;
-  }
+  country: string;
 }
 
 export class Transportation implements ITransportation {

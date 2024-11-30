@@ -14,8 +14,8 @@ import {
 import { TourValidationPipe } from './validation.pipe';
 import { log } from 'console';
 import { TourVO } from '../vo/tour.master.vo';
-import { Tour } from '../entities/tour.entity';
 import { ITourService } from '../services/tour.service.interface';
+import { Tour } from '../dao/tour.entity';
 
 @Controller('tours')
 export class TourController {
@@ -36,10 +36,11 @@ export class TourController {
     const tour: Tour = tourVo.toEntity();
 
     // process data with service
-    return await this.dataService.createDoc(
-      tour.toObject(),
-      this.collectionName,
-    );
+    // return await this.dataService.createDoc(
+    //   tour,
+    //   this.collectionName,
+    // );
+    return;
   }
 
   @Patch()

@@ -1,6 +1,8 @@
 import { Controller, Get, Post, Param, Body, Put, Delete } from '@nestjs/common';
-import { CoreService } from './core.service';
-import { CreateTourDTO, UpdateTourDTO } from './dtos/tour.dto';
+import { CoreService } from '../services/tour.core.service';
+import { CreateTourDTO } from './dto/tour.create.dto';
+import { UpdateTourDTO } from './dto/tour.update.dto';
+
 
 @Controller('tours')
 export class CoreController {
@@ -21,10 +23,10 @@ export class CoreController {
     return this.coreService.createTour(createTourDTO);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateTourDTO: UpdateTourDTO) {
-    return this.coreService.updateTour(id, updateTourDTO);
-  }
+  // @Put(':id')
+  // update(@Param('id') id: string, @Body() updateTourDTO: UpdateTourDTO) {
+  //   return this.coreService.updateTour(id, updateTourDTO);
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

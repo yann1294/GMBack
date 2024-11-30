@@ -1,4 +1,4 @@
-import { CreatePackageDTO, UpdatePackageDTO } from './dtos/package.dto';
+import { CreatePackageDTO, UpdatePackageDTO } from "../controller/dto/package.dto";
 
 export interface TourPackageDAOInterface {
   findAll(): Promise<any[]>;

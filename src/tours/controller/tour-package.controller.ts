@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
-import { TourPackageService } from './tour-package.service';
-import { CreatePackageDTO, UpdatePackageDTO } from './dtos/package.dto';
+import { TourPackageService } from '../services/tour-package.service';
+import { CreatePackageDTO, UpdatePackageDTO } from './dto/package.dto';
+
 
 @Controller('tour-packages')
 export class TourPackageController {

@@ -1,6 +1,6 @@
-import { Tour } from '../entities/tour.entity';
 import { Expose, Type } from 'class-transformer';
 import { Activity, TourLocation, User } from './helper.vo';
+import { Tour } from '../dao/tour.entity';
 
 export class TourVO {
   @Expose({ name: 'id' }) private _id: string;

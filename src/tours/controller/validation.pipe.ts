@@ -7,8 +7,8 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { log } from 'console';
-import { TourDTO } from '../controller/dto/tour.dto';
 import { TourVO } from '../vo/tour.master.vo';
+import { TourDTO } from 'src/payment/controller/dto/tour.dto';
 
 @Injectable()
 export class TourValidationPipe implements PipeTransform<any, Promise<TourVO>> {

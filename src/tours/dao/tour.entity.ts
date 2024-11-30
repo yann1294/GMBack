@@ -1,5 +1,5 @@
-import { Activity, TourLocation, User } from '../vo/helper.vo';
 import { GeoPoint, Timestamp } from 'firebase-admin/firestore';
+import { Activity, TourLocation, User } from '../vo/helper.vo';
 
 export class Tour {
   constructor(
@@ -9,27 +9,13 @@ export class Tour {
     public price: number,
     public durationDays: number,
     public discount: number,
+    public numberOfSeats: number,
+    public description: string,
     public isAvailable: boolean,
     public guide: User,
     public activities: Map<number, Activity>,
   ) {}
-
-  addActivity(activity: Activity): void {
-    this.activities.set(activity.id, activity);
-  }
-
-  deleteActivity(id: number): boolean {
-    return this.activities.delete(id);
-  }
-
-  getAllActivities(): Map<number, Activity> {
-    return this.activities;
-  }
-
-  getActivity(id: number): Activity | undefined {
-    return this.activities.get(id);
-  }
-
+  
   toObject(): object {
     return {
       id: this.id,
@@ -38,6 +24,8 @@ export class Tour {
       price: this.price,
       durationDays: this.durationDays,
       discount: this.discount,
+      numberOfSeats: this.numberOfSeats,
+      description: this.description,
       isAvailable: this.isAvailable,
       guide: Object.assign({}, this.guide),
       activities: Object.fromEntries(

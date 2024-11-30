@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PathFinderDAOInterface } from './path-finder.dao.interface';
+import { PathFinderDAOInterface } from '../dao/path-finder.dao.interface';
 
 @Injectable()
 export class PathFinderService {

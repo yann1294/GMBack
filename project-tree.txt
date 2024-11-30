@@ -78,11 +78,11 @@ src/
 │   │   ├── pathfinder.controller.ts
 │   │   ├── package.controller.ts
 │   │   ├── dto/
-│   │   │   ├── tour.locationdto.ts
-│   │   │   ├── tour.userdto.ts
-│   │   │   ├── tour.activitydto.ts
-│   │   │   ├── tour.updatedto.ts
-│   │   │   ├── tour.createdto.ts
+│   │   │   ├── tour.location.dto.ts
+│   │   │   ├── tour.activity.dto.ts
+│   │   │   ├── tour.update.dto.ts
+│   │   │   ├── tour.create.dto.ts
+│   │   │   ├── package.dto.ts
 │   ├── service/
 │   │   ├── tour.core.service.ts
 │   │   ├── pathfinder.service.ts

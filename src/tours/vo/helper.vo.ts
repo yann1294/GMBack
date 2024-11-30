@@ -16,6 +16,7 @@ import {
   IActivityLocation,
   ITourLocation,
   IUser,
+  ITransportation,
 } from 'src/types';
 
 export class GMGeoPoint implements GeoPoint {
@@ -31,6 +32,10 @@ export class GMGeoPoint implements GeoPoint {
 
   isEqual(other: GeoPoint): boolean {
     return this.latitude == other.latitude && this.longitude == other.longitude;
+  }
+
+  toString(): string {
+    return `GeoPoint(latitude=${this.latitude}, longitude=${this.longitude})`;
   }
 }
 
@@ -51,28 +56,66 @@ export class ActivityLocation implements IActivityLocation {
   @ValidateNested()
   @Type(() => GMGeoPoint)
   location: GMGeoPoint;
+
+  toString(): string {
+    return `
+    ActivityLocation(
+      name=${this.name},
+      city=${this.city},
+      country=${this.country},
+      address=${this.address},
+      location=${this.location.toString()}
+    )`;
+  }
 }
 
 export class TourLocation implements ITourLocation {
   @IsString()
-  public name: string;
+  private _name: string;
+  public get name(): string {
+    return this._name;
+  }
+  public set name(value: string) {
+    this._name = value;
+  }
 
   @IsString()
-  public city: string;
+  private _city: string;
+  public get city(): string {
+    return this._city;
+  }
+  public set city(value: string) {
+    this._city = value;
+  }
 
   @IsString()
-  public country: string;
+  private _country: string;
+  public get country(): string {
+    return this._country;
+  }
+  public set country(value: string) {
+    this._country = value;
+  }
 }
 
-export class Transportation {
+export class Transportation implements ITransportation {
   @IsDateString()
-  arrivalTime: string;
+  arrivalTime: Date;
 
   @IsDateString()
-  departureTime: string;
+  departureTime: Date;
 
   @IsString()
   type: string;
+
+  toString(): string {
+    return `
+    Transportation(
+      arrivalTime=${this.arrivalTime},
+      departureTime=${this.departureTime},
+      type=${this.type}
+    )`;
+  }
 }
 
 export class Accommodation implements IAccommodation {
@@ -81,6 +124,10 @@ export class Accommodation implements IAccommodation {
 
   @IsString()
   name: string;
+
+  toString(): string {
+    return `Accommodation(type='${this.type}', name='${this.name}')`;
+  }
 }
 
 export class Activity implements IActivity {
@@ -108,9 +155,28 @@ export class Activity implements IActivity {
   @ValidateNested()
   @Type(() => Accommodation)
   accommodation: Accommodation;
+
+  toString() {
+    return `
+    Activity(
+      id=${this.id},
+      name=${this.name},
+      durationHours=${this.durationHours},
+      location=${this.location.toString()}
+      transportation=${this.transportation.toString()},
+      accommodation=${this.accommodation.toString()}
+    )`;
+  }
 }
 
 export class User implements IUser {
   @IsString()
-  name: string;
+  private _name: string;
+
+  public get name(): string {
+    return this._name;
+  }
+  public set name(value: string) {
+    this._name = value;
+  }
 }

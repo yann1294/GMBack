@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CoreDAOInterface } from './core.dao.interface';
+import { CoreDAOInterface } from './tour.core.dao.interface';
 import { CreateTourDTO, UpdateTourDTO } from './dtos/tour.dto';
 
 @Injectable()

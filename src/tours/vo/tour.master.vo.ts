@@ -1,4 +1,4 @@
-import { Tour } from '../entities/tour.entity';
+import { Tour } from '../dao/tour.entity';
 import { Expose, Type } from 'class-transformer';
 import { Activity, TourLocation, User } from './helper.vo';
 
@@ -9,6 +9,8 @@ export class TourVO {
   @Expose({ name: 'price' }) private _price: number;
   @Expose({ name: 'durationDays' }) private _durationDays: number;
   @Expose({ name: 'discount' }) private _discount: number;
+  @Expose({ name: 'numberOfSeats' }) private _numberOfSeats: number;
+  @Expose({ name: 'description' }) private _description: string;
   @Expose({ name: 'isAvailable' }) private _isAvailable: boolean;
   @Expose({ name: 'guide' }) private _guide: User;
   @Expose({ name: 'activities' })
@@ -44,6 +46,16 @@ export class TourVO {
   @Expose()
   get discount(): number {
     return this._discount;
+  }
+
+  @Expose()
+  get numberOfSeats(): number {
+    return this._numberOfSeats;
+  }
+
+  @Expose()
+  get description(): string {
+    return this._description;
   }
 
   @Expose()
@@ -86,6 +98,14 @@ export class TourVO {
     this._discount = value;
   }
 
+  set numberOfSeats(value: number) {
+    this._numberOfSeats = value;
+  }
+
+  set description(value: string) {
+    this._description = value;
+  }
+
   set isAvailable(value: boolean) {
     this._isAvailable = value;
   }
@@ -106,6 +126,8 @@ export class TourVO {
       this._price,
       this._durationDays,
       this._discount,
+      this._numberOfSeats,
+      this._description,
       this._isAvailable,
       this._guide,
       this._activities,

@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
   Patch,
   Post,
@@ -12,6 +13,7 @@ import { TourVO } from '../vo/tour.master.vo';
 import { ICoreService } from '../services/tour.service.interface';
 import { Tour } from '../dao/tour.entity';
 import { Activity } from '../vo/helper.vo';
+import { CORE_SERVICE_TOKEN } from '../token';
 
 @Controller('tours')
 export class TourController {
@@ -19,10 +21,12 @@ export class TourController {
 
   // inject firebase repository
   constructor(
-    private readonly coreService: ICoreService,
+    @Inject(CORE_SERVICE_TOKEN) private readonly coreService: ICoreService,
   ) {}
 
   // tour functions
+
+  // Create a new tour
   @Post()
   async createTour(
     @Body(new TourValidationPipe()) tourVo: TourVO,
@@ -31,70 +35,113 @@ export class TourController {
     return await this.coreService.createTour(tourVo);
   }
 
-  @Patch()
-  async update(@Param() id: string, @Body(new TourValidationPipe()) tourVO: TourVO): Promise<any> {
-    return await this.coreService.updateTour(id, tourVO);
+  // Update an existing tour
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body(new TourValidationPipe()) tourVO: TourVO,
+  ): Promise<any> {
+    //return await this.coreService.updateTour(id, tourVO);
+    return;
   }
 
-  @Get()
-  async findById(@Param() id: string): Promise<Tour> {
+  // Get a tour by ID
+  @Get(':id')
+  async findById(@Param('id') id: string): Promise<Tour> {
     return await this.coreService.findTourById(id);
   }
 
+  // Get all tours
   @Get()
   async findAllTours(): Promise<Tour[]> {
     return;
+    //return await this.coreService.findAllTours();
   }
 
-  @Delete()
-  deleteTour(id: string): Promise<void> {
+  // Delete a tour
+  @Delete(':id')
+  deleteTour(@Param('id') id: string): Promise<void> {
     return;
+    //return await this.coreService.deleteTour(id);
   }
 
-  @Patch()
-  updateTourAvailability(id: string, isAvailable: boolean): Promise<boolean>{
+  // Update tour availability
+  @Patch('availability/:id')
+  async updateTourAvailability(
+    @Param('id') id: string,
+    @Body('isAvailable') isAvailable: boolean,
+  ): Promise<boolean> {
     return;
+    //    return await this.coreService.updateTourAvailability(id, isAvailable);
   }
 
-  @Patch()
-  assignGuideToTour(tourId: string, guideId: string): Promise<void> {
+  // Assign a guide to a tour
+  @Patch('assign-guide/:tourId')
+  async assignGuideToTour(
+    @Param('tourId') tourId: string,
+    @Body('guideId') guideId: string,
+  ): Promise<void> {
     return;
+    //    return await this.coreService.assignGuideToTour(tourId, guideId);
   }
-  
+
   // activity functions
-  @Patch()
-  addActivityToTour(tourId: string, activity: Activity): Promise<void> {
+
+  // Add an activity to a tour
+  @Patch('add-activity/:tourId')
+  async addActivityToTour(
+    @Param('tourId') tourId: string,
+    @Body() activity: Activity,
+  ): Promise<void> {
+    return;
+    //return await this.coreService.addActivityToTour(tourId, activity);
+  }
+
+  // Remove an activity from a tour
+  @Patch('remove-activity/:tourId')
+  async removeActivityFromTour(
+    @Param('tourId') tourId: string,
+    @Body('activityName') activityName: string,
+  ): Promise<void> {
+    // return await this.coreService.removeActivityFromTour(
+    //   tourId,
+    //   activityName,
+    // );
     return;
   }
 
-  @Patch()
-  removeActivityFromTour(tourId: string, activityName: string): Promise<void>{
+  // List activities for a tour
+  @Get('activities/:tourId')
+  async listActivitiesForTour(@Param('tourId') tourId: string): Promise<void> {
     return;
-  };
+    //return await this.coreService.listActivitiesForTour(tourId);
+  }
 
-  @Get()
-  listActivitiesForTour(tourId: string): Promise<void> {
+  // Get the current activity ID
+  @Get('current-activity-id')
+  async getCurrentActivityId(): Promise<string> {
+    // return await this.coreService.getCurrentActivityId();
     return;
   }
 
-  @Get()
-  getCurrentActivityId(): Promise<string> {
+  // Set the current activity ID
+  @Patch('set-current-activity/:id')
+  async setCurrentActivityId(@Param('id') id: string): Promise<string> {
     return;
+    //return await this.coreService.setCurrentActivityId(id);
   }
 
-  @Patch()
-  setCurrentActivityId(id: string): Promise<string> {
+  // Start the current activity
+  @Patch('start-current-activity')
+  async startCurrentActivity(): Promise<boolean> {
     return;
+    //return await this.coreService.startCurrentActivity();
   }
 
-  @Patch()
-  startCurrentActivity(): Promise<boolean> {
+  // Stop the current activity
+  @Patch('stop-current-activity')
+  async stopCurrentActivity(): Promise<boolean> {
     return;
+    //return await this.coreService.stopCurrentActivity();
   }
-
-  @Patch()
-  stopCurrentActivity(): Promise<boolean> {
-    return;
-  }
-
 }

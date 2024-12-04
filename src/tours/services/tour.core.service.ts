@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CoreDAOInterface } from '../dao/tour.core.dao.interface';
 import { CreateTourDTO } from '../controller/dto/tour.create.dto';
-import { UpdateTourDTO } from '../controller/dto/tour.update.dto';
+//import { UpdateTourDTO } from '../controller/dto/tour.update.dto';
 
 @Injectable()
 export class CoreService {

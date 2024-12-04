@@ -1,33 +1,34 @@
 import { ICoreService } from './tour.service.interface';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Tour } from '../dao/tour.entity';
 import { TourVO } from '../vo/tour.master.vo';
 import { CoreDAOInterface } from '../dao/tour.core.dao.interface';
 
-
+import { CORE_DAO_INTERFACE_TOKEN } from '../token';
 
 @Injectable()
 export class CoreService implements ICoreService {
-  constructor(private readonly coreDAO: CoreDAOInterface) {}
+  constructor(
+    @Inject(CORE_DAO_INTERFACE_TOKEN)
+    private readonly coreDAO: CoreDAOInterface,
+  ) {}
 
   async createTour(tourVO: TourVO): Promise<void> {
     // converting VO to Entity and returning entity
-    // return await this.coreDAO.create(tourVO.toEntity());
+    return await this.coreDAO.create(tourVO.toEntity());
   }
-  async updateTour(id: string, tourVO: TourVO): Promise<void> {
-    // return await this.coreDAO.update(id, tourVO);
-    return;
-  }
- 
+  // async updateTour(id: string, tourVO: TourVO): Promise<void> {
+  //   return await this.coreDAO.update(id, tourVO);
+  // }
+
   async findTourById(id: string): Promise<Tour> {
     return await this.coreDAO.findById(id);
   }
   async findAllTours(): Promise<Tour[]> {
-    // return await this.coreDAO.findAll();
-    return;
+    return await this.coreDAO.findAll();
   }
   async deleteTour(id: string): Promise<void> {
-    // return await this.coreDAO.delete(id);
+    return await this.coreDAO.delete(id);
   }
   // async updateTourAvailability(id: string, isAvailable: boolean): boolean {
   //   return await this.coreDAO.update(id, isAvailable);
@@ -56,7 +57,4 @@ export class CoreService implements ICoreService {
   // async stopCurrentActivity(): boolean {
   //   throw new Error('Method not implemented.');
   // }
-
-
-
 }

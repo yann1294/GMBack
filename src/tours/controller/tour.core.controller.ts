@@ -1,10 +1,9 @@
-import { Controller, Get, Post, Param, Body, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Delete } from '@nestjs/common';
 import { CoreService } from '../services/tour.core.service';
 import { CreateTourDTO } from './dto/tour.create.dto';
-import { UpdateTourDTO } from './dto/tour.update.dto';
+//import { UpdateTourDTO } from './dto/tour.update.dto';
 
-
-@Controller('tours')
+@Controller('tours/core')
 export class CoreController {
   constructor(private readonly coreService: CoreService) {}
 

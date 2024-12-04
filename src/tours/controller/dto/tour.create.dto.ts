@@ -33,17 +33,16 @@ export class CreateTourDTO {
   public readonly numberOfSeats: number;
 
   @IsString()
-  public readonly description: number
+  public readonly description: number;
 
   @IsBoolean()
   public readonly isAvailable: boolean;
 
   @ValidateNested()
   @Type(() => TourLocationDTO)
-  location: TourLocationDTO
+  location: TourLocationDTO;
 
   @ValidateNested()
   @Type(() => ActivityDTO)
-  activity: ActivityDTO
+  activity: ActivityDTO;
 }
-

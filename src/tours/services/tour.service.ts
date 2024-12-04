@@ -5,6 +5,7 @@ import { TourVO } from '../vo/tour.master.vo';
 import { CoreDAOInterface } from '../dao/tour.core.dao.interface';
 
 import { CORE_DAO_INTERFACE_TOKEN } from '../token';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class CoreService implements ICoreService {
@@ -21,8 +22,11 @@ export class CoreService implements ICoreService {
     // converting VO to Entity and returning entity
     return await this.coreDAO.create(tourVO.toEntity());
   }
-  // async updateTour(id: string, tourVO: TourVO): Promise<void> {
-  //   return await this.coreDAO.update(id, tourVO);
+
+  // async updateTour(id: string, updateTourDTO: TourVO): Promise<void> {
+  //   const tourVO = plainToClass(TourVO, updateTourDTO);
+  //   const updatedData = tourVO.toEntity();
+  //   return await this.coreDAO.update(id, updatedData);
   // }
 
   async findTourById(id: string): Promise<Tour> {

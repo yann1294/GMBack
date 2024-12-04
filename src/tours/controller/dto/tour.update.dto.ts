@@ -6,6 +6,7 @@ import {
   Max,
   IsBoolean,
   IsOptional,
+  IsObject,
 } from 'class-validator';
 import { TourLocationDTO } from './tour.location.dto';
 import { Type } from 'class-transformer';
@@ -40,7 +41,7 @@ export class UpdateTourDTO {
 
   @IsString()
   @IsOptional()
-  public readonly description: number;
+  public readonly description: string;
 
   @IsBoolean()
   @IsOptional()
@@ -54,5 +55,6 @@ export class UpdateTourDTO {
   @ValidateNested()
   @Type(() => ActivityDTO)
   @IsOptional()
-  activity: ActivityDTO;
+  @IsObject()
+  activities: { [key: number]: ActivityDTO };
 }

@@ -1,5 +1,5 @@
 import { ICoreService } from './tour.service.interface';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Tour } from '../dao/tour.entity';
 import { TourVO } from '../vo/tour.master.vo';
 import { CoreDAOInterface } from '../dao/tour.core.dao.interface';
@@ -8,7 +8,9 @@ import { CoreDAOInterface } from '../dao/tour.core.dao.interface';
 
 @Injectable()
 export class CoreService implements ICoreService {
-  constructor(private readonly coreDAO: CoreDAOInterface) {}
+  constructor(
+    @Inject('CoreDAOInterface') private readonly coreDAO: CoreDAOInterface,
+  ) {}
 
   async createTour(tourVO: TourVO): Promise<void> {
     // converting VO to Entity and returning entity

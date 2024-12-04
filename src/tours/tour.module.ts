@@ -2,13 +2,18 @@ import { Module } from '@nestjs/common';
 import { TourController } from './controller/tour.controller';
 import { DataService } from 'src/shared/services/data.service';
 import { FirebaseModule } from 'src/shared/firebase/firebase.module';
+//import { FileService } from 'src/shared/services/file.service';
+//import { TourValidationPipe } from './controller/validation.pipe';
 import { CoreService } from './services/tour.service';
+//import { CoreDAOInterface } from './dao/tour.core.dao.interface';
 import { CoreDAO } from './dao/tour.core.dao';
+import { CORE_DAO_INTERFACE_TOKEN, CORE_SERVICE_TOKEN } from './token';
+
 /**
  * Reason for using the format below in the provider.
  *  {
-      provide: 'CoreDAOInterface',
-      useClass: CoreDAO,
+      provide: CORE_SERVICE_TOKEN,
+      useClass: CoreService,
     }
 
     Interfaces do not exist during runtime so we need a token to represent interfaces. These tokens should be
@@ -19,16 +24,15 @@ import { CoreDAO } from './dao/tour.core.dao';
   imports: [FirebaseModule],
   controllers: [TourController],
   providers: [
-    CoreService,
     {
-      provide: 'CoreDAOInterface',
+      provide: CORE_DAO_INTERFACE_TOKEN,
       useClass: CoreDAO,
     },
+    DataService,
     {
-      provide: 'ICoreService',
+      provide: CORE_SERVICE_TOKEN,
       useClass: CoreService,
     },
-    DataService,
   ],
 })
 export class TourModule {}

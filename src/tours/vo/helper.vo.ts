@@ -25,6 +25,7 @@ export class GMGeoPoint implements GeoPoint {
 
   @IsNumber()
   longitude: number;
+
   constructor(latitude: number, longitude: number) {
     this.latitude = latitude;
     this.longitude = longitude;
@@ -78,6 +79,16 @@ export class TourLocation implements ITourLocation {
 
   @IsString()
   country: string;
+
+  toString(): string {
+    return `
+      TourLocation(
+        name=${this.name}
+        city=${this.city}
+        country=${this.country}
+      )
+    `;
+  }
 }
 
 export class Transportation implements ITransportation {

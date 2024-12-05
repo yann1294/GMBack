@@ -34,7 +34,6 @@ Assumptions and Constraints for Beta version:
    After the guide accepts the request from the user, a signal is sent to the user space allowing him to pay for the tour.
 - Price could be static
 
-
 src/
 ├── shared/
 │   ├── services/

@@ -59,6 +59,7 @@ export class TourVO {
   }
 
   @Expose()
+
   get isAvailable(): boolean {
     return this._isAvailable;
   }
@@ -70,6 +71,7 @@ export class TourVO {
 
   @Expose()
   get activities(): Activity[] {
+
     return this._activities;
   }
 
@@ -115,6 +117,7 @@ export class TourVO {
   }
 
   set activities(value: Activity[]) {
+
     this._activities = value;
   }
 

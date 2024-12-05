@@ -9,6 +9,7 @@ import { CoreService } from './services/tour.service';
 import { CoreDAO } from './dao/tour.core.dao';
 import { CORE_DAO_INTERFACE_TOKEN, CORE_SERVICE_TOKEN } from './token';
 
+
 /**
  * Reason for using the format below in the provider.
  *  {

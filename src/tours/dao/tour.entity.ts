@@ -15,7 +15,6 @@ export class Tour {
     public guide: User,
     public activities: Activity[],
   ) {}
-
   toObject(): object {
     return {
       id: this.id,

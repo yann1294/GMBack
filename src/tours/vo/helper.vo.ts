@@ -25,7 +25,6 @@ export class GMGeoPoint implements GeoPoint {
 
   @IsNumber()
   longitude: number;
-
   constructor(latitude: number, longitude: number) {
     this.latitude = latitude;
     this.longitude = longitude;
@@ -38,6 +37,7 @@ export class GMGeoPoint implements GeoPoint {
   toString(): string {
     return `GeoPoint(latitude=${this.latitude}, longitude=${this.longitude})`;
   }
+
 }
 
 export class ActivityLocation implements IActivityLocation {
@@ -109,6 +109,7 @@ export class Transportation implements ITransportation {
       type=${this.type}
     )`;
   }
+
 }
 
 export class Accommodation implements IAccommodation {

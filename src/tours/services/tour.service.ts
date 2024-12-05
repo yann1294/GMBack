@@ -10,12 +10,8 @@ import { plainToClass } from 'class-transformer';
 @Injectable()
 export class CoreService implements ICoreService {
   constructor(
-<<<<<<< HEAD
-    @Inject('CoreDAOInterface') private readonly coreDAO: CoreDAOInterface,
-=======
     @Inject(CORE_DAO_INTERFACE_TOKEN)
     private readonly coreDAO: CoreDAOInterface,
->>>>>>> 58d51cc822486cb88bee200b7a098dd180e0308e
   ) {}
 
   async createTour(tourVO: TourVO): Promise<void> {

@@ -1,7 +1,7 @@
 // import { Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
 import { DataService } from 'src/shared/services/data.service';
 import { FileService } from 'src/shared/services/file.service';
-import { DataServiceResponse } from 'src/types';
+import { DataServiceResponse } from 'src/shared/types';
 import {
   Body,
   Controller,

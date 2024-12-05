@@ -16,14 +16,15 @@ export class CoreService {
   }
 
   createTour(createTourDTO: CreateTourDTO) {
-    return this.coreDAO.create(createTourDTO);
+    // return this.coreDAO.create(createTourDTO);
   }
 
   updateTour(id: string, updateTourDTO: UpdateTourDTO) {
-    return this.coreDAO.update(id, updateTourDTO);
+    // return this.coreDAO.update(id, updateTourDTO);
   }
 
   deleteTour(id: string) {
     return this.coreDAO.delete(id);
   }
+
 }

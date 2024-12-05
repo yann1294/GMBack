@@ -48,10 +48,10 @@ export class TourController {
   @Patch(':id')
   async update(
     @Param('id') id: string,
-    @Body(new TourValidationPipe()) tourVO: TourVO,
+    @Body(new TourValidationPipe('update')) tourVO: TourVO,
   ): Promise<any> {
-    //return await this.coreService.updateTour(id, tourVO);
-    return;
+    console.log(tourVO);
+    return await this.coreService.updateTour(id, tourVO);
   }
 
   // Get all tours
@@ -91,26 +91,27 @@ export class TourController {
   // activity functions
 
   // Add an activity to a tour
-  @Patch('add-activity/:tourId')
+  @Patch('add-activity')
   async addActivityToTour(
-    @Param('tourId') tourId: string,
-    @Body() activity: Activity,
+    @Body('tourId') tourId: string,
+    @Body(new TourValidationPipe('update')) tourVo: TourVO,
   ): Promise<void> {
-    return;
-    //return await this.coreService.addActivityToTour(tourId, activity);
+    return await this.coreService.addActivityToTour(tourId, tourVo);
   }
 
   // Remove an activity from a tour
-  @Patch('remove-activity/:tourId')
+  @Patch('remove-activity')
   async removeActivityFromTour(
-    @Param('tourId') tourId: string,
-    @Body('activityName') activityName: string,
+    @Body('tourId') tourId: string,
+    @Body('activityId') activityId: string,
   ): Promise<void> {
-    // return await this.coreService.removeActivityFromTour(
-    //   tourId,
-    //   activityName,
-    // );
-    return;
+    console.log(tourId);
+    console.log(activityId);
+    
+    return await this.coreService.removeActivityFromTour(
+      tourId,
+      activityId,
+    );
   }
 
   // List activities for a tour

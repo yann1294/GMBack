@@ -16,7 +16,7 @@ import {
   IActivityLocation,
   ITourLocation,
   IUser,
-} from 'src/types';
+} from 'src/shared/types';
 
 export class GMGeoPoint implements GeoPoint {
   @IsNumber()

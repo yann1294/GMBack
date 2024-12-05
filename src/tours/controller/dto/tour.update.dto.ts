@@ -56,5 +56,5 @@ export class UpdateTourDTO {
   @ValidateNested({ each: true })
   @Type(() => ActivityDTO)
   @IsOptional()
-  activities?: ActivityDTO[];
+  activities?: Map<number, ActivityDTO>;
 }

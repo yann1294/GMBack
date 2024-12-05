@@ -10,7 +10,7 @@ import {
   WriteBatch,
 } from 'firebase-admin/firestore';
 import { log } from 'console';
-import { DataServiceCondition, DataServiceResponse } from 'src/types';
+import { DataServiceCondition, DataServiceResponse } from 'src/shared/types';
 import { Tour } from 'src/tours/dao/tour.entity';
 
 @Injectable()
@@ -267,7 +267,7 @@ export class DataService {
       await this.firestore
         .collection(collectionName)
         .doc(docId)
-        .update(newData);
+        .set(newData, { merge: true,});
 
       return {
         status: 'success',

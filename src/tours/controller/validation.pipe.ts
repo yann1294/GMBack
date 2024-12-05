@@ -8,10 +8,12 @@ import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { log } from 'console';
 import { TourVO } from '../vo/tour.master.vo';
-import { TourDTO } from 'src/payment/controller/dto/tour.dto';
+import { TourDTO } from './dto/tour.dto';
+import { UpdateTourDTO } from './dto/tour.update.dto';
 
 @Injectable()
 export class TourValidationPipe implements PipeTransform<any, Promise<TourVO>> {
+  constructor(private readonly origin: string = 'default') { }
   async transform(value: any, metadata: ArgumentMetadata): Promise<TourVO> {
     log(metadata);
     // checking if value if empty
@@ -20,7 +22,7 @@ export class TourValidationPipe implements PipeTransform<any, Promise<TourVO>> {
     }
 
     // validate input data against TourDTO
-    const tourDto = plainToInstance(TourDTO, value);
+    const tourDto = this.origin == "update" ? plainToInstance(UpdateTourDTO, value) : plainToInstance(TourDTO, value);
     const errors = await validate(tourDto);
 
     // checking if there are any errors

@@ -13,7 +13,7 @@ export class Tour {
     public description: string,
     public isAvailable: boolean,
     public guide: User,
-    public activities: Activity[],
+    public activities: Map<number, Activity>,
   ) {}
   toObject(): object {
     return {

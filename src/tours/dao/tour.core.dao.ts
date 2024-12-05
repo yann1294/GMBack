@@ -4,6 +4,8 @@ import { DataService } from 'src/shared/services/data.service';
 //import { TourVO } from '../vo/tour.master.vo';
 import { Tour } from './tour.entity';
 import { UpdateTourDTO } from '../controller/dto/tour.update.dto';
+import { TourVO } from '../vo/tour.master.vo';
+import { log } from 'console';
 
 @Injectable()
 export class CoreDAO implements CoreDAOInterface {
@@ -26,20 +28,26 @@ export class CoreDAO implements CoreDAOInterface {
     return await this.dataService.readDoc(this.collectionName, id);
   }
 
-  async update(id: string, data: UpdateTourDTO): Promise<any> {
-    // Convert the UpdateTourDTO to a plain object or entity as needed
-    const updatedData = { ...data };
-
+  async update(id: string, data: TourVO): Promise<any> {
     // Call the DataService's updateDoc method
     return await this.dataService.updateDoc(
       this.collectionName,
-      id,
-      updatedData,
+      data.id,
+      data.toObject(),
     );
   }
 
-  async delete(id: string): Promise<any> {
+  async delete(id: string, data?: TourVO): Promise<any> {
+    console.log(data.toUpdateObject());
+    
     // Call the DataService's deleteDoc method
+    if (data) {
+      return await this.dataService.updateDoc(
+        this.collectionName,
+        data.id,
+        data.toUpdateObject(),
+      );
+    }
     return await this.dataService.deleteDoc(this.collectionName, id);
   }
 }

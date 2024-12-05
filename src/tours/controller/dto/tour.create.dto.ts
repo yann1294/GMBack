@@ -55,5 +55,5 @@ export class CreateTourDTO {
 
   @ValidateNested()
   @Type(() => ActivityDTO)
-  activities: ActivityDTO[];
+  activities: Map<number, ActivityDTO>;
 }

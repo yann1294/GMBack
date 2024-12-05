@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Bucket, File, TransferManager } from '@google-cloud/storage';
 import { getDownloadURL } from 'firebase-admin/storage';
 import { FirebaseRepository } from '../firebase/firebase.service';
-import { FileServiceResponse } from 'src/types';
+import { FileServiceResponse } from 'src/shared/types';
 import { log } from 'console';
 import { MultipartFile } from '@fastify/multipart';
 import { Timestamp } from 'firebase-admin/firestore';

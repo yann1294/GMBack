@@ -1,21 +1,55 @@
 import { Tour } from '../dao/tour.entity';
-import { Expose, Transform, Type } from 'class-transformer';
+import { Expose, instanceToPlain, Type } from 'class-transformer';
 import { Activity, TourLocation, User } from './helper.vo';
+import { IsOptional } from 'class-validator';
+import { FieldValue } from 'firebase-admin/firestore';
 
 export class TourVO {
-  @Expose({ name: 'id' }) private _id: string;
-  @Expose({ name: 'name' }) private _name: string;
-  @Expose({ name: 'location' }) private _location: TourLocation;
-  @Expose({ name: 'price' }) private _price: number;
-  @Expose({ name: 'durationDays' }) private _durationDays: number;
-  @Expose({ name: 'discount' }) private _discount: number;
-  @Expose({ name: 'numberOfSeats' }) private _numberOfSeats: number;
-  @Expose({ name: 'description' }) private _description: string;
-  @Expose({ name: 'isAvailable' }) private _isAvailable: boolean;
-  @Expose({ name: 'guide' }) private _guide: User;
+  @Expose({ name: 'id' })
+  @IsOptional()
+  private _id: string;
+
+  @Expose({ name: 'name' })
+  @IsOptional()
+  private _name: string;
+
+  @Expose({ name: 'location' })
+  @IsOptional()
+  private _location: TourLocation;
+
+  @Expose({ name: 'price' })
+  @IsOptional()
+  private _price: number;
+
+  @Expose({ name: 'durationDays' })
+  @IsOptional()
+  private _durationDays: number;
+
+  @Expose({ name: 'discount' })
+  @IsOptional()
+  private _discount: number;
+
+  @Expose({ name: 'numberOfSeats' })
+  @IsOptional()
+  private _numberOfSeats: number;
+
+  @Expose({ name: 'description' })
+  @IsOptional()
+  private _description: string;
+
+  @Expose({ name: 'isAvailable' })
+  @IsOptional()
+  private _isAvailable: boolean;
+
+  @Expose({ name: 'guide' })
+  @IsOptional()
+  private _guide: User;
+
   @Expose({ name: 'activities' })
   @Type(() => Activity)
-  private _activities: Activity[];
+  @IsOptional()
+  private _activities: Map<number, Activity>;
+  tourVo: {};
 
   // Getters
   @Expose()
@@ -59,7 +93,6 @@ export class TourVO {
   }
 
   @Expose()
-
   get isAvailable(): boolean {
     return this._isAvailable;
   }
@@ -70,8 +103,7 @@ export class TourVO {
   }
 
   @Expose()
-  get activities(): Activity[] {
-
+  get activities(): Map<number, Activity> {
     return this._activities;
   }
 
@@ -116,8 +148,7 @@ export class TourVO {
     this._guide = value;
   }
 
-  set activities(value: Activity[]) {
-
+  set activities(value: Map<number, Activity>) {
     this._activities = value;
   }
 
@@ -136,4 +167,13 @@ export class TourVO {
       this._activities,
     );
   }
+
+  toObject(): object {
+      return instanceToPlain(this);
+  }
+
+  toUpdateObject(): object {
+    return {...this.toEntity()}
+  }
+    
 }

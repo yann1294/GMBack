@@ -11,6 +11,7 @@ import {
 } from 'firebase-admin/firestore';
 import { log } from 'console';
 import { DataServiceCondition, DataServiceResponse } from 'src/types';
+import { Tour } from 'src/tours/dao/tour.entity';
 
 @Injectable()
 export class DataService {
@@ -47,7 +48,7 @@ export class DataService {
    * @returns A promise that resolves to a DataServiceResponse containing the document ID or an error message.
    */
   async createDoc(
-    data: object,
+    data: Tour,
     collectionName: string,
   ): Promise<DataServiceResponse> {
     try {
@@ -60,7 +61,7 @@ export class DataService {
       data['id'] = doc.id;
 
       // adding data to doc
-      await doc.set(data);
+      await doc.set(data.toObject());
 
       // return success status
       // .path -> A string representing the path of the referenced document (relative to the root of the database).

@@ -1,6 +1,6 @@
-import { Tour } from '../dao/tour.entity';
-import { Expose, Transform, Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { Activity, TourLocation, User } from './helper.vo';
+import { Tour } from '../dao/tour.entity';
 
 export class TourVO {
   @Expose({ name: 'id' }) private _id: string;
@@ -9,13 +9,11 @@ export class TourVO {
   @Expose({ name: 'price' }) private _price: number;
   @Expose({ name: 'durationDays' }) private _durationDays: number;
   @Expose({ name: 'discount' }) private _discount: number;
-  @Expose({ name: 'numberOfSeats' }) private _numberOfSeats: number;
-  @Expose({ name: 'description' }) private _description: string;
   @Expose({ name: 'isAvailable' }) private _isAvailable: boolean;
   @Expose({ name: 'guide' }) private _guide: User;
   @Expose({ name: 'activities' })
   @Type(() => Activity)
-  private _activities: Activity[];
+  private _activities: Map<number, Activity>;
 
   // Getters
   @Expose()
@@ -49,17 +47,6 @@ export class TourVO {
   }
 
   @Expose()
-  get numberOfSeats(): number {
-    return this._numberOfSeats;
-  }
-
-  @Expose()
-  get description(): string {
-    return this._description;
-  }
-
-  @Expose()
-
   get isAvailable(): boolean {
     return this._isAvailable;
   }
@@ -70,8 +57,7 @@ export class TourVO {
   }
 
   @Expose()
-  get activities(): Activity[] {
-
+  get activities(): Map<number, Activity> {
     return this._activities;
   }
 
@@ -100,14 +86,6 @@ export class TourVO {
     this._discount = value;
   }
 
-  set numberOfSeats(value: number) {
-    this._numberOfSeats = value;
-  }
-
-  set description(value: string) {
-    this._description = value;
-  }
-
   set isAvailable(value: boolean) {
     this._isAvailable = value;
   }
@@ -116,8 +94,7 @@ export class TourVO {
     this._guide = value;
   }
 
-  set activities(value: Activity[]) {
-
+  set activities(value: Map<number, Activity>) {
     this._activities = value;
   }
 
@@ -129,8 +106,6 @@ export class TourVO {
       this._price,
       this._durationDays,
       this._discount,
-      this._numberOfSeats,
-      this._description,
       this._isAvailable,
       this._guide,
       this._activities,

@@ -15,35 +15,7 @@ export class TourVO {
   @Expose({ name: 'guide' }) private _guide: User;
   @Expose({ name: 'activities' })
   @Type(() => Activity)
-  @Transform(
-    ({ value }) => {
-      // Map to Object
-      if (value instanceof Map) {
-        const obj = {};
-        value.forEach((activity, key) => {
-          obj[key] = activity;
-        });
-        return obj;
-      }
-      return value;
-    },
-    { toPlainOnly: true },
-  )
-  @Transform(
-    ({ value }) => {
-      // Object to Map
-      if (value && typeof value === 'object') {
-        const map = new Map<number, Activity>();
-        Object.keys(value).forEach((key) => {
-          map.set(Number(key), value[key]);
-        });
-        return map;
-      }
-      return value;
-    },
-    { toClassOnly: true },
-  )
-  private _activities: Map<number, Activity>;
+  private _activities: Activity[];
 
   // Getters
   @Expose()
@@ -97,7 +69,7 @@ export class TourVO {
   }
 
   @Expose()
-  get activities(): Map<number, Activity> {
+  get activities(): Activity[] {
     return this._activities;
   }
 
@@ -142,7 +114,7 @@ export class TourVO {
     this._guide = value;
   }
 
-  set activities(value: Map<number, Activity>) {
+  set activities(value: Activity[]) {
     this._activities = value;
   }
 

@@ -6,6 +6,8 @@ import { CoreDAOInterface } from '../dao/tour.core.dao.interface';
 
 import { CORE_DAO_INTERFACE_TOKEN } from '../token';
 import { plainToClass } from 'class-transformer';
+import { UpdateTourDTO } from '../controller/dto/tour.update.dto';
+import { Activity } from '../vo/helper.vo';
 
 @Injectable()
 export class CoreService implements ICoreService {
@@ -19,11 +21,11 @@ export class CoreService implements ICoreService {
     return await this.coreDAO.create(tourVO.toEntity());
   }
 
-  // async updateTour(id: string, updateTourDTO: TourVO): Promise<void> {
-  //   const tourVO = plainToClass(TourVO, updateTourDTO);
-  //   const updatedData = tourVO.toEntity();
-  //   return await this.coreDAO.update(id, updatedData);
-  // }
+  async updateTour(id: string, updateTourDTO: TourVO): Promise<void> {
+    const tourVO = plainToClass(TourVO, updateTourDTO);
+    const updatedData = tourVO.toEntity();
+    return await this.coreDAO.update(id, updatedData);
+  }
 
   async findTourById(id: string): Promise<Tour> {
     return await this.coreDAO.findById(id);
@@ -34,15 +36,38 @@ export class CoreService implements ICoreService {
   async deleteTour(id: string): Promise<void> {
     return await this.coreDAO.delete(id);
   }
-  // async updateTourAvailability(id: string, isAvailable: boolean): boolean {
-  //   return await this.coreDAO.update(id, isAvailable);
-  // }
-  // async assignGuideToTour(tourId: string, guideId: string): void {
-  //   return await this.coreDAO.findById(tourId, guideId)
-  // }
-  // async addActivityToTour(tourId: string, activity: Activity): void {
-  //   return await this.coreDAO.create(tourId, activity)
-  // }
+  async updateTourAvailability(
+    id: string,
+    isAvailable: boolean,
+  ): Promise<boolean> {
+    const updateData: UpdateTourDTO = { isAvailable };
+    return await this.coreDAO.update(id, updateData);
+  }
+
+  async assignGuideToTour(tourId: string, guideId: string): Promise<void> {
+    const tour = await this.coreDAO.findById(tourId);
+    if (!tour) {
+      throw new Error(`Tour with ID ${tourId} not found.`);
+    }
+    tour.guide = guideId;
+    await this.coreDAO.update(tourId, tour);
+  }
+  async addActivityToTour(tourId: string, activity: Activity): Promise<void> {
+    // Step 1: Retrieve the tour
+    const tour = await this.coreDAO.findById(tourId);
+    if (!tour) {
+      throw new Error(`Tour with ID ${tourId} not found.`);
+    }
+
+    // Step 2: Add the activity
+    if (!tour.activities) {
+      tour.activities = [];
+    }
+    tour.activities.push(activity);
+
+    // Step 3: Update the tour
+    await this.coreDAO.update(tourId, tour);
+  }
   // async removeActivityFromTour(tourId: string, activityName: string): void {
   //   return await this.coreDAO.delete(tourId, activityName)
   // }

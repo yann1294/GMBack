@@ -6,9 +6,11 @@ import {
   Min,
   Max,
   IsBoolean,
+  IsObject,
 } from 'class-validator';
 import { TourLocationDTO } from './tour.location.dto';
 import { ActivityDTO } from './tour.activity.dto';
+import { User } from 'src/tours/vo/helper.vo';
 
 export class CreateTourDTO {
   @IsString()
@@ -33,10 +35,19 @@ export class CreateTourDTO {
   public readonly numberOfSeats: number;
 
   @IsString()
-  public readonly description: number;
+  public readonly description: string;
 
   @IsBoolean()
   public readonly isAvailable: boolean;
+
+  @ValidateNested()
+  @Type(() => User)
+  guide: User;
+
+  @ValidateNested()
+  @Type(() => Object)
+  @IsObject()
+  toObject: { (): object };
 
   @ValidateNested()
   @Type(() => TourLocationDTO)
@@ -44,5 +55,5 @@ export class CreateTourDTO {
 
   @ValidateNested()
   @Type(() => ActivityDTO)
-  activity: ActivityDTO;
+  activities: ActivityDTO[];
 }

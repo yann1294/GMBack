@@ -6,55 +6,55 @@ import {
   Max,
   IsBoolean,
   IsOptional,
-  IsObject,
 } from 'class-validator';
 import { TourLocationDTO } from './tour.location.dto';
 import { Type } from 'class-transformer';
 import { ActivityDTO } from './tour.activity.dto';
+import { Optional } from '@nestjs/common';
 
 export class UpdateTourDTO {
   @IsString()
-  public readonly id: string;
+  @Optional()
+  public id?: string;
 
   @IsString()
   @IsOptional()
-  public readonly name: string;
+  public name?: string;
 
   @IsNumber()
   @IsOptional()
-  public readonly price: number;
+  public price?: number;
 
   @IsNumber()
   @Min(0)
   @IsOptional()
-  public readonly durationDays: number;
+  public durationDays?: number;
 
   @IsNumber()
   @Min(0)
   @Max(100)
   @IsOptional()
-  public readonly discount: number;
+  public discount?: number;
 
   @IsNumber()
   @IsOptional()
-  public readonly numberOfSeats: number;
+  public numberOfSeats?: number;
 
   @IsString()
   @IsOptional()
-  public readonly description: string;
+  public description?: string;
 
   @IsBoolean()
   @IsOptional()
-  public readonly isAvailable: boolean;
+  public isAvailable?: boolean;
 
   @ValidateNested()
   @Type(() => TourLocationDTO)
   @IsOptional()
-  location: TourLocationDTO;
+  location?: TourLocationDTO;
 
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => ActivityDTO)
   @IsOptional()
-  @IsObject()
-  activities: { [key: number]: ActivityDTO };
+  activities?: ActivityDTO[];
 }

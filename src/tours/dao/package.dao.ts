@@ -1,49 +1,47 @@
 import { Injectable } from '@nestjs/common';
-import { TourPackageDAOInterface } from './package.dao.interface';
-import { CreatePackageDTO, UpdatePackageDTO } from '../controller/dto/package.dto';
+import { PackageDAOInterface } from './package.dao.interface';
+import { Package } from './package.entity';
+import { DataService } from 'src/shared/services/data.service';
+import { DataServiceResponse } from 'src/shared/types';
 
 @Injectable()
-export class TourPackageDAO implements TourPackageDAOInterface {
-  private readonly packages = new Map<string, { id: string; name: string; tours: string[] }>();
+export class PackageDAO implements PackageDAOInterface {
+  private readonly collectionName = 'packages';
 
-  async findAll(): Promise<any[]> {
-    return Array.from(this.packages.values());
+  constructor(private readonly dataService: DataService) {}
+
+  async findAll(): Promise<DataServiceResponse> {
+    return await this.dataService.readAllDocs(this.collectionName);
   }
 
   async findById(id: string): Promise<any> {
-    return this.packages.get(id) || null;
+    return await this.dataService.readDoc(this.collectionName, id);
   }
 
-  async create(data: CreatePackageDTO): Promise<any> {
-    this.packages.set(data.id, { ...data, tours: [] });
-    return this.packages.get(data.id);
+  async create(data: Package): Promise<any> {
+    return this.dataService.createDoc(data, this.collectionName);
   }
 
-  async update(id: string, data: UpdatePackageDTO): Promise<any> {
-    const existing = this.packages.get(id);
-    if (!existing) throw new Error('Package not found');
-    const updated = { ...existing, ...data };
-    this.packages.set(id, updated);
-    return updated;
+  async update(id: string, data: Package): Promise<any> {
+    // Call the DataService's updateDoc method
+    return await this.dataService.updateDoc(
+      this.collectionName,
+      data.id,
+      data.toObject(),
+    );
   }
 
-  async delete(id: string): Promise<void> {
-    this.packages.delete(id);
-  }
+  async delete(id: string, data?: Package): Promise<any> {
+    console.log(data.toUpdateObject());
 
-  async addTour(packageId: string, tourId: string): Promise<any> {
-    const pkg = this.packages.get(packageId);
-    if (!pkg) throw new Error('Package not found');
-    if (!pkg.tours.includes(tourId)) {
-      pkg.tours.push(tourId);
+    // Call the DataService's deleteDoc method
+    if (data) {
+      return await this.dataService.updateDoc(
+        this.collectionName,
+        data.id,
+        data.toUpdateObject(),
+      );
     }
-    return pkg;
-  }
-
-  async removeTour(packageId: string, tourId: string): Promise<any> {
-    const pkg = this.packages.get(packageId);
-    if (!pkg) throw new Error('Package not found');
-    pkg.tours = pkg.tours.filter((id) => id !== tourId);
-    return pkg;
+    return await this.dataService.deleteDoc(this.collectionName, id);
   }
 }

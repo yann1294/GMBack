@@ -74,8 +74,9 @@ src/
 │   │   ├── tour package handler
 │   │   ├── path finder
 │   ├── controller/
-│   │   ├── tour.validation.pipe.ts
-│   │   ├── tour.core.controller.ts
+│   │   ├── core.validation.pipe.ts
+│   │   ├── package.validation.pipe.ts
+│   │   ├── core.controller.ts
 │   │   ├── pathfinder.controller.ts
 │   │   ├── package.controller.ts
 │   │   ├── dto/
@@ -84,6 +85,9 @@ src/
 │   │   │   ├── tour.update.dto.ts
 │   │   │   ├── tour.create.dto.ts
 │   │   │   ├── package.dto.ts
+│   │   │   ├── package.location.dto.ts
+│   │   │   ├── package.create.dto.ts
+│   │   │   ├── package.update.dto.ts
 │   ├── service/
 │   │   ├── tour.core.service.ts
 │   │   ├── pathfinder.service.ts
@@ -102,6 +106,7 @@ src/
 │   ├── vo/
 │   │   ├── helper.vo.ts
 │   │   ├── tour.master.vo.ts
+│   │   ├── package.master.vo.ts
 │   ├── utilitary/
 │   │   ├── tour.X.ts (to define)
 │   ├── tour.module.ts

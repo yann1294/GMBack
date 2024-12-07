@@ -37,7 +37,6 @@ export class GMGeoPoint implements GeoPoint {
   toString(): string {
     return `GeoPoint(latitude=${this.latitude}, longitude=${this.longitude})`;
   }
-
 }
 
 export class ActivityLocation implements IActivityLocation {
@@ -91,6 +90,27 @@ export class TourLocation implements ITourLocation {
   }
 }
 
+export class PackageLocation implements ITourLocation {
+  @IsString()
+  name: string;
+
+  @IsString()
+  city: string;
+
+  @IsString()
+  country: string;
+
+  toString(): string {
+    return `
+      PackageLocation(
+        name=${this.name}
+        city=${this.city}
+        country=${this.country}
+      )
+    `;
+  }
+}
+
 export class Transportation implements ITransportation {
   @IsDateString()
   arrivalTime: Date;
@@ -109,7 +129,6 @@ export class Transportation implements ITransportation {
       type=${this.type}
     )`;
   }
-
 }
 
 export class Accommodation implements IAccommodation {

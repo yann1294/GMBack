@@ -12,6 +12,7 @@ import {
 import { log } from 'console';
 import { DataServiceCondition, DataServiceResponse } from 'src/shared/types';
 import { Tour } from 'src/tours/dao/tour.entity';
+import { Package } from 'src/tours/dao/package.entity';
 
 @Injectable()
 export class DataService {
@@ -48,7 +49,7 @@ export class DataService {
    * @returns A promise that resolves to a DataServiceResponse containing the document ID or an error message.
    */
   async createDoc(
-    data: Tour,
+    data: Tour | Package,
     collectionName: string,
   ): Promise<DataServiceResponse> {
     try {
@@ -267,7 +268,7 @@ export class DataService {
       await this.firestore
         .collection(collectionName)
         .doc(docId)
-        .set(newData, { merge: true,});
+        .set(newData, { merge: true });
 
       return {
         status: 'success',

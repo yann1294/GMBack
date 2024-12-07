@@ -54,7 +54,7 @@ export class CoreService implements ICoreService {
   }
 
   // TODO: Algorithm and specifications
-  async addActivityToTour(tourId: string, tourVo: TourVO): Promise<ResponseObject> {
+  async addActivityToTour(tourVo: TourVO): Promise<ResponseObject> {
     // // Step 1: Retrieve the tour
     // const tour = await this.coreDAO.findById(tourId);
     // if (!tour) {
@@ -69,7 +69,7 @@ export class CoreService implements ICoreService {
 
     // // Step 3: Update the tour
     // await this.coreDAO.update(tourId, tour);
-    return await this.coreDAO.update(tourId, tourVo.toEntity());
+    return await this.coreDAO.update(tourVo.id, tourVo.toEntity());
   }
 
   // TODO: Rethink deletes

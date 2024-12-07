@@ -16,7 +16,7 @@ export interface ICoreService {
   assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject>
 
   // activity functions
-  addActivityToTour(tourId: string, tourVo: TourVO): Promise<ResponseObject>;
+  addActivityToTour(tourVo: TourVO): Promise<ResponseObject>;
   removeActivityFromTour(tourId: string, activityId: string): Promise<ResponseObject>;
   listActivitiesForTour(tourId: string): Promise<void>;
   getCurrentActivityId(): Promise<string>;

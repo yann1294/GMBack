@@ -78,13 +78,13 @@ export class TourController {
   }
 
   // Assign a guide to a tour
-  @Patch('assign-guide/:tourId')
+  // TODO: Change guide to guide id in tour entity
+  @Patch('assign-guide')
   async assignGuideToTour(
-    @Param('tourId') tourId: string,
+    @Body('tourId') tourId: string,
     @Body('guideId') guideId: string,
-  ): Promise<void> {
-    return;
-    //    return await this.coreService.assignGuideToTour(tourId, guideId);
+  ): Promise<ResponseObject> {
+       return await this.coreService.assignGuideToTour(tourId, guideId);
   }
 
   // activity functions
@@ -92,10 +92,9 @@ export class TourController {
   // Add an activity to a tour
   @Patch('add-activity')
   async addActivityToTour(
-    @Body('tourId') tourId: string,
     @Body(new TourValidationPipe('update')) tourVo: TourVO,
   ): Promise<ResponseObject> {
-    return await this.coreService.addActivityToTour(tourId, tourVo);
+    return await this.coreService.addActivityToTour(tourVo);
   }
 
   // Remove an activity from a tour

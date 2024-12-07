@@ -2,6 +2,7 @@ import { GeoPoint, Timestamp } from 'firebase-admin/firestore';
 import { Activity, TourLocation, User } from '../vo/helper.vo';
 import { instanceToPlain } from 'class-transformer';
 
+// TODO: Add getters and setters
 export class Tour {
   constructor(
     public id: string,

@@ -14,7 +14,7 @@ import {
   IAccommodation,
   IActivity,
   IActivityLocation,
-  ITourLocation,
+  ILocation,
   IUser,
 } from 'src/shared/types';
 
@@ -53,7 +53,7 @@ export class ActivityLocation implements IActivityLocation {
   location: GMGeoPoint;
 }
 
-export class TourLocation implements ITourLocation {
+export class TourLocation implements ILocation {
   @IsString()
   public name: string;
 

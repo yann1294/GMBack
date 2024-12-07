@@ -8,7 +8,7 @@ export declare interface IActivityLocation {
   location: GeoPoint;
 }
 
-export declare interface ITourLocation {
+export declare interface ILocation {
   name: string;
   city: string;
   country: string;

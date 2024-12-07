@@ -14,7 +14,7 @@ import {
   IAccommodation,
   IActivity,
   IActivityLocation,
-  ITourLocation,
+  ILocation,
   IUser,
   ITransportation,
 } from 'src/shared/types';
@@ -69,7 +69,7 @@ export class ActivityLocation implements IActivityLocation {
   }
 }
 
-export class TourLocation implements ITourLocation {
+export class TourLocation implements ILocation {
   @IsString()
   name: string;
 
@@ -90,7 +90,7 @@ export class TourLocation implements ITourLocation {
   }
 }
 
-export class PackageLocation implements ITourLocation {
+export class PackageLocation implements ILocation {
   @IsString()
   name: string;
 

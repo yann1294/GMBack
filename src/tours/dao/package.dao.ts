@@ -14,15 +14,15 @@ export class PackageDAO implements PackageDAOInterface {
     return await this.dataService.readAllDocs(this.collectionName);
   }
 
-  async findById(id: string): Promise<any> {
+  async findById(id: string): Promise<ResponseObject> {
     return await this.dataService.readDoc(this.collectionName, id);
   }
 
-  async create(data: Package): Promise<any> {
+  async create(data: Package): Promise<ResponseObject> {
     return this.dataService.createDoc(data, this.collectionName);
   }
 
-  async update(id: string, data: Package): Promise<any> {
+  async update(id: string, data: Package): Promise<ResponseObject> {
     // Call the DataService's updateDoc method
     return await this.dataService.updateDoc(
       this.collectionName,
@@ -31,7 +31,7 @@ export class PackageDAO implements PackageDAOInterface {
     );
   }
 
-  async delete(id: string, data?: Package): Promise<any> {
+  async delete(id: string, data?: Package): Promise<ResponseObject> {
     // Call the DataService's deleteDoc method
     if (data) {
       return await this.dataService.updateDoc(

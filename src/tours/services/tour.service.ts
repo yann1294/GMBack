@@ -64,7 +64,7 @@ export class CoreService implements ICoreService {
   async listActivitiesForTour(tourId: string): Promise<ResponseObject> {
     // fetch tour with id == tourId
     let response: ResponseObject = await this.coreDAO.findById(tourId);
-    if  (response.message !== 'success') {
+    if  (response.status !== 'success') {
       return response;
     }
     return {...response, data: response.data['activities']} as ResponseObject;

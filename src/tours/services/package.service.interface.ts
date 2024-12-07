@@ -3,14 +3,14 @@ import { Package } from '../dao/package.entity';
 import { PackageVO } from '../vo/package.master.vo';
 
 export interface IPackageService {
-  createPackage(packageVO: PackageVO): Promise<void>;
-  readTours(tourId: string): Promise<any>;
-  deletePackage(packageId: string): Promise<any>;
-  assignGuideToPackage(tourId: string, guideId: string): Promise<void>;
-  updatePackageAvailability(id: string, isAvailable: boolean): Promise<boolean>;
-  updatePackage(id: string, packageVO: PackageVO): Promise<boolean>;
-  findPackageById(id: string): Promise<Package>;
+  createPackage(packageVO: PackageVO): Promise<ResponseObject>;
+  readTours(packageId: string): Promise<ResponseObject>;
+  deletePackage(packageId: string): Promise<ResponseObject>;
+  assignGuideToPackage(packageId: string, guideId: string): Promise<ResponseObject>;
+  updatePackageAvailability(id: string, isAvailable: boolean): Promise<ResponseObject>;
+  updatePackage(id: string, packageVO: PackageVO): Promise<ResponseObject>;
+  findPackageById(id: string): Promise<ResponseObject>;
   findAllPackages(): Promise<ResponseObject>;
-  addTourToPackage(packageId: string, tourId: string | string[]): Promise<void>;
-  removeTourFromPackage(packageId: string, tourId: string | string[]): Promise<void>;
+  addTourToPackage(packageId: string, tourId: string | string[]): Promise<ResponseObject>;
+  removeTourFromPackage(packageId: string, tourId: string | string[]): Promise<ResponseObject>;
 }

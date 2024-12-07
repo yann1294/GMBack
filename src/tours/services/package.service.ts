@@ -35,9 +35,14 @@ export class PackageService implements IPackageService {
     return this.packageDAO.delete(id);
   }
 
-  async readTours(tourId: string) {
-    let tour: any = await this.packageDAO.findById(tourId);
-    return plainToClass(PackageVO, tour).tours;
+  // TODO: Return tour data
+  async readTours(packageId: string): Promise<ResponseObject> {    
+    let response: ResponseObject = await this.packageDAO.findById(packageId);
+    
+    if  (response.status !== 'success') {
+      return response;
+    }
+    return {...response, data: response.data['tours']} as ResponseObject;
   }
 
   async addTourToPackage(packageId: string, tourId: string | string[]) {
@@ -54,7 +59,7 @@ export class PackageService implements IPackageService {
       })
     );
   }
-
+  
   async removeTourFromPackage(packageId: string, tourId: string | string[]) {
     // let packageVo: PackageVO = new PackageVO();
     // packageVo.id = tourId;
@@ -67,19 +72,14 @@ export class PackageService implements IPackageService {
     );
   }
 
-  async assignGuideToPackage(packageId: string, guideId: string) {
-    const packages = await this.packageDAO.findById(packageId);
-    if (!packages) {
-      throw new Error(`Tour with ID ${packageId} not found.`);
-    }
-    packages.guide = guideId;
-    await this.packageDAO.update(packageId, packages);
+  async assignGuideToPackage(packageId: string, guideId: string): Promise<ResponseObject> {
+    return await this.packageDAO.update(packageId, plainToClass(Package, {guide: guideId}));
   }
 
   async updatePackageAvailability(
     id: string,
     isAvailable: boolean,
-  ): Promise<boolean> {
+  ): Promise<ResponseObject> {
     return await this.packageDAO.update(
       id,
       plainToClass(Package, { isAvailable: isAvailable }),

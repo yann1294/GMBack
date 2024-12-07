@@ -27,7 +27,7 @@ export class CoreDAO implements CoreDAOInterface {
   }
 
   async update(id: string, data: Tour): Promise<any> {
-    // Call the DataService's updateDoc method
+    // Call the DataService's updateDoc method  
     return await this.dataService.updateDoc(
       this.collectionName,
       id,

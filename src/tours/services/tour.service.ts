@@ -22,7 +22,7 @@ export class CoreService implements ICoreService {
     return await this.coreDAO.create(tourVO.toEntity());
   }
 
-  async updateTour(id: string, tourVo: TourVO): Promise<ResponseObject> {    
+  async updateTour(id: string, tourVo: TourVO): Promise<ResponseObject> {        
     return await this.coreDAO.update(id, tourVo.toEntity());
   }
 

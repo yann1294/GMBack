@@ -193,7 +193,7 @@ export class TourVO {
       this._description,
       this._isAvailable,
       this._activities, 
-      new Date(this._date), 
+      this._date ? new Date(this._date) : undefined, 
     );
     tour.guide = this._guide;
     tour.images = this._images;

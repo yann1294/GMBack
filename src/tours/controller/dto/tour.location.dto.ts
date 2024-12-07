@@ -1,13 +1,15 @@
-import { IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 export class TourLocationDTO {
-    @IsString()
-    public name: string;
-  
-    @IsString()
-    public city: string;
-  
-    @IsString()
-    public country: string;
-  }
-  
+  @IsString()
+  @IsOptional()
+  public name: string;
+
+  @IsString()
+  @IsOptional()
+  public city: string;
+
+  @IsString()
+  @IsOptional()
+  public country: string;
+}

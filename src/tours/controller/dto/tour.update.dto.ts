@@ -28,6 +28,7 @@ export class UpdateTourDTO {
   public price?: number;
 
   @IsDateString()
+  @IsOptional()
   public date: Date;
 
   @IsArray()

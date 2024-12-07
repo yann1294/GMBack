@@ -52,7 +52,7 @@ export class CoreService implements ICoreService {
     return await this.coreDAO.update(tourVo.id, tourVo.toEntity());
   }
 
-  // TODO: Rethink deletes
+  // TODO: Rethink deletes:- Logical delete
   async removeActivityFromTour(tourId: string, activityId: string): Promise<ResponseObject> {
     let tourVo: TourVO = new TourVO();
     tourVo.id = tourId;

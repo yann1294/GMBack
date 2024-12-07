@@ -11,9 +11,6 @@ import { TourLocation, Activity, User } from '../../vo/helper.vo';
 
 export class TourDTO {
   @IsString()
-  public readonly id: string;
-
-  @IsString()
   public readonly name: string;
 
   @ValidateNested()
@@ -43,3 +40,5 @@ export class TourDTO {
   @Type(() => Activity)
   public readonly activities: Map<number, Activity>;
 }
+
+// TODO: is not empty string for entity

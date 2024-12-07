@@ -44,50 +44,16 @@ export class CoreService implements ICoreService {
 
   // TODO: Algorithm for assigning tour
   async assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject> {
-    // const tour = await this.coreDAO.findById(tourId);
-    // if (!tour) {
-    //   throw new Error(`Tour with ID ${tourId} not found.`);
-    // }
-    // tour.guide = guideId;
     return await this.coreDAO.update(tourId, plainToClass(Tour, {guide: guideId}));
-
   }
 
   // TODO: Algorithm and specifications
   async addActivityToTour(tourVo: TourVO): Promise<ResponseObject> {
-    // // Step 1: Retrieve the tour
-    // const tour = await this.coreDAO.findById(tourId);
-    // if (!tour) {
-    //   throw new Error(`Tour with ID ${tourId} not found.`);
-    // }
-
-    // // Step 2: Add the activity
-    // if (!tour.activities) {
-    //   tour.activities = [];
-    // }
-    // tour.activities.push(activity);
-
-    // // Step 3: Update the tour
-    // await this.coreDAO.update(tourId, tour);
     return await this.coreDAO.update(tourVo.id, tourVo.toEntity());
   }
 
   // TODO: Rethink deletes
   async removeActivityFromTour(tourId: string, activityId: string): Promise<ResponseObject> {
-    //  // Step 1: Retrieve the existing tour
-    //  const tour = await this.coreDAO.findById(tourId)
-    //  if (!tour) {
-    //   throw new Error(`Tour with ID ${tourId} not found.`);
-    // }
-    // // ensure the tours have an activity 
-    // if(!tour.activities || !Array.isArray(tour.activities)){
-    //   return
-    // }
-    // // filter the activity to remove
-    // const updatedActivities = tour.activities.filter(
-    //   (activity) => String(activity.id) !== activityId
-    // )
-    // await this.coreDAO.update(tourId,{activities: updatedActivities})
     let tourVo: TourVO = new TourVO();
     tourVo.id = tourId;
     tourVo.activities = {} as Map<number, Activity>;

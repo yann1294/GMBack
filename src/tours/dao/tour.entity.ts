@@ -3,6 +3,8 @@ import { Activity, TourLocation, User } from '../vo/helper.vo';
 import { instanceToPlain } from 'class-transformer';
 
 // TODO: Add getters and setters
+// TODO: Add tour date
+// TODO: Guide is guide id only
 export class Tour {
   constructor(
     public id: string,

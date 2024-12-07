@@ -48,7 +48,6 @@ export type ResponseObject = {
   message: string;
   data: string[] | object[] | string | object | null;
 };
-//TODO: return only string when only one object is created
 
 /**
  * Condition object for DataService operations.

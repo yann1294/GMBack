@@ -10,7 +10,7 @@ import {
   Query,
   Request,
 } from '@nestjs/common';
-import { TourValidationPipe } from './validation.pipe';
+import { HasAttribute, TourValidationPipe } from './validation.pipe';
 import { TourVO } from '../vo/tour.master.vo';
 import { ICoreService } from '../services/tour.service.interface';
 import { Tour } from '../dao/tour.entity';
@@ -41,7 +41,6 @@ export class TourController {
 
 
   // Get a tour by ID
-  // TODO: Validation for when body does not contain id
   @Get(':id')
   async findById(@Param('id') id: string): Promise<ResponseObject> {
     return await this.coreService.findTourById(id);
@@ -71,20 +70,20 @@ export class TourController {
   // Update tour availability
   @Patch('availability')
   async updateTourAvailability(
-    @Body('id') id: string,
-    @Body('isAvailable') isAvailable: boolean,
+    @Body(new HasAttribute(['isAvailable', 'tourId'])) body: {tourId: string, isAvailable: boolean},
   ): Promise<ResponseObject> {
-       return await this.coreService.updateTourAvailability(id, isAvailable);
+       return await this.coreService.updateTourAvailability(body.tourId, body.isAvailable);
   }
+
+  // TODO: Check whether document exist before update
 
   // Assign a guide to a tour
   // TODO: Change guide to guide id in tour entity
   @Patch('assign-guide')
   async assignGuideToTour(
-    @Body('tourId') tourId: string,
-    @Body('guideId') guideId: string,
+    @Body(new HasAttribute(['tourId', 'guideId'])) body: {tourId: string, guideId: string},
   ): Promise<ResponseObject> {
-       return await this.coreService.assignGuideToTour(tourId, guideId);
+       return await this.coreService.assignGuideToTour(body.tourId, body.guideId);
   }
 
   // activity functions
@@ -100,12 +99,11 @@ export class TourController {
   // Remove an activity from a tour
   @Patch('remove-activity')
   async removeActivityFromTour(
-    @Body('tourId') tourId: string,
-    @Body('activityId') activityId: string,
+    @Body(new HasAttribute(['tourId', 'activityId'])) body: {tourId: string, activityId: string},
   ): Promise<ResponseObject> {
     return await this.coreService.removeActivityFromTour(
-      tourId,
-      activityId,
+      body.tourId,
+      body.activityId,
     );
   }
 
@@ -116,6 +114,7 @@ export class TourController {
   }
 
   // Get the current activity ID
+  // TODO: Will be implemented when booking container is implemented
   @Get('current-activity-id')
   async getCurrentActivityId(): Promise<string> {
     // return await this.coreService.getCurrentActivityId();

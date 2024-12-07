@@ -54,3 +54,4 @@ export class TourDTO {
 }
 
 // TODO: is not empty string for entity
+// TODO: Add tour description

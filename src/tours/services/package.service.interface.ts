@@ -11,6 +11,6 @@ export interface IPackageService {
   updatePackage(id: string, packageVO: PackageVO): Promise<boolean>;
   findPackageById(id: string): Promise<Package>;
   findAllPackages(): Promise<ResponseObject>;
-  addTourToPackage(packageId: string, tourId: string): Promise<void>;
-  removeTourFromPackage(packageId: string, tourId: string): Promise<void>;
+  addTourToPackage(packageId: string, tourId: string | string[]): Promise<void>;
+  removeTourFromPackage(packageId: string, tourId: string | string[]): Promise<void>;
 }

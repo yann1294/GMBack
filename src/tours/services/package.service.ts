@@ -3,9 +3,10 @@ import { PackageDAOInterface } from '../dao/package.dao.interface';
 import { IPackageService } from './package.service.interface';
 import { PACKAGE_DAO_INTERFACE_TOKEN } from '../token';
 import { PackageVO } from '../vo/package.master.vo';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { Package } from '../dao/package.entity';
 import { ResponseObject } from 'src/shared/types';
+import { FieldValue } from 'firebase-admin/firestore';
 
 @Injectable()
 export class PackageService implements IPackageService {
@@ -39,19 +40,31 @@ export class PackageService implements IPackageService {
     return plainToClass(PackageVO, tour).tours;
   }
 
-  async addTourToPackage(packageId: string, tourId: string) {
-    const packages = await this.packageDAO.findById(packageId);
-    if (!packages) {
-      throw new Error(`Package with ID ${packageId} not found.`);
-    }
-    packages.tour = tourId;
-    await this.packageDAO.update(packageId, packages);
+  async addTourToPackage(packageId: string, tourId: string | string[]) {
+    // const packages = await this.packageDAO.findById(packageId);
+    // if (!packages) {
+    //   throw new Error(`Package with ID ${packageId} not found.`);
+    // }
+    // packages.tour = tourId;
+    const tours: string[] = Array.isArray(tourId) ? tourId : [tourId];
+    return await this.packageDAO.update(
+      packageId, 
+      plainToInstance(Package, {
+        tours: FieldValue.arrayUnion(...tours) 
+      })
+    );
   }
 
-  async removeTourFromPackage(packageId: string, tourId: string) {
-    let packageVo: PackageVO = new PackageVO();
-    packageVo.id = tourId;
-    return await this.packageDAO.delete(packageId, packageVo.toEntity());
+  async removeTourFromPackage(packageId: string, tourId: string | string[]) {
+    // let packageVo: PackageVO = new PackageVO();
+    // packageVo.id = tourId;
+    const tours: string[] = Array.isArray(tourId) ? tourId : [tourId];
+    return await this.packageDAO.update(
+      packageId, 
+      plainToInstance(Package, {
+        tours: FieldValue.arrayRemove(...tours) 
+      })
+    );
   }
 
   async assignGuideToPackage(packageId: string, guideId: string) {

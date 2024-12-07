@@ -26,14 +26,12 @@ export class PackageDAO implements PackageDAOInterface {
     // Call the DataService's updateDoc method
     return await this.dataService.updateDoc(
       this.collectionName,
-      data.id,
+      id,
       data.toObject(),
     );
   }
 
   async delete(id: string, data?: Package): Promise<any> {
-    console.log(data.toUpdateObject());
-
     // Call the DataService's deleteDoc method
     if (data) {
       return await this.dataService.updateDoc(

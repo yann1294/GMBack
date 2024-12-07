@@ -1,6 +1,6 @@
 import { Expose, instanceToPlain } from 'class-transformer';
 import { PackageLocation, User } from './helper.vo';
-import { IsOptional } from 'class-validator';
+import { IsArray, IsOptional, IsString, Max, Min } from 'class-validator';
 import { Package } from '../dao/package.entity';
 import { TourVO } from './tour.master.vo';
 
@@ -9,21 +9,22 @@ export class PackageVO {
   @IsOptional()
   private _id: string;
 
-  @Expose({ name: 'packageName' })
+  @Expose({ name: 'name' })
   @IsOptional()
-  private _packageName: string;
+  private _name: string;
 
   @Expose({ name: 'tours' })
+  @IsString({each: true})
   @IsOptional()
-  private _tours: TourVO[];
+  private _tours: string[];
 
-  @Expose({ name: 'packageLocation' })
+  @Expose({ name: 'location' })
   @IsOptional()
-  private _packageLocation: PackageLocation;
+  private _location: PackageLocation;
 
-  @Expose({ name: 'packagePrice' })
+  @Expose({ name: 'price' })
   @IsOptional()
-  private _packagePrice: number;
+  private _price: number;
 
   @Expose({ name: 'durationDays' })
   @IsOptional()
@@ -31,6 +32,8 @@ export class PackageVO {
 
   @Expose({ name: 'discount' })
   @IsOptional()
+  @Min(0)
+  @Max(100)
   private _discount: number;
 
   @Expose({ name: 'numberOfSeats' })
@@ -47,11 +50,17 @@ export class PackageVO {
 
   @Expose({ name: 'guide' })
   @IsOptional()
-  private _guide: User;
+  private _guide: string;
 
   @Expose({ name: 'images' })
+  @IsArray()
   @IsOptional()
+  @IsString({ each: true })
   private _images: string[];
+
+  @Expose({ name: 'date' })
+  @IsOptional()
+  private _date: string;
 
   // getters & setters
   @Expose()
@@ -64,39 +73,39 @@ export class PackageVO {
   }
 
   @Expose()
-  get packageName(): string {
-    return this._packageName;
+  get name(): string {
+    return this._name;
   }
 
-  set packageName(value: string) {
-    this._packageName = value;
+  set name(value: string) {
+    this._name = value;
   }
 
   @Expose()
-  get tours(): TourVO[] {
+  get tours(): string[] {
     return this._tours;
   }
 
-  set tours(value: TourVO[]) {
+  set tours(value: string[]) {
     this._tours = value;
   }
 
   @Expose()
-  get packageLocation(): PackageLocation {
-    return this._packageLocation;
+  get location(): PackageLocation {
+    return this._location;
   }
 
-  set packageLocation(value: PackageLocation) {
-    this._packageLocation = value;
+  set location(value: PackageLocation) {
+    this._location = value;
   }
 
   @Expose()
-  get packagePrice(): number {
-    return this._packagePrice;
+  get price(): number {
+    return this._price;
   }
 
-  set packagePrice(value: number) {
-    this._packagePrice = value;
+  set price(value: number) {
+    this._price = value;
   }
 
   @Expose()
@@ -116,10 +125,10 @@ export class PackageVO {
     this._durationDays = value;
   }
   @Expose()
-  get guide(): User {
+  get guide(): string {
     return this._guide;
   }
-  set guide(value: User) {
+  set guide(value: string) {
     this._guide = value;
   }
 
@@ -155,19 +164,29 @@ export class PackageVO {
     this._numberOfSeats = value;
   }
 
+  @Expose()
+  get date(): string {
+    return this._date;
+  }
+  set date(value: string) {
+    this._date = value;
+  }
+
   toEntity(): Package {
     return new Package(
       this._id,
-      this._packageName,
-      this._packageLocation,
-      this._packagePrice,
-      this._images,
+      this._name,
+      this._location,
+      this._price,
       this._durationDays,
       this._discount,
       this._numberOfSeats,
       this._description,
       this._isAvailable,
+      this._date ? new Date(this._date) : undefined,
       this._guide,
+      this._images,
+      this._tours,
     );
   }
   //  TODO: add description

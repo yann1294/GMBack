@@ -1,17 +1,21 @@
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsBoolean,
+  IsDateString,
   IsNumber,
+  IsOptional,
   IsString,
   Max,
   Min,
   ValidateNested,
 } from 'class-validator';
 import { PackageLocationDTO } from './package.location.dto';
-import { User } from 'src/payment/vo/helper.vo';
 
 export class PackageDTO {
-  @IsString() public readonly name: string;
+  @IsString() 
+  public readonly name: string;
+
   @ValidateNested()
   @Type(() => PackageLocationDTO)
   public readonly location: PackageLocationDTO;
@@ -19,9 +23,19 @@ export class PackageDTO {
   @IsNumber()
   public readonly price: number;
 
-  @IsString()
+  @IsDateString()
+  public readonly date: string;
+
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
   public readonly images: string[];
   
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  public readonly tours: string[];
+
   @IsNumber()
   @Min(0)
   public readonly durationDays: number;
@@ -31,10 +45,17 @@ export class PackageDTO {
   @Max(100)
   public readonly discount: number;
 
+  @IsNumber()
+  @Min(0)
+  public readonly numberOfSeats: number;
+
+  @IsString()
+  public readonly description: number;
+
   @IsBoolean()
   public readonly isAvailable: boolean;
 
-  @ValidateNested()
-  @Type(() => User)
-  public readonly guide: User;
+  @IsString()
+  @IsOptional()
+  public readonly guide: string;
 }

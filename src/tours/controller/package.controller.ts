@@ -17,6 +17,7 @@ import { ResponseObject } from 'src/shared/types';
 import { PackageValidationPipe } from './package.validation.pipe';
 import { PackageVO } from '../vo/package.master.vo';
 import { IPackageService } from '../services/package.service.interface';
+import { HasAttribute } from './core.validation.pipe';
 
 @Controller('packages')
 export class PackageController {
@@ -29,7 +30,7 @@ export class PackageController {
     return await this.packageService.findAllPackages();
   }
 
-  @Get('find-by-id')
+  @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.packageService.findPackageById(id);
   }
@@ -52,16 +53,15 @@ export class PackageController {
     return this.packageService.deletePackage(id);
   }
 
-  @Patch(':id/tours/:tourId')
-  addTourToPackage(@Param('id') packageId: string, @Body() tourId: string) {
-    return this.packageService.addTourToPackage(packageId, tourId);
+  @Patch(':id/tours')
+  addTourToPackage(@Param('id') packageId: string, @Body(new HasAttribute(['tourId'])) body: {tourId: string | string[]}) {
+    return this.packageService.addTourToPackage(packageId, body.tourId);
   }
 
-  @Delete(':id/tours/:tourId')
+  @Delete(':id/tours')
   removeTourFromPackage(
-    @Param('id') packageId: string,
-    @Param('tourId') tourId: string,
+    @Param('id') packageId: string, @Body(new HasAttribute(['tourId'])) body: {tourId: string | string[]}
   ) {
-    return this.packageService.removeTourFromPackage(packageId, tourId);
+    return this.packageService.removeTourFromPackage(packageId, body.tourId);
   }
 }

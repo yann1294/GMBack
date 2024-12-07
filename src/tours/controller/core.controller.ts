@@ -69,13 +69,12 @@ export class TourController {
   }
 
   // Update tour availability
-  @Patch('availability/:id')
+  @Patch('availability')
   async updateTourAvailability(
-    @Param('id') id: string,
+    @Body('id') id: string,
     @Body('isAvailable') isAvailable: boolean,
-  ): Promise<boolean> {
-    return;
-    //    return await this.coreService.updateTourAvailability(id, isAvailable);
+  ): Promise<ResponseObject> {
+       return await this.coreService.updateTourAvailability(id, isAvailable);
   }
 
   // Assign a guide to a tour

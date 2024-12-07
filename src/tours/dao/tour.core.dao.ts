@@ -30,7 +30,7 @@ export class CoreDAO implements CoreDAOInterface {
     // Call the DataService's updateDoc method
     return await this.dataService.updateDoc(
       this.collectionName,
-      data.id,
+      id,
       data.toUpdateObject(),
     );
   }

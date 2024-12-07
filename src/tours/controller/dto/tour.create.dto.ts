@@ -7,6 +7,7 @@ import {
   Max,
   IsBoolean,
   IsObject,
+  IsOptional,
 } from 'class-validator';
 import { TourLocationDTO } from './tour.location.dto';
 import { ActivityDTO } from './tour.activity.dto';
@@ -40,9 +41,9 @@ export class CreateTourDTO {
   @IsBoolean()
   public readonly isAvailable: boolean;
 
-  @ValidateNested()
-  @Type(() => User)
-  guide: User;
+  @IsString()
+  @IsOptional()
+  public readonly guide: string;
 
   @ValidateNested()
   @Type(() => Object)

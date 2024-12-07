@@ -10,7 +10,7 @@ export class TourVO {
   @Expose({ name: 'durationDays' }) private _durationDays: number;
   @Expose({ name: 'discount' }) private _discount: number;
   @Expose({ name: 'isAvailable' }) private _isAvailable: boolean;
-  @Expose({ name: 'guide' }) private _guide: User;
+  @Expose({ name: 'guide' }) private _guide: string;
   @Expose({ name: 'activities' })
   @Type(() => Activity)
   private _activities: Map<number, Activity>;
@@ -52,7 +52,7 @@ export class TourVO {
   }
 
   @Expose()
-  get guide(): User {
+  get guide(): string {
     return this._guide;
   }
 
@@ -90,7 +90,7 @@ export class TourVO {
     this._isAvailable = value;
   }
 
-  set guide(value: User) {
+  set guide(value: string) {
     this._guide = value;
   }
 
@@ -107,8 +107,8 @@ export class TourVO {
       this._durationDays,
       this._discount,
       this._isAvailable,
-      this._guide,
       this._activities,
+      this._guide,
     );
   }
 }

@@ -1,7 +1,7 @@
 import { Tour } from '../dao/tour.entity';
 import { Expose, instanceToPlain, Type } from 'class-transformer';
 import { Activity, TourLocation, User } from './helper.vo';
-import { IsOptional } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { FieldValue } from 'firebase-admin/firestore';
 
 export class TourVO {
@@ -42,8 +42,9 @@ export class TourVO {
   private _isAvailable: boolean;
 
   @Expose({ name: 'guide' })
+  @IsString()
   @IsOptional()
-  private _guide: User;
+  private _guide: string;
 
   @Expose({ name: 'activities' })
   @Type(() => Activity)
@@ -98,7 +99,7 @@ export class TourVO {
   }
 
   @Expose()
-  get guide(): User {
+  get guide(): string {
     return this._guide;
   }
 
@@ -144,7 +145,7 @@ export class TourVO {
     this._isAvailable = value;
   }
 
-  set guide(value: User) {
+  set guide(value: string) {
     this._guide = value;
   }
 
@@ -163,8 +164,8 @@ export class TourVO {
       this._numberOfSeats,
       this._description,
       this._isAvailable,
-      this._guide,
       this._activities,
+      this._guide,
     );
   }
 

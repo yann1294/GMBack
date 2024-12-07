@@ -6,6 +6,7 @@ import {
   Min,
   Max,
   IsBoolean,
+  IsOptional,
 } from 'class-validator';
 import { TourLocation, Activity, User } from '../../vo/helper.vo';
 
@@ -32,9 +33,9 @@ export class TourDTO {
   @IsBoolean()
   public readonly isAvailable: boolean;
 
-  @ValidateNested()
-  @Type(() => User)
-  public readonly guide: User;
+  @IsString()
+  @IsOptional()
+  public readonly guide: string;
 
   @ValidateNested({ each: true })
   @Type(() => Activity)

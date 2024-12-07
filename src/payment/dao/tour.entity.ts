@@ -10,8 +10,8 @@ export class Tour {
     public durationDays: number,
     public discount: number,
     public isAvailable: boolean,
-    public guide: User,
     public activities: Map<number, Activity>,
+    public guide?: string,
   ) {}
 
   addActivity(activity: Activity): void {
@@ -39,7 +39,7 @@ export class Tour {
       durationDays: this.durationDays,
       discount: this.discount,
       isAvailable: this.isAvailable,
-      guide: Object.assign({}, this.guide),
+      guide: this.guide,
       activities: Object.fromEntries(
         Array.from(this.activities).map((activity) => [
           activity[0],

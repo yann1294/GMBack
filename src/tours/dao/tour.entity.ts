@@ -16,8 +16,8 @@ export class Tour {
     public numberOfSeats: number,
     public description: string,
     public isAvailable: boolean,
-    public guide: User,
     public activities: Map<number, Activity>,
+    public guide?: string,
   ) {}
   toObject(): object {
     return {
@@ -30,7 +30,7 @@ export class Tour {
       numberOfSeats: this.numberOfSeats,
       description: this.description,
       isAvailable: this.isAvailable,
-      guide: Object.assign({}, this.guide),
+      guide: this.guide,
       activities: Object.fromEntries(
         Array.from(this.activities).map((activity) => [
           activity[0],

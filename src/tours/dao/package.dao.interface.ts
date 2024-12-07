@@ -1,11 +1,10 @@
-import { CreatePackageDTO, UpdatePackageDTO } from "../controller/dto/package.dto";
+import { DataServiceResponse } from 'src/shared/types';
+import { Package } from './package.entity';
 
-export interface TourPackageDAOInterface {
-  findAll(): Promise<any[]>;
+export interface PackageDAOInterface {
+  findAll(): Promise<DataServiceResponse>;
   findById(id: string): Promise<any>;
-  create(data: CreatePackageDTO): Promise<any>;
-  update(id: string, data: UpdatePackageDTO): Promise<any>;
-  delete(id: string): Promise<void>;
-  addTour(packageId: string, tourId: string): Promise<any>;
-  removeTour(packageId: string, tourId: string): Promise<any>;
+  create(data: Package): Promise<any>;
+  update(id: string, data: Package): Promise<any>;
+  delete(id: string, data?: Package): Promise<void>;
 }

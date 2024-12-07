@@ -1,44 +1,67 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
-import { TourPackageService } from '../services/package.service';
-import { CreatePackageDTO, UpdatePackageDTO } from './dto/package.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Inject,
+  Patch,
+} from '@nestjs/common';
+import { PackageService } from '../services/package.service';
+import { CORE_SERVICE_TOKEN } from '../token';
+import { Package } from '../dao/package.entity';
+import { fromEventPattern } from 'rxjs';
+import { DataServiceResponse } from 'src/shared/types';
+import { PackageValidationPipe } from './package.validation.pipe';
+import { PackageVO } from '../vo/package.master.vo';
 
-
-@Controller('tour-packages')
-export class TourPackageController {
-  constructor(private readonly tourPackageService: TourPackageService) {}
+@Controller('packages')
+export class PackageController {
+  collectionName: string = 'tours';
+  constructor(
+    @Inject(CORE_SERVICE_TOKEN) private readonly packageService: PackageService,
+  ) {}
 
   @Get()
-  findAll() {
-    return this.tourPackageService.findAllPackages();
+  async findAll(): Promise<DataServiceResponse> {
+    return await this.packageService.findAllPackages();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tourPackageService.findPackageById(id);
+  @Get('find-by-id')
+  async findOne(@Param('id') id: string) {
+    return this.packageService.findPackageById(id);
   }
 
   @Post()
-  create(@Body() createPackageDTO: CreatePackageDTO) {
-    return this.tourPackageService.createPackage(createPackageDTO);
+  async create(@Body(new PackageValidationPipe()) packageVo: PackageVO) {
+    return this.packageService.createPackage(packageVo);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updatePackageDTO: UpdatePackageDTO) {
-    return this.tourPackageService.updatePackage(id, updatePackageDTO);
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body(new PackageValidationPipe('update')) packageVo: PackageVO,
+  ) {
+    return this.packageService.updatePackage(id, packageVo);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.tourPackageService.deletePackage(id);
+    return this.packageService.deletePackage(id);
   }
 
-  @Put(':id/tours')
+  @Patch(':id/tours/:tourId')
   addTourToPackage(@Param('id') packageId: string, @Body() tourId: string) {
-    return this.tourPackageService.addTourToPackage(packageId, tourId);
+    return this.packageService.addTourToPackage(packageId, tourId);
   }
 
   @Delete(':id/tours/:tourId')
-  removeTourFromPackage(@Param('id') packageId: string, @Param('tourId') tourId: string) {
-    return this.tourPackageService.removeTourFromPackage(packageId, tourId);
+  removeTourFromPackage(
+    @Param('id') packageId: string,
+    @Param('tourId') tourId: string,
+  ) {
+    return this.packageService.removeTourFromPackage(packageId, tourId);
   }
 }

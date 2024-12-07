@@ -201,6 +201,6 @@ export class TourVO {
   }
 
   toObject(): object {
-      return instanceToPlain(this);
+    return instanceToPlain(this);
   }
 }

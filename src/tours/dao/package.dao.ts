@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PackageDAOInterface } from './package.dao.interface';
 import { Package } from './package.entity';
 import { DataService } from 'src/shared/services/data.service';
-import { DataServiceResponse } from 'src/shared/types';
+import { ResponseObject } from 'src/shared/types';
 
 @Injectable()
 export class PackageDAO implements PackageDAOInterface {
@@ -10,7 +10,7 @@ export class PackageDAO implements PackageDAOInterface {
 
   constructor(private readonly dataService: DataService) {}
 
-  async findAll(): Promise<DataServiceResponse> {
+  async findAll(): Promise<ResponseObject> {
     return await this.dataService.readAllDocs(this.collectionName);
   }
 

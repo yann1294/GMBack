@@ -1,8 +1,8 @@
-import { DataServiceResponse } from 'src/shared/types';
+import { ResponseObject } from 'src/shared/types';
 import { Package } from './package.entity';
 
 export interface PackageDAOInterface {
-  findAll(): Promise<DataServiceResponse>;
+  findAll(): Promise<ResponseObject>;
   findById(id: string): Promise<any>;
   create(data: Package): Promise<any>;
   update(id: string, data: Package): Promise<any>;

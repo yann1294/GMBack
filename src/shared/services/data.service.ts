@@ -28,7 +28,7 @@ export class DataService {
    * Logs and returns DataService errors.
    *
    * @param e - Error object.
-   * @returns A promise that resolves to a DataServiceResponse containing the error message.
+   * @returns A promise that resolves to a ResponseObject containing the error message.
    */
   private errorHandler(e: unknown): ResponseObject {
     const error = e as FirebaseFirestoreError;
@@ -46,7 +46,7 @@ export class DataService {
    *
    * @param collectionName - The Firestore collection name or path for the document.
    * @param data - The data to be stored in the document.
-   * @returns A promise that resolves to a DataServiceResponse containing the document ID or an error message.
+   * @returns A promise that resolves to a ResponseObject containing the document ID or an error message.
    */
   async createDoc(
     data: Tour | Package,
@@ -82,7 +82,7 @@ export class DataService {
    *
    * @param collectionName - The Firestore collection name or path for the documents.
    * @param data[] - A list of data to be stored in each document.
-   * @returns A promise that resolves to a DataServiceResponse containing document IDs or an error message.
+   * @returns A promise that resolves to a ResponseObject containing document IDs or an error message.
    */
   async createDocs(
     data: object[],
@@ -137,7 +137,7 @@ export class DataService {
    *
    * @param collectionName - The Firestore collection name or path for the document.
    * @param docId - The id of the document to be read.
-   * @returns A promise that resolves to a DataServiceResponse containing the document data or an error message.
+   * @returns A promise that resolves to a ResponseObject containing the document data or an error message.
    */
   async readDoc(
     collectionName: string,
@@ -177,7 +177,7 @@ export class DataService {
    * Reads all documents in a given Firestore collection.
    *
    * @param collectionName - The Firestore collection name or path for the documents.
-   * @returns A promise that resolves to a DataServiceResponse containing documents or an error message.
+   * @returns A promise that resolves to a ResponseObject containing documents or an error message.
    */
   async readAllDocs(collectionName: string): Promise<ResponseObject> {
     try {

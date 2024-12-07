@@ -15,10 +15,13 @@ export class PackageDTO {
   @ValidateNested()
   @Type(() => PackageLocationDTO)
   public readonly location: PackageLocationDTO;
+
   @IsNumber()
   public readonly price: number;
+
   @IsString()
   public readonly images: string[];
+  
   @IsNumber()
   @Min(0)
   public readonly durationDays: number;

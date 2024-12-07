@@ -10,7 +10,7 @@ import {
   Query,
   Request,
 } from '@nestjs/common';
-import { HasAttribute, TourValidationPipe } from './validation.pipe';
+import { HasAttribute, TourValidationPipe } from './core.validation.pipe';
 import { TourVO } from '../vo/tour.master.vo';
 import { ICoreService } from '../services/tour.service.interface';
 import { Tour } from '../dao/tour.entity';

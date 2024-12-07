@@ -6,8 +6,11 @@ import { FirebaseModule } from 'src/shared/firebase/firebase.module';
 import { CoreService } from './services/tour.service';
 //import { CoreDAOInterface } from './dao/tour.core.dao.interface';
 import { CoreDAO } from './dao/tour.core.dao';
-import { CORE_DAO_INTERFACE_TOKEN, CORE_SERVICE_TOKEN } from './token';
+import { CORE_DAO_INTERFACE_TOKEN, CORE_SERVICE_TOKEN, PACKAGE_DAO_INTERFACE_TOKEN, PACKAGE_SERVICE_TOKEN } from './token';
 import { TourController } from './controller/core.controller';
+import { PackageController } from './controller/package.controller';
+import { PackageDAO } from './dao/package.dao';
+import { PackageService } from './services/package.service';
 
 
 /**
@@ -23,7 +26,7 @@ import { TourController } from './controller/core.controller';
  */
 @Module({
   imports: [FirebaseModule],
-  controllers: [TourController],
+  controllers: [TourController, PackageController],
   providers: [
     {
       provide: CORE_DAO_INTERFACE_TOKEN,
@@ -33,6 +36,15 @@ import { TourController } from './controller/core.controller';
     {
       provide: CORE_SERVICE_TOKEN,
       useClass: CoreService,
+    },
+    {
+      provide: PACKAGE_DAO_INTERFACE_TOKEN,
+      useClass: PackageDAO,
+    },
+    DataService,
+    {
+      provide: PACKAGE_SERVICE_TOKEN,
+      useClass: PackageService,
     },
   ],
 })

@@ -10,22 +10,22 @@ import {
   Patch,
 } from '@nestjs/common';
 import { PackageService } from '../services/package.service';
-import { CORE_SERVICE_TOKEN } from '../token';
+import { CORE_SERVICE_TOKEN, PACKAGE_SERVICE_TOKEN } from '../token';
 import { Package } from '../dao/package.entity';
 import { fromEventPattern } from 'rxjs';
-import { DataServiceResponse } from 'src/shared/types';
+import { ResponseObject } from 'src/shared/types';
 import { PackageValidationPipe } from './package.validation.pipe';
 import { PackageVO } from '../vo/package.master.vo';
+import { IPackageService } from '../services/package.service.interface';
 
 @Controller('packages')
 export class PackageController {
-  collectionName: string = 'tours';
   constructor(
-    @Inject(CORE_SERVICE_TOKEN) private readonly packageService: PackageService,
+    @Inject(PACKAGE_SERVICE_TOKEN) private readonly packageService: IPackageService,
   ) {}
 
   @Get()
-  async findAll(): Promise<DataServiceResponse> {
+  async findAll(): Promise<ResponseObject> {
     return await this.packageService.findAllPackages();
   }
 

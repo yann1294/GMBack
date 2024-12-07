@@ -35,9 +35,8 @@ export class CoreDAO implements CoreDAOInterface {
     );
   }
 
-  async delete(id: string, data?: Tour): Promise<any> {
-    console.log(data.toUpdateObject());
-    
+  // if only id is passed, then document id will be deleted.
+  async delete(id: string, data?: Tour): Promise<any> {    
     // Call the DataService's deleteDoc method
     if (data) {
       return await this.update(id, data);

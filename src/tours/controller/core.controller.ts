@@ -64,9 +64,8 @@ export class TourController {
 
   // Delete a tour
   @Delete(':id')
-  deleteTour(@Param('id') id: string): Promise<void> {
-    return;
-    //return await this.coreService.deleteTour(id);
+  async deleteTour(@Param('id') id: string): Promise<ResponseObject> {
+    return await this.coreService.deleteTour(id);
   }
 
   // Update tour availability

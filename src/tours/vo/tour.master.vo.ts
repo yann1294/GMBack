@@ -171,9 +171,4 @@ export class TourVO {
   toObject(): object {
       return instanceToPlain(this);
   }
-
-  toUpdateObject(): object {
-    return {...this.toEntity()}
-  }
-    
 }

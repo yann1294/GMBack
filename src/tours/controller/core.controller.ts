@@ -29,8 +29,10 @@ export class TourController {
   // tour functions
 
   // Get a tour by ID
-  @Get(':id')
-  async findById(@Query('id') id: string): Promise<Tour> {
+  // TODO: Validation for when body does not contain id
+  @Get('find-by-id')
+  async findById(@Param('id') id: string): Promise<Tour> {
+    console.log("Find by id");
     log(id);
     return await this.coreService.findTourById(id);
   }
@@ -57,8 +59,7 @@ export class TourController {
   // Get all tours
   @Get()
   async findAllTours(): Promise<Tour[]> {
-    return;
-    //return await this.coreService.findAllTours();
+    return await this.coreService.findAllTours();
   }
 
   // Delete a tour

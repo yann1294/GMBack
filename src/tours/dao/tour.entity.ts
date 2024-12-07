@@ -62,4 +62,11 @@ export class Tour {
       ),
     };
   }
+
+  toUpdateObject(): object {
+    return {...this}
+  }
+    
 }
+
+// TODO: Add tour images attribute

@@ -6,7 +6,6 @@ import { CoreDAOInterface } from '../dao/tour.core.dao.interface';
 
 import { CORE_DAO_INTERFACE_TOKEN } from '../token';
 import { plainToClass } from 'class-transformer';
-import { UpdateTourDTO } from '../controller/dto/tour.update.dto';
 import { Activity } from '../vo/helper.vo';
 import { FieldValue } from 'firebase-admin/firestore';
 
@@ -23,7 +22,7 @@ export class CoreService implements ICoreService {
   }
 
   async updateTour(id: string, tourVo: TourVO): Promise<void> {
-    return await this.coreDAO.update(id, tourVo);
+    return await this.coreDAO.update(id, tourVo.toEntity());
   }
 
   async findTourById(id: string): Promise<Tour> {
@@ -39,7 +38,7 @@ export class CoreService implements ICoreService {
     id: string,
     isAvailable: boolean,
   ): Promise<boolean> {
-    return await this.coreDAO.update(id, plainToClass(TourVO, {isAvailable: isAvailable}));
+    return await this.coreDAO.update(id, plainToClass(Tour, {isAvailable: isAvailable}));
   }
 
   // TODO: Algorithm for assigning tour
@@ -68,7 +67,7 @@ export class CoreService implements ICoreService {
 
     // // Step 3: Update the tour
     // await this.coreDAO.update(tourId, tour);
-    return await this.coreDAO.update(tourId, tourVo);
+    return await this.coreDAO.update(tourId, tourVo.toEntity());
   }
 
   // TODO: Rethink deletes
@@ -91,7 +90,7 @@ export class CoreService implements ICoreService {
     tourVo.id = tourId;
     tourVo.activities = {} as Map<number, Activity>;
     tourVo.activities[activityId] = FieldValue.delete();
-    return await this.coreDAO.delete(tourId, tourVo);
+    return await this.coreDAO.delete(tourId, tourVo.toEntity());
   }
 
   async listActivitiesForTour(tourId: string): Promise<any> {

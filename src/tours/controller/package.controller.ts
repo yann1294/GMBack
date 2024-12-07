@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
-import { TourPackageService } from '../services/tour-package.service';
+import { TourPackageService } from '../services/package.service';
 import { CreatePackageDTO, UpdatePackageDTO } from './dto/package.dto';
 
 

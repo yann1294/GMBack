@@ -147,7 +147,7 @@ export class DataService {
       const result: DocumentSnapshot = await this.firestore
         .collection(collectionName)
         .doc(docId)
-        .get();
+        .get();        
 
       // check whether document exists
       if (!result.exists) {

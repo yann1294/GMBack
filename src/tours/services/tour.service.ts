@@ -63,8 +63,11 @@ export class CoreService implements ICoreService {
 
   async listActivitiesForTour(tourId: string): Promise<ResponseObject> {
     // fetch tour with id == tourId
-    let tour: ResponseObject = await this.coreDAO.findById(tourId);    
-    return {...tour, data: tour.data['activities']} as ResponseObject;
+    let response: ResponseObject = await this.coreDAO.findById(tourId);
+    if  (response.message !== 'success') {
+      return response;
+    }
+    return {...response, data: response.data['activities']} as ResponseObject;
   }
 
   // TODO: Will operate on a booking session and not the entire tour entity

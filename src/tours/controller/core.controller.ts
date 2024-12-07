@@ -47,6 +47,7 @@ export class TourController {
   }
 
   // Update an existing tour
+  // TODO: Remove id from params of Patch, and post requests: they'll be in the sent object
   @Patch(':id')
   async update(
     @Param('id') id: string,

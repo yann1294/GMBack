@@ -18,7 +18,7 @@ export interface ICoreService {
   // activity functions
   addActivityToTour(tourVo: TourVO): Promise<ResponseObject>;
   removeActivityFromTour(tourId: string, activityId: string): Promise<ResponseObject>;
-  listActivitiesForTour(tourId: string): Promise<void>;
+  listActivitiesForTour(tourId: string): Promise<ResponseObject>;
   getCurrentActivityId(): Promise<string>;
   setCurrentActivityId(id: string): Promise<string>;
   startCurrentActivity(): Promise<boolean>;

@@ -95,10 +95,10 @@ export class CoreService implements ICoreService {
     return await this.coreDAO.delete(tourId, tourVo.toEntity());
   }
 
-  async listActivitiesForTour(tourId: string): Promise<any> {
+  async listActivitiesForTour(tourId: string): Promise<ResponseObject> {
     // fetch tour with id == tourId
-    let tour: any = await this.coreDAO.findById(tourId);
-    return plainToClass(TourVO, tour).activities;
+    let tour: ResponseObject = await this.coreDAO.findById(tourId);    
+    return {...tour, data: tour.data['activities']} as ResponseObject;
   }
 
   // TODO: Will operate on a booking session and not the entire tour entity

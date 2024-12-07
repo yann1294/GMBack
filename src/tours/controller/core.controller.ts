@@ -111,9 +111,8 @@ export class TourController {
 
   // List activities for a tour
   @Get('activities/:tourId')
-  async listActivitiesForTour(@Param('tourId') tourId: string): Promise<void> {
-    return;
-    //return await this.coreService.listActivitiesForTour(tourId);
+  async listActivitiesForTour(@Param('tourId') tourId: string): Promise<ResponseObject> {
+    return await this.coreService.listActivitiesForTour(tourId);
   }
 
   // Get the current activity ID

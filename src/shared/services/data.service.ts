@@ -263,11 +263,23 @@ export class DataService {
     newData: object,
   ): Promise<ResponseObject> {
     try {
+      // checking whether doc exist
+      let docRef: DocumentReference = await this.firestore
+      .collection(collectionName)
+      .doc(docId);
+
+      // checking whether document exist
+      if (!(await docRef.get()).exists) {
+        return {
+          status: 'not-found',
+          code: 404,
+          message: 'Document not found.',
+          data: null,
+        };
+      } 
+
       // update document
-      await this.firestore
-        .collection(collectionName)
-        .doc(docId)
-        .set(newData, { merge: true,});
+      docRef.set(newData, { merge: true });
 
       return {
         status: 'success',

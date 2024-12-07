@@ -75,8 +75,6 @@ export class TourController {
        return await this.coreService.updateTourAvailability(body.tourId, body.isAvailable);
   }
 
-  // TODO: Check whether document exist before update
-
   // Assign a guide to a tour
   @Patch('assign-guide')
   async assignGuideToTour(

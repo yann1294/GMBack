@@ -103,9 +103,6 @@ export class TourController {
     @Body('tourId') tourId: string,
     @Body('activityId') activityId: string,
   ): Promise<ResponseObject> {
-    console.log(tourId);
-    console.log(activityId);
-    
     return await this.coreService.removeActivityFromTour(
       tourId,
       activityId,

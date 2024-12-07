@@ -39,7 +39,11 @@ export class CoreDAO implements CoreDAOInterface {
   async delete(id: string, data?: Tour): Promise<any> {    
     // Call the DataService's deleteDoc method
     if (data) {
-      return await this.update(id, data);
+      return await this.dataService.updateDoc(
+        this.collectionName,
+        id,
+        data.toDeleteObject(),
+      );
     }
     return await this.dataService.deleteDoc(this.collectionName, id);
   }

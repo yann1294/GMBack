@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TourPackageDAOInterface } from '../dao/tour-package.dao.interface';
+import { TourPackageDAOInterface } from '../dao/package.dao.interface';
 import { CreatePackageDTO, UpdatePackageDTO } from '../controller/dto/package.dto';
 
 

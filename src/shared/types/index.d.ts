@@ -42,11 +42,11 @@ export declare interface IActivity {
  * @param message - A message regarding the operation; includes a Firebase error message if unsuccessful.
  * @param data - Document paths/data of created documents or `null` if there’s an error.
  */
-export type DataServiceResponse = {
+export type ResponseObject = {
   status: string;
   code: string | number;
   message: string;
-  data: string[] | object[] | string | null;
+  data: string[] | object[] | string | object | null;
 };
 //TODO: return only string when only one object is created
 

@@ -1,7 +1,7 @@
 // import { Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
 import { DataService } from 'src/shared/services/data.service';
 import { FileService } from 'src/shared/services/file.service';
-import { DataServiceResponse } from 'src/shared/types';
+import { ResponseObject } from 'src/shared/types';
 import {
   Body,
   Controller,
@@ -31,7 +31,7 @@ export class TourController {
   @Post()
   async createTour(
     @Body(new TourValidationPipe()) tourVo: TourVO,
-  ): Promise<DataServiceResponse> {
+  ): Promise<ResponseObject> {
     // transform data to entity
     const tour: Tour = tourVo.toEntity();
 
@@ -55,12 +55,12 @@ export class TourController {
   }
 
   @Get()
-  async findAll(): Promise<DataServiceResponse> {
+  async findAll(): Promise<ResponseObject> {
     return await this.dataService.readAllDocs(this.collectionName);
   }
 
   @Delete(':id')
-  async deleteOne(@Param('id') id: string): Promise<DataServiceResponse> {
+  async deleteOne(@Param('id') id: string): Promise<ResponseObject> {
     log(id);
     return await this.dataService.deleteDoc(this.collectionName, id);
   }
@@ -69,7 +69,7 @@ export class TourController {
   async updateOne(
     @Param('id') id: string,
     @Body() data: object,
-  ): Promise<DataServiceResponse> {
+  ): Promise<ResponseObject> {
     return this.dataService.updateDoc(this.collectionName, id, data);
   }
 }

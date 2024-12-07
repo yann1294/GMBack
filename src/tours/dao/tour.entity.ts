@@ -1,5 +1,6 @@
 import { GeoPoint, Timestamp } from 'firebase-admin/firestore';
 import { Activity, TourLocation, User } from '../vo/helper.vo';
+import { instanceToPlain } from 'class-transformer';
 
 export class Tour {
   constructor(
@@ -64,6 +65,10 @@ export class Tour {
   }
 
   toUpdateObject(): object {
+    return instanceToPlain(this);
+  }
+
+  toDeleteObject(): object {
     return {...this}
   }
     

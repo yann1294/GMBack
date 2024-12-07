@@ -3,6 +3,7 @@ import { CoreDAOInterface } from './tour.core.dao.interface';
 import { DataService } from 'src/shared/services/data.service';
 //import { TourVO } from '../vo/tour.master.vo';
 import { Tour } from './tour.entity';
+import { ResponseObject } from 'src/shared/types';
 
 @Injectable()
 export class CoreDAO implements CoreDAOInterface {
@@ -17,7 +18,7 @@ export class CoreDAO implements CoreDAOInterface {
     return this.dataService.createDoc(data, this.collectionName);
   }
 
-  async findAll(): Promise<any> {
+  async findAll(): Promise<ResponseObject> {
     return await this.dataService.readAllDocs(this.collectionName);
   }
 
@@ -30,7 +31,7 @@ export class CoreDAO implements CoreDAOInterface {
     return await this.dataService.updateDoc(
       this.collectionName,
       data.id,
-      data.toObject(),
+      data.toUpdateObject(),
     );
   }
 
@@ -39,11 +40,7 @@ export class CoreDAO implements CoreDAOInterface {
     
     // Call the DataService's deleteDoc method
     if (data) {
-      return await this.dataService.updateDoc(
-        this.collectionName,
-        data.id,
-        data.toUpdateObject(),
-      );
+      return await this.update(id, data);
     }
     return await this.dataService.deleteDoc(this.collectionName, id);
   }

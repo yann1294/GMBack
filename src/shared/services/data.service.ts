@@ -10,7 +10,7 @@ import {
   WriteBatch,
 } from 'firebase-admin/firestore';
 import { log } from 'console';
-import { DataServiceCondition, DataServiceResponse } from 'src/shared/types';
+import { DataServiceCondition, ResponseObject } from 'src/shared/types';
 import { Tour } from 'src/tours/dao/tour.entity';
 
 @Injectable()
@@ -29,7 +29,7 @@ export class DataService {
    * @param e - Error object.
    * @returns A promise that resolves to a DataServiceResponse containing the error message.
    */
-  private errorHandler(e: unknown): DataServiceResponse {
+  private errorHandler(e: unknown): ResponseObject {
     const error = e as FirebaseFirestoreError;
     log(`Error: ${error.code}`);
     return {
@@ -50,7 +50,7 @@ export class DataService {
   async createDoc(
     data: Tour,
     collectionName: string,
-  ): Promise<DataServiceResponse> {
+  ): Promise<ResponseObject> {
     try {
       // create doc to auto generate doc id
       const doc: DocumentReference = this.firestore
@@ -69,7 +69,7 @@ export class DataService {
         status: 'success',
         message: 'Document successfully created.',
         data: doc.path,
-      } as DataServiceResponse;
+      } as ResponseObject;
     } catch (e: unknown) {
       // return error
       return this.errorHandler(e);
@@ -86,7 +86,7 @@ export class DataService {
   async createDocs(
     data: object[],
     collectionName: string,
-  ): Promise<DataServiceResponse> {
+  ): Promise<ResponseObject> {
     try {
       // instantiate a batch
       // By using a batch, we can automatically group multiple
@@ -124,7 +124,7 @@ export class DataService {
         status: 'success',
         message: 'Documents created successfully',
         data: docRefs,
-      } as DataServiceResponse;
+      } as ResponseObject;
     } catch (e: unknown) {
       // return error
       return this.errorHandler(e);
@@ -141,7 +141,7 @@ export class DataService {
   async readDoc(
     collectionName: string,
     docId: string,
-  ): Promise<DataServiceResponse> {
+  ): Promise<ResponseObject> {
     try {
       // read specific document
       const result: DocumentSnapshot = await this.firestore
@@ -164,7 +164,7 @@ export class DataService {
         status: 'success',
         code: 200,
         message: 'Successfully feteched document.',
-        data: [result.data()],
+        data: result.data(),
       };
     } catch (e: unknown) {
       // return error
@@ -178,7 +178,7 @@ export class DataService {
    * @param collectionName - The Firestore collection name or path for the documents.
    * @returns A promise that resolves to a DataServiceResponse containing documents or an error message.
    */
-  async readAllDocs(collectionName: string): Promise<DataServiceResponse> {
+  async readAllDocs(collectionName: string): Promise<ResponseObject> {
     try {
       // read specific document
       const results: QuerySnapshot = await this.firestore
@@ -244,7 +244,7 @@ export class DataService {
         status: 'success',
         message: 'Document deleted successfully',
         data: docId,
-      } as DataServiceResponse;
+      } as ResponseObject;
     } catch (e) {
       return this.errorHandler(e);
     }
@@ -261,7 +261,7 @@ export class DataService {
     collectionName: string,
     docId: string,
     newData: object,
-  ): Promise<DataServiceResponse> {
+  ): Promise<ResponseObject> {
     try {
       // update document
       await this.firestore
@@ -273,7 +273,7 @@ export class DataService {
         status: 'success',
         message: 'Document updated successfully',
         data: docId,
-      } as DataServiceResponse;
+      } as ResponseObject;
     } catch (e) {
       return this.errorHandler(e);
     }

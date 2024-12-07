@@ -3,20 +3,21 @@ import { UpdateTourDTO } from 'src/tours/controller/dto/tour.update.dto';
 import { Activity } from '../vo/helper.vo';
 import { Tour } from '../dao/tour.entity';
 import { TourVO } from '../vo/tour.master.vo';
+import { ResponseObject } from 'src/shared/types';
 
 export interface ICoreService {
   // tour functions
-  createTour(tourVO: TourVO): Promise<void>;
-  updateTour(id: string, tourVO: TourVO): Promise<void>;
-  findTourById(id: string): Promise<Tour>;
-  findAllTours(): Promise<Tour[]>;
-  deleteTour(id: string): Promise<void>;
-  updateTourAvailability(id: string, isAvailable: boolean): Promise<boolean>;
-  assignGuideToTour(tourId: string, guideId: string): Promise<void>
+  createTour(tourVO: TourVO): Promise<ResponseObject>;
+  updateTour(id: string, tourVO: TourVO): Promise<ResponseObject>;
+  findTourById(id: string): Promise<ResponseObject>;
+  findAllTours(): Promise<ResponseObject>;
+  deleteTour(id: string): Promise<ResponseObject>;
+  updateTourAvailability(id: string, isAvailable: boolean): Promise<ResponseObject>;
+  assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject>
 
   // activity functions
-  addActivityToTour(tourId: string, tourVo: TourVO): Promise<void>;
-  removeActivityFromTour(tourId: string, activityId: string): Promise<void>;
+  addActivityToTour(tourId: string, tourVo: TourVO): Promise<ResponseObject>;
+  removeActivityFromTour(tourId: string, activityId: string): Promise<ResponseObject>;
   listActivitiesForTour(tourId: string): Promise<void>;
   getCurrentActivityId(): Promise<string>;
   setCurrentActivityId(id: string): Promise<string>;

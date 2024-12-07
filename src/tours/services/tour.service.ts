@@ -8,6 +8,7 @@ import { CORE_DAO_INTERFACE_TOKEN } from '../token';
 import { plainToClass } from 'class-transformer';
 import { Activity } from '../vo/helper.vo';
 import { FieldValue } from 'firebase-admin/firestore';
+import { ResponseObject } from 'src/shared/types';
 
 @Injectable()
 export class CoreService implements ICoreService {
@@ -16,43 +17,44 @@ export class CoreService implements ICoreService {
     private readonly coreDAO: CoreDAOInterface,
   ) {}
 
-  async createTour(tourVO: TourVO): Promise<void> {
+  async createTour(tourVO: TourVO): Promise<ResponseObject> {
     // converting VO to Entity and returning entity
     return await this.coreDAO.create(tourVO.toEntity());
   }
 
-  async updateTour(id: string, tourVo: TourVO): Promise<void> {
+  async updateTour(id: string, tourVo: TourVO): Promise<ResponseObject> {    
     return await this.coreDAO.update(id, tourVo.toEntity());
   }
 
-  async findTourById(id: string): Promise<Tour> {
+  async findTourById(id: string): Promise<ResponseObject> {
     return await this.coreDAO.findById(id);
   }
-  async findAllTours(): Promise<Tour[]> {
+  async findAllTours(): Promise<ResponseObject> {
     return await this.coreDAO.findAll();
   }
-  async deleteTour(id: string): Promise<void> {
+  async deleteTour(id: string): Promise<ResponseObject> {
     return await this.coreDAO.delete(id);
   }
   async updateTourAvailability(
     id: string,
     isAvailable: boolean,
-  ): Promise<boolean> {
+  ): Promise<ResponseObject> {
     return await this.coreDAO.update(id, plainToClass(Tour, {isAvailable: isAvailable}));
   }
 
   // TODO: Algorithm for assigning tour
-  async assignGuideToTour(tourId: string, guideId: string): Promise<void> {
-    const tour = await this.coreDAO.findById(tourId);
-    if (!tour) {
-      throw new Error(`Tour with ID ${tourId} not found.`);
-    }
-    tour.guide = guideId;
-    await this.coreDAO.update(tourId, tour);
+  async assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject> {
+    // const tour = await this.coreDAO.findById(tourId);
+    // if (!tour) {
+    //   throw new Error(`Tour with ID ${tourId} not found.`);
+    // }
+    // tour.guide = guideId;
+    return await this.coreDAO.update(tourId, plainToClass(Tour, {guide: guideId}));
+
   }
 
   // TODO: Algorithm and specifications
-  async addActivityToTour(tourId: string, tourVo: TourVO): Promise<void> {
+  async addActivityToTour(tourId: string, tourVo: TourVO): Promise<ResponseObject> {
     // // Step 1: Retrieve the tour
     // const tour = await this.coreDAO.findById(tourId);
     // if (!tour) {
@@ -71,7 +73,7 @@ export class CoreService implements ICoreService {
   }
 
   // TODO: Rethink deletes
-  async removeActivityFromTour(tourId: string, activityId: string): Promise<void> {
+  async removeActivityFromTour(tourId: string, activityId: string): Promise<ResponseObject> {
     //  // Step 1: Retrieve the existing tour
     //  const tour = await this.coreDAO.findById(tourId)
     //  if (!tour) {

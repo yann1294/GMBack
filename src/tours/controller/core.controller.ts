@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  Request,
 } from '@nestjs/common';
 import { TourValidationPipe } from './validation.pipe';
 import { TourVO } from '../vo/tour.master.vo';
@@ -16,6 +17,7 @@ import { Tour } from '../dao/tour.entity';
 import { Activity } from '../vo/helper.vo';
 import { log } from 'console';
 import { CORE_SERVICE_TOKEN } from '../token';
+import { ResponseObject } from 'src/shared/types';
 
 @Controller('tours')
 export class TourController {
@@ -28,22 +30,21 @@ export class TourController {
 
   // tour functions
 
+   // Create a new tour
+   @Post()
+   async createTour(
+     @Body(new TourValidationPipe()) tourVo: TourVO,
+   ): Promise<ResponseObject> {
+     // process data with service
+     return await this.coreService.createTour(tourVo);
+   }
+
+
   // Get a tour by ID
   // TODO: Validation for when body does not contain id
-  @Get('find-by-id')
-  async findById(@Param('id') id: string): Promise<Tour> {
-    console.log("Find by id");
-    log(id);
+  @Get(':id')
+  async findById(@Param('id') id: string): Promise<ResponseObject> {
     return await this.coreService.findTourById(id);
-  }
-
-  // Create a new tour
-  @Post()
-  async createTour(
-    @Body(new TourValidationPipe()) tourVo: TourVO,
-  ): Promise<any> {
-    // process data with service
-    return await this.coreService.createTour(tourVo);
   }
 
   // Update an existing tour
@@ -51,14 +52,13 @@ export class TourController {
   async update(
     @Param('id') id: string,
     @Body(new TourValidationPipe('update')) tourVO: TourVO,
-  ): Promise<any> {
-    console.log(tourVO);
+  ): Promise<ResponseObject> {
     return await this.coreService.updateTour(id, tourVO);
   }
 
   // Get all tours
   @Get()
-  async findAllTours(): Promise<Tour[]> {
+  async findAllTours(): Promise<ResponseObject> {
     return await this.coreService.findAllTours();
   }
 
@@ -96,7 +96,7 @@ export class TourController {
   async addActivityToTour(
     @Body('tourId') tourId: string,
     @Body(new TourValidationPipe('update')) tourVo: TourVO,
-  ): Promise<void> {
+  ): Promise<ResponseObject> {
     return await this.coreService.addActivityToTour(tourId, tourVo);
   }
 
@@ -105,7 +105,7 @@ export class TourController {
   async removeActivityFromTour(
     @Body('tourId') tourId: string,
     @Body('activityId') activityId: string,
-  ): Promise<void> {
+  ): Promise<ResponseObject> {
     console.log(tourId);
     console.log(activityId);
     

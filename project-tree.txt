@@ -11,7 +11,9 @@ Notes:
 - VO (view object): Defines the data structure of data to be moved within the application. They are the actual
  domain objects.
 - Types would be used to shape all models such as VO & entities
--
+
+Has getters and setters:
+- All VOs will have getters and setters
 
 Processes (through containers):
 - guide creation

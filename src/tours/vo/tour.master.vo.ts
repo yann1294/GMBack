@@ -1,7 +1,7 @@
 import { Tour } from '../dao/tour.entity';
 import { Expose, instanceToPlain, Type } from 'class-transformer';
 import { Activity, TourLocation, User } from './helper.vo';
-import { IsOptional, IsString } from 'class-validator';
+import { IsArray, IsDateString, IsOptional, IsString } from 'class-validator';
 import { FieldValue } from 'firebase-admin/firestore';
 
 export class TourVO {
@@ -20,6 +20,16 @@ export class TourVO {
   @Expose({ name: 'price' })
   @IsOptional()
   private _price: number;
+
+  @Expose({ name: "date" })
+  @IsDateString()
+  public _date: string;
+
+  @Expose({ name: "images" })
+  @IsArray()
+  @IsString({each: true})
+  @IsOptional()
+  public _images: string[];
 
   @Expose({ name: 'durationDays' })
   @IsOptional()
@@ -74,6 +84,16 @@ export class TourVO {
   }
 
   @Expose()
+  get date(): string {
+    return this._date;
+  }
+
+  @Expose()
+  get images(): string[] {
+    return this._images;
+  }
+
+  @Expose()
   get durationDays(): number {
     return this._durationDays;
   }
@@ -125,6 +145,14 @@ export class TourVO {
     this._price = value;
   }
 
+  set date(value: string) {
+    this._date = value;
+  }
+
+  set images(value: string[]) {
+    this._images = value;
+  }
+
   set durationDays(value: number) {
     this._durationDays = value;
   }
@@ -154,7 +182,7 @@ export class TourVO {
   }
 
   toEntity(): Tour {
-    return new Tour(
+    let tour: Tour = new Tour(
       this._id,
       this._name,
       this._location,
@@ -164,9 +192,12 @@ export class TourVO {
       this._numberOfSeats,
       this._description,
       this._isAvailable,
-      this._activities,
-      this._guide,
+      this._activities, 
+      new Date(this._date), 
     );
+    tour.guide = this._guide;
+    tour.images = this._images;
+    return tour;
   }
 
   toObject(): object {

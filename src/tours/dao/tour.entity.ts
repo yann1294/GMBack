@@ -3,8 +3,6 @@ import { Activity, TourLocation, User } from '../vo/helper.vo';
 import { instanceToPlain } from 'class-transformer';
 
 // TODO: Add getters and setters
-// TODO: Add tour date
-// TODO: Guide is guide id only
 export class Tour {
   constructor(
     public id: string,
@@ -17,6 +15,8 @@ export class Tour {
     public description: string,
     public isAvailable: boolean,
     public activities: Map<number, Activity>,
+    public date: Date,
+    public images?: string[],
     public guide?: string,
   ) {}
   toObject(): object {
@@ -31,6 +31,8 @@ export class Tour {
       description: this.description,
       isAvailable: this.isAvailable,
       guide: this.guide,
+      images: this.images ?? [],
+      date: Timestamp.fromDate(new Date(this.date)),
       activities: Object.fromEntries(
         Array.from(this.activities).map((activity) => [
           activity[0],
@@ -76,5 +78,3 @@ export class Tour {
   }
     
 }
-
-// TODO: Add tour images attribute

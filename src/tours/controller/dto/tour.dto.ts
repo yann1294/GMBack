@@ -7,6 +7,8 @@ import {
   Max,
   IsBoolean,
   IsOptional,
+  IsDateString,
+  IsArray,
 } from 'class-validator';
 import { TourLocation, Activity, User } from '../../vo/helper.vo';
 
@@ -20,6 +22,15 @@ export class TourDTO {
 
   @IsNumber()
   public readonly price: number;
+
+  @IsDateString()
+  public date: Date;
+
+  @IsArray()
+  @IsString({each: true})
+  @IsOptional()
+  public images: string[];
+
 
   @IsNumber()
   @Min(0)

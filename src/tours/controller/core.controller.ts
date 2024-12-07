@@ -78,7 +78,6 @@ export class TourController {
   // TODO: Check whether document exist before update
 
   // Assign a guide to a tour
-  // TODO: Change guide to guide id in tour entity
   @Patch('assign-guide')
   async assignGuideToTour(
     @Body(new HasAttribute(['tourId', 'guideId'])) body: {tourId: string, guideId: string},

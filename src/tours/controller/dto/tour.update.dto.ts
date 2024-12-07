@@ -6,6 +6,8 @@ import {
   Max,
   IsBoolean,
   IsOptional,
+  IsArray,
+  IsDateString,
 } from 'class-validator';
 import { TourLocationDTO } from './tour.location.dto';
 import { Type } from 'class-transformer';
@@ -24,6 +26,14 @@ export class UpdateTourDTO {
   @IsNumber()
   @IsOptional()
   public price?: number;
+
+  @IsDateString()
+  public date: Date;
+
+  @IsArray()
+  @IsString({each: true})
+  @IsOptional()
+  public images: string[];
 
   @IsNumber()
   @Min(0)

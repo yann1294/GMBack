@@ -8,6 +8,8 @@ import {
   IsBoolean,
   IsObject,
   IsOptional,
+  IsDateString,
+  IsArray,
 } from 'class-validator';
 import { TourLocationDTO } from './tour.location.dto';
 import { ActivityDTO } from './tour.activity.dto';
@@ -22,6 +24,14 @@ export class CreateTourDTO {
 
   @IsNumber()
   public readonly price: number;
+
+  @IsDateString()
+  public date: Date;
+
+  @IsArray()
+  @IsString({each: true})
+  @IsOptional()
+  public images: string[];
 
   @IsNumber()
   @Min(0)

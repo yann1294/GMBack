@@ -87,8 +87,8 @@ export class BookingVO {
       this._status,
       this._bookedOn,
       this._tourist,
-      this._tour,
-      this._tourPackage,
+      this._tour === undefined ? 'package' : 'tour',
+      this._tour ?? this._tourPackage,
     );
   }
 

@@ -5,7 +5,7 @@ import {
   IsString,
   Validate,
 } from 'class-validator';
-import ExclusiveFieldsValidator from 'src/booking/utilitary/exclusive-field-validator';
+import ExclusiveFieldsValidator from 'src/booking/utils/exclusive-field-validator';
 
 export default class BookingDTO {
   @IsString()

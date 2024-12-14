@@ -13,6 +13,7 @@ import { log } from 'console';
 import { DataServiceCondition, ResponseObject } from 'src/shared/types';
 import { Tour } from 'src/tours/dao/tour.entity';
 import { Package } from 'src/tours/dao/package.entity';
+import { Booking } from 'src/booking/dao/booking.entity';
 
 @Injectable()
 export class DataService {
@@ -49,7 +50,7 @@ export class DataService {
    * @returns A promise that resolves to a ResponseObject containing the document ID or an error message.
    */
   async createDoc(
-    data: Tour | Package,
+    data: Tour | Package | Booking,
     collectionName: string,
   ): Promise<ResponseObject> {
     try {
@@ -148,7 +149,7 @@ export class DataService {
       const result: DocumentSnapshot = await this.firestore
         .collection(collectionName)
         .doc(docId)
-        .get();        
+        .get();
 
       // check whether document exists
       if (!result.exists) {
@@ -209,7 +210,7 @@ export class DataService {
   async readDocsWithCondition(
     collectionName: string,
     condition: DataServiceCondition,
-  ) {
+  ): Promise<ResponseObject> {
     try {
       // read specific document
       const results: QuerySnapshot = await this.firestore
@@ -222,7 +223,7 @@ export class DataService {
         status: 'success',
         message: 'Successfully feteched document.',
         data: results.docs.map((doc: QueryDocumentSnapshot) => doc.data()),
-      };
+      } as ResponseObject;
     } catch (e: unknown) {
       // return error
       return this.errorHandler(e);
@@ -266,8 +267,8 @@ export class DataService {
     try {
       // checking whether doc exist
       let docRef: DocumentReference = await this.firestore
-      .collection(collectionName)
-      .doc(docId);
+        .collection(collectionName)
+        .doc(docId);
 
       // checking whether document exist
       if (!(await docRef.get()).exists) {
@@ -277,7 +278,7 @@ export class DataService {
           message: 'Document not found.',
           data: null,
         };
-      } 
+      }
 
       // update document
       docRef.set(newData, { merge: true });

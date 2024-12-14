@@ -1,12 +1,11 @@
-import { ResponseObject } from "src/shared/types";
+import { ResponseObject } from 'src/shared/types';
+import { Booking } from './booking.entity';
 
-interface IBookingServiceDAO {
-    displayGuide(): Promise<ResponseObject>;
-    cancelBooking(): Promise<ResponseObject>;
-    makeBooking(): Promise<ResponseObject>;
-    modifyBooking(): Promise<ResponseObject>;
-    displayBooking(): Promise<ResponseObject>;
-    displayBookingHistory(): Promise<ResponseObject>;
-    makePayment(): Promise<ResponseObject>;
-    reserveBooking(): Promise<ResponseObject>;
+export default interface IBookingServiceDAO {
+  findAllByTourist(id: string): Promise<ResponseObject>;
+  findAllByGuide(id: string): Promise<ResponseObject>;
+  findById(id: string): Promise<ResponseObject>;
+  create(data: Booking): Promise<ResponseObject>;
+  update(id: string, data: Booking): Promise<ResponseObject>;
+  delete(id: string, data?: Booking): Promise<ResponseObject>;
 }

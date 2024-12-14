@@ -1,12 +1,20 @@
-import { ResponseObject } from "src/shared/types";
+import { ResponseObject } from 'src/shared/types';
+import { BookingVO } from '../vo/booking.master.vo';
 
-interface IBookingService {
-    displayGuide(): Promise<ResponseObject>;
-    cancelBooking(): Promise<ResponseObject>;
-    makeBooking(): Promise<ResponseObject>;
-    modifyBooking(): Promise<ResponseObject>;
-    displayBooking(): Promise<ResponseObject>;
-    displayBookingHistory(): Promise<ResponseObject>;
-    makePayment(): Promise<ResponseObject>;
-    reserveBooking(): Promise<ResponseObject>;
+export default interface IBookingService {
+  // This will not be required because the tours have guide information in them
+  // displayGuide(): Promise<ResponseObject>;
+  cancelBooking(
+    bookingId: string,
+    touristId: string | string[],
+  ): Promise<ResponseObject>;
+  makeBooking(booking: BookingVO): Promise<ResponseObject>;
+  modifyBooking(bookingId: string, booking: BookingVO): Promise<ResponseObject>;
+  displayBooking(bookingId: string): Promise<ResponseObject>;
+  displayGuideBookingHistory(guideId: string): Promise<ResponseObject>;
+  displayTouristBookingHistory(touristId: string): Promise<ResponseObject>;
+
+  // Comes from the payment container
+  // makePayment(): Promise<ResponseObject>;
+  // reserveBooking(): Promise<ResponseObject>;
 }

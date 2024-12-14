@@ -1,6 +1,6 @@
 import { ResponseObject } from "src/shared/types";
 
-interface IBookingService {
+interface IBookingServiceDAO {
     displayGuide(): Promise<ResponseObject>;
     cancelBooking(): Promise<ResponseObject>;
     makeBooking(): Promise<ResponseObject>;

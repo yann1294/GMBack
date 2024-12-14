@@ -112,5 +112,31 @@ src/
 │   ├── tour.module.ts
 │   └── tour.controller.spec.ts
 │
+├── booking/
+│   ├── components
+│   │   ├── booking.engine.ts
+│   │   ├── price.engine.ts
+│   │   ├── inventory.management.ts
+│   ├── controller/
+│   │   ├── booking.validation.pipe.ts
+│   │   ├── dto/
+│   │   │   ├── booking.update.dto.ts
+│   │   │   ├── booking.create.dto.ts
+│   │   │   ├── booking.dto.ts
+│   ├── service/
+│   │   ├── booking.service.ts
+│   │   ├── booking.service.interface.ts
+│   ├── dao/
+│   │   ├── booking.dao.interface.ts
+│   │   ├── booking.dao.ts
+│   │   ├── booking.entity.ts
+│   ├── vo/
+│   │   ├── helper.vo.ts
+│   │   ├── booking.master.vo.ts
+│   ├── utilitary/
+│   │   ├── inventory.management.ts
+│   │   ├── price.engine.ts
+│   ├── tour.module.ts
+│   └── tour.controller.spec.ts
 ├── app.module.ts
 └── main.ts

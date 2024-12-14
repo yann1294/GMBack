@@ -1,8 +1,5 @@
-
 import { instanceToPlain } from 'class-transformer';
-import { Tour } from 'src/tours/dao/tour.entity';
-import { Package } from 'src/tours/dao/package.entity';
-import { User } from 'src/tours/vo/helper.vo';
+import { Timestamp } from 'firebase-admin/firestore';
 
 export class Booking {
   constructor(
@@ -15,7 +12,18 @@ export class Booking {
   ) {}
 
   // Convert to object representation
-  toObject() {
+  toObject(): object {
+    return {
+      id: this.id,
+      status: this.status,
+      bookedOn:
+        this.bookedOn === undefined
+          ? this.bookedOn
+          : Timestamp.fromDate(this.bookedOn),
+      tourist: this.tourist ?? [],
+      tour: this.tour,
+      tourPackage: this.tourPackage,
+    };
   }
 
   toUpdateObject(): object {

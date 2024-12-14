@@ -1,12 +1,24 @@
-import { Package } from "src/tours/dao/package.entity";
-import { Tour } from "src/tours/dao/tour.entity";
-import { User } from "src/tours/vo/helper.vo";
+import { IsArray, IsDateString, IsOptional, IsString } from 'class-validator';
 
-class BookingDTO {
-    private id: string;
-  private status: string;
-  private bookedOn: Date;
-  private tourist: string[];
-  private tour: string;
-  private tourPackage: string;
+export default class BookingDTO {
+  @IsString()
+  public readonly id: string;
+
+  @IsString()
+  public readonly status: string;
+
+  @IsDateString()
+  public readonly bookedOn: Date;
+
+  @IsArray()
+  @IsString({ each: true })
+  public readonly tourist: string[];
+
+  @IsString()
+  @IsOptional()
+  public readonly tour?: string;
+
+  @IsString()
+  @IsOptional()
+  public readonly tourPackage?: string;
 }

@@ -7,8 +7,8 @@ export class Booking {
     public status: string,
     public bookedOn: Date,
     public tourist: string[],
-    public tour?: string,
-    public tourPackage?: string,
+    public bookingType: string,
+    public resourceId: string,
   ) {}
 
   // Convert to object representation
@@ -21,8 +21,8 @@ export class Booking {
           ? this.bookedOn
           : Timestamp.fromDate(this.bookedOn),
       tourist: this.tourist ?? [],
-      tour: this.tour,
-      tourPackage: this.tourPackage,
+      resourceId: this.resourceId,
+      bookingType: this.bookingType,
     };
   }
 

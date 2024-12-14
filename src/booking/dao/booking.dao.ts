@@ -1,17 +1,57 @@
 import { Injectable } from '@nestjs/common';
 import { DataService } from 'src/shared/services/data.service';
 import { DataServiceCondition, ResponseObject } from 'src/shared/types';
-import IBookingServiceDAO from './booking.dao.interface';
+import IBookingDAO from './booking.dao.interface';
 import { Booking } from './booking.entity';
+import { log } from 'console';
+import { FieldValue } from 'firebase-admin/firestore';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
-export class BookingDAO implements IBookingServiceDAO {
+export class BookingDAO implements IBookingDAO {
   private readonly collectionName = 'bookings';
 
   constructor(private readonly dataService: DataService) {}
 
+  async findAll(): Promise<ResponseObject> {
+    return await this.dataService.readAllDocs(this.collectionName);
+  }
+
+  // TODO: What are the possible values for booking status
   async create(data: Booking): Promise<ResponseObject> {
-    return this.dataService.createDoc(data, this.collectionName);
+    // checking whether booking for resource id already exist
+    // TODO: Fetching only booking that are not done yet
+    let booking: ResponseObject = await this.dataService.readDocsWithCondition(
+      this.collectionName,
+      {
+        fieldPath: 'resourceId',
+        operationString: '==',
+        value: data.resourceId,
+      } as DataServiceCondition,
+    );
+
+    // check whether resoruce was found
+    if ((booking.data as object[]).length !== 0) {
+      // update tourist in booking
+      return await this.dataService.updateDoc(
+        this.collectionName,
+        booking.data[0]['id'],
+        {
+          tourist: FieldValue.arrayUnion(...data.tourist),
+        },
+      );
+    }
+
+    // create new booking
+    return await this.dataService.createDoc(data, this.collectionName);
+  }
+
+  async findByResourceId(resoruceId: string): Promise<ResponseObject> {
+    return await this.dataService.readDocsWithCondition(this.collectionName, {
+      fieldPath: 'resourceId',
+      operationString: '==',
+      value: resoruceId,
+    } as DataServiceCondition);
   }
 
   async findAllByTourist(id: string): Promise<ResponseObject> {
@@ -33,14 +73,35 @@ export class BookingDAO implements IBookingServiceDAO {
       } as DataServiceCondition,
     )) as ResponseObject;
 
-    // creating a list of tour ids
+    // retrieving all packages guided by guide id
+    let packages: ResponseObject =
+      (await this.dataService.readDocsWithCondition('packages', {
+        fieldPath: 'guide',
+        operationString: '==',
+        value: id,
+      } as DataServiceCondition)) as ResponseObject;
+
+    // creating a list of tour ids and package ids
     let tourIds: string[] = (tours.data as object[]).map((data) => data['id']);
+    let packageIds: string[] = (packages.data as object[]).map(
+      (data) => data['id'],
+    );
+
+    // check if guide has any tours
+    if (tourIds.length === 0 && packageIds.length === 0) {
+      return {
+        status: 'success',
+        code: 200,
+        message: `Guide ${id} is not assigned to any tour or package`,
+        data: [],
+      };
+    }
 
     // retrive all bookings where resourceId is in tourIds
     return await this.dataService.readDocsWithCondition(this.collectionName, {
       fieldPath: 'resourceId',
-      operationString: 'array-contains-any',
-      value: tourIds,
+      operationString: 'in',
+      value: [...tourIds, ...packageIds],
     } as DataServiceCondition);
   }
 

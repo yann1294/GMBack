@@ -59,6 +59,17 @@ export class BookingController {
   async displayTouristBookingHistory(@Param('id') touristId: string) {
     return await this.bookingService.displayTouristBookingHistory(touristId);
   }
+
+  @Get()
+  async getAllBooking() {
+    return await this.bookingService.getAllBookings();
+  }
+
+  @Get('resource/:id')
+  async getBookingByResource(@Param('id') resourceId: string) {
+    return await this.bookingService.getBookingsForResource(resourceId);
+  }
+
   // async makePayment() {}
   // async reserveBooking() {}
 }

@@ -2,7 +2,8 @@ import { IsArray, IsDateString, IsOptional, IsString } from 'class-validator';
 
 export default class BookingCreateDTO {
   @IsString()
-  public readonly id: string;
+  @IsOptional()
+  public readonly id?: string;
 
   @IsString()
   public readonly status: string;

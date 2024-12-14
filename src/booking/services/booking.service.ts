@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { DataService } from 'src/shared/services/data.service';
 import { DataServiceCondition, ResponseObject } from 'src/shared/types';
 
@@ -8,12 +8,26 @@ import IBookingService from './booking.service.interface';
 import { Booking } from '../dao/booking.entity';
 import { BookingVO } from '../vo/booking.master.vo';
 import { BookingDAO } from '../dao/booking.dao';
+import { BOOKING_DAO_INTERFACE_TOKEN } from '../token';
+import { log } from 'console';
+import IBookingServiceDAO from '../dao/booking.dao.interface';
 
 @Injectable()
 export class BookingService implements IBookingService {
   private readonly collectionName = 'bookings';
 
-  constructor(private readonly bookingDAO: BookingDAO) {}
+  constructor(
+    @Inject(BOOKING_DAO_INTERFACE_TOKEN)
+    private readonly bookingDAO: IBookingServiceDAO,
+  ) {}
+
+  async getAllBookings(): Promise<ResponseObject> {
+    return await this.bookingDAO.findAll();
+  }
+
+  async getBookingsForResource(resoruceId: string): Promise<ResponseObject> {
+    return await this.bookingDAO.findByResourceId(resoruceId);
+  }
 
   async displayTouristBookingHistory(
     touristId: string,
@@ -24,8 +38,6 @@ export class BookingService implements IBookingService {
   async displayGuideBookingHistory(guideId: string): Promise<ResponseObject> {
     return await this.bookingDAO.findAllByGuide(guideId);
   }
-
-  // TODO: Restructure booking entity to reflect db
 
   async makeBooking(data: BookingVO): Promise<ResponseObject> {
     return await this.bookingDAO.create(data.toEntity());
@@ -43,13 +55,14 @@ export class BookingService implements IBookingService {
   }
 
   async cancelBooking(bookingId: string, touristId: string | string[]) {
-    const bookings: string[] = Array.isArray(touristId)
+    const tourists: string[] = Array.isArray(touristId)
       ? touristId
       : [touristId];
-    return await this.bookingDAO.update(
+
+    return await this.bookingDAO.delete(
       bookingId,
       plainToInstance(Booking, {
-        bookings: FieldValue.arrayRemove(...bookings),
+        tourist: FieldValue.arrayRemove(...tourists),
       }),
     );
   }

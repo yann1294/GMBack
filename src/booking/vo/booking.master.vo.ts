@@ -85,7 +85,7 @@ export class BookingVO {
     return new Booking(
       this._id,
       this._status,
-      this._bookedOn,
+      this._bookedOn === undefined ? this._bookedOn : new Date(this._bookedOn),
       this._tourist,
       this._tour === undefined ? 'package' : 'tour',
       this._tour ?? this._tourPackage,

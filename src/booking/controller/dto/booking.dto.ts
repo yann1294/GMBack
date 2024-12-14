@@ -1,8 +1,16 @@
-import { IsArray, IsDateString, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsOptional,
+  IsString,
+  Validate,
+} from 'class-validator';
+import ExclusiveFieldsValidator from 'src/booking/utilitary/exclusive-field-validator';
 
 export default class BookingDTO {
   @IsString()
-  public readonly id: string;
+  @IsOptional()
+  public readonly id?: string;
 
   @IsString()
   public readonly status: string;
@@ -16,9 +24,11 @@ export default class BookingDTO {
 
   @IsString()
   @IsOptional()
+  @Validate(ExclusiveFieldsValidator)
   public readonly tour?: string;
 
   @IsString()
   @IsOptional()
+  @Validate(ExclusiveFieldsValidator)
   public readonly tourPackage?: string;
 }

@@ -53,7 +53,7 @@ export type ResponseObject = {
  * Condition object for DataService operations.
  *
  * @param fieldPath - The path or field to compare.
- * @param operationString - The operation string from `WhereFilterOp`.
+ * @param operationString - The operation string from `WhereFilterOp`. "<" | "<=" | "==" | ">" | ">=" | "!=" | "array-contains" | "array-contains-any" | "in" | "not-in"
  * @param value - The value for comparison.
  */
 export type DataServiceCondition = {

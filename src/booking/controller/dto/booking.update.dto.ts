@@ -1,6 +1,6 @@
 import { IsArray, IsDateString, IsOptional, IsString } from 'class-validator';
 
-export default class BookingCreateDTO {
+export default class UpdateBookingCreateDTO {
   @IsString()
   @IsOptional()
   public readonly id: string;

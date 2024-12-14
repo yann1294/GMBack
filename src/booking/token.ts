@@ -1,2 +1,2 @@
-export const BOOKING_CORE_DAO_INTERFACE_TOKEN = 'CoreDAOInterfaceToken';
-export const BOOKING_CORE_SERVICE_TOKEN = 'ICoreServiceToken';
+export const BOOKING_DAO_INTERFACE_TOKEN = 'BookingDAOInterfaceToken';
+export const BOOKING_SERVICE_TOKEN = 'IBookingServiceToken';

@@ -1,7 +1,7 @@
 import { Role } from "../vo/helper.vo";
-import { IUser } from "./user.abstract";
+import { User } from "../utitls/user.abstract";
 
-export class Admin extends IUser {
+export class Admin extends User {
     constructor(
         uid: string,
         firstName: string,
@@ -12,8 +12,8 @@ export class Admin extends IUser {
         profilePhoto: string,
         role: Role,
         accountStatus: string,
-        createdAt: Date,
-        updatedAt: Date
+        createdAt: string,
+        updatedAt: string
     ) {
         super();
         this.uid = uid;

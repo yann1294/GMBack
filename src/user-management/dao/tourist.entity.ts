@@ -1,7 +1,7 @@
 import { Identification, Role } from "../vo/helper.vo";
-import { IUser } from "./user.abstract";
+import { User } from "../utitls/user.abstract";
 
-export class Tourist extends IUser {
+export class Tourist extends User {
     public identification: Identification;
     public spokenLanguages: string[];
 
@@ -15,8 +15,8 @@ export class Tourist extends IUser {
         profilePhoto: string,
         role: Role,
         accountStatus: string,
-        createdAt: Date,
-        updatedAt: Date,
+        createdAt: string,
+        updatedAt: string,
         identification: Identification,
         spokenLanguages: string[]
     ) { 

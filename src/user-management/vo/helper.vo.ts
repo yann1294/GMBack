@@ -1,7 +1,17 @@
+import { IsOptional, IsString } from "class-validator";
+
 export class Role {
-    constructor(name: string) { }
+    @IsString()
+    @IsOptional()
+    public name: string;
 }
 
 export class Identification {
-    constructor(file: string, type: string) { }
+    @IsString()
+    @IsOptional()
+    public file: string;
+
+    @IsString()
+    @IsOptional()
+    public type: string;
 }

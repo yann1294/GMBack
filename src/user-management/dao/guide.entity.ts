@@ -1,7 +1,7 @@
 import { Identification, Role } from "../vo/helper.vo";
-import { IUser } from "./user.abstract";
+import { User } from "../utitls/user.abstract";
 
-export class Guide extends IUser {
+export class Guide extends User {
     public identification: Identification;
     public spokenLanguages: string[];
     public availability: boolean;
@@ -16,8 +16,8 @@ export class Guide extends IUser {
         profilePhoto: string,
         role: Role,
         accountStatus: string,
-        createdAt: Date,
-        updatedAt: Date,
+        createdAt: string,
+        updatedAt: string,
         identification: Identification,
         spokenLanguages: string[],
         availability: boolean

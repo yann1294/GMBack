@@ -9,7 +9,7 @@ import { validate } from 'class-validator';
 import { log } from 'console';
 import { PackageVO } from '../vo/package.master.vo';
 import { UpdatePackageDTO } from './dto/package.update.dto';
-import { PackageDTO } from './dto/package.dto';
+import { CreatePackageDTO } from './dto/package.create.dto';
 
 @Injectable()
 export class PackageValidationPipe
@@ -27,7 +27,7 @@ export class PackageValidationPipe
     const packageDto =
       this.origin == 'update'
         ? plainToInstance(UpdatePackageDTO, value)
-        : plainToInstance(PackageDTO, value);
+        : plainToInstance(CreatePackageDTO, value);
     const errors = await validate(packageDto);
 
     // checking if there are any errors

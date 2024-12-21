@@ -8,8 +8,8 @@ import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { log } from 'console';
 import { TourVO } from '../vo/tour.master.vo';
-import { TourDTO } from './dto/tour.dto';
 import { UpdateTourDTO } from './dto/tour.update.dto';
+import { CreateTourDTO } from './dto/tour.create.dto';
 
 @Injectable()
 export class TourValidationPipe implements PipeTransform<any, Promise<TourVO>> {
@@ -22,7 +22,7 @@ export class TourValidationPipe implements PipeTransform<any, Promise<TourVO>> {
     }
 
     // validate input data against TourDTO
-    const tourDto = this.origin == "update" ? plainToInstance(UpdateTourDTO, value) : plainToInstance(TourDTO, value);
+    const tourDto = this.origin == "update" ? plainToInstance(UpdateTourDTO, value) : plainToInstance(CreateTourDTO, value);
     const errors = await validate(tourDto);
 
     // checking if there are any errors

@@ -1,5 +1,6 @@
 import { Role } from "../vo/helper.vo";
 import { User } from "../utitls/user.abstract";
+import { instanceToPlain } from "class-transformer";
 
 export class Admin extends User {
     constructor(
@@ -42,4 +43,12 @@ export class Admin extends User {
             updatedAt: this.updatedAt,
         };
     }
+
+    toUpdateObject(): object {
+        return instanceToPlain(this);
+      }
+    
+      toDeleteObject(): object {
+        return { ...this };
+      }
 }

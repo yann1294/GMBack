@@ -1,5 +1,6 @@
 import { Identification, Role } from "../vo/helper.vo";
 import { User } from "../utitls/user.abstract";
+import { instanceToPlain } from "class-transformer";
 
 export class Tourist extends User {
     public identification: Identification;
@@ -52,4 +53,12 @@ export class Tourist extends User {
             spokenLanguages: this.spokenLanguages,
         };
     }
+
+    toUpdateObject(): object {
+        return instanceToPlain(this);
+      }
+    
+      toDeleteObject(): object {
+        return { ...this };
+      }
 }

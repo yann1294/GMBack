@@ -1,5 +1,6 @@
 import { Identification, Role } from "../vo/helper.vo";
 import { User } from "../utitls/user.abstract";
+import { instanceToPlain } from "class-transformer";
 
 export class Guide extends User {
     public identification: Identification;
@@ -55,4 +56,12 @@ export class Guide extends User {
             availability: this.availability
         };
     }
+
+    toUpdateObject(): object {
+        return instanceToPlain(this);
+      }
+    
+      toDeleteObject(): object {
+        return { ...this };
+      }
 }

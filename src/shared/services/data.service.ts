@@ -15,6 +15,9 @@ import { DataServiceCondition, ResponseObject } from 'src/shared/types';
 import { Tour } from 'src/tours/dao/tour.entity';
 import { Package } from 'src/tours/dao/package.entity';
 import { Booking } from 'src/booking/dao/booking.entity';
+import { Tourist } from 'src/user-management/dao/tourist.entity';
+import { Guide } from 'src/user-management/dao/guide.entity';
+import { Admin } from 'src/user-management/dao/admin.entity';
 
 @Injectable()
 export class DataService {
@@ -51,7 +54,7 @@ export class DataService {
    * @returns A promise that resolves to a ResponseObject containing the document ID or an error message.
    */
   async createDoc(
-    data: Tour | Package | Booking,
+    data: Tour | Package | Booking | Admin | Guide | Tourist,
     collectionName: string,
   ): Promise<ResponseObject> {
     try {

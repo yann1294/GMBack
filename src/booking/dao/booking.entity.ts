@@ -21,7 +21,12 @@ export class Booking {
         this.bookedOn === undefined
           ? this.bookedOn
           : Timestamp.fromDate(this.bookedOn),
-      tourist: Object.assign({}, this.tourists),
+      tourists: Object.fromEntries(
+              Array.from(this.tourists).map(([key, tourist]) => [
+                key,
+                tourist.toObject()
+              ]),
+            ),
       resourceId: this.resourceId,
       bookingType: this.bookingType,
     };

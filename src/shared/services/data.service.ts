@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { FirebaseRepository } from '../firebase/firebase.service';
 import {
+  CollectionReference,
   DocumentReference,
   DocumentSnapshot,
   FirebaseFirestoreError,
@@ -207,28 +208,59 @@ export class DataService {
    * @param condition - A `DataServiceCondition` object specifying the retrieval conditions.
    * @returns A promise resolving to the documents that fulfill the condition or an error object on failure.
    */
-  async readDocsWithCondition(
+  async readDocsWithConditions(
     collectionName: string,
-    condition: DataServiceCondition,
+    conditions: DataServiceCondition | DataServiceCondition[], // Can be a single condition or an array
   ): Promise<ResponseObject> {
     try {
-      // read specific document
-      const results: QuerySnapshot = await this.firestore
-        .collection(collectionName)
-        .where(condition.fieldPath, condition.operationString, condition.value)
-        .get();
-
-      // return document data
+      // Initialize query with collection reference
+      let query: FirebaseFirestore.Query = this.firestore.collection(collectionName);
+  
+      // If conditions is a single object, make it an array
+      const conditionsArray = Array.isArray(conditions) ? conditions : [conditions];
+  
+      // Loop through each condition and apply it to the query
+      conditionsArray.forEach((condition) => {
+        query = query.where(condition.fieldPath, condition.operationString, condition.value);
+      });
+  
+      // Execute the query
+      const results: QuerySnapshot = await query.get();
+  
+      // Return document data
       return {
         status: 'success',
-        message: 'Successfully feteched document.',
+        message: 'Successfully fetched document.',
         data: results.docs.map((doc: QueryDocumentSnapshot) => doc.data()),
       } as ResponseObject;
     } catch (e: unknown) {
-      // return error
+      // Return error
       return this.errorHandler(e);
     }
   }
+  
+  // async readDocsWithCondition(
+  //   collectionName: string,
+  //   condition: DataServiceCondition,
+  // ): Promise<ResponseObject> {
+  //   try {
+  //     // read specific document
+  //     const results: QuerySnapshot = await this.firestore
+  //       .collection(collectionName)
+  //       .where(condition.fieldPath, condition.operationString, condition.value)
+  //       .get();
+
+  //     // return document data
+  //     return {
+  //       status: 'success',
+  //       message: 'Successfully feteched document.',
+  //       data: results.docs.map((doc: QueryDocumentSnapshot) => doc.data()),
+  //     } as ResponseObject;
+  //   } catch (e: unknown) {
+  //     // return error
+  //     return this.errorHandler(e);
+  //   }
+  // }
 
   /**
    * Deletes a specific document from a given collection.

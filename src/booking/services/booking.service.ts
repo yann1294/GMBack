@@ -7,10 +7,9 @@ import { plainToInstance } from 'class-transformer';
 import IBookingService from './booking.service.interface';
 import { Booking } from '../dao/booking.entity';
 import { BookingVO } from '../vo/booking.master.vo';
-import { BookingDAO } from '../dao/booking.dao';
 import { BOOKING_DAO_INTERFACE_TOKEN } from '../token';
-import { log } from 'console';
 import IBookingServiceDAO from '../dao/booking.dao.interface';
+import { Tourist } from '../vo/helper.vo';
 
 @Injectable()
 export class BookingService implements IBookingService {
@@ -54,16 +53,21 @@ export class BookingService implements IBookingService {
     return await this.bookingDAO.update(bookingId, booking.toEntity());
   }
 
-  async cancelBooking(bookingId: string, touristId: string | string[]) {
-    const tourists: string[] = Array.isArray(touristId)
-      ? touristId
-      : [touristId];
+  async cancelBooking(bookingId: string, touristId: string) {
+    // Initialize the Map
+    let touristData: Map<string, Tourist> = new Map<string, Tourist>();
+    touristData.set(touristId, { bookingStatus: 'cancelled' } as Tourist);
 
+    // Convert the Map to a plain object
+    let touristDataObject = Object.fromEntries(touristData);
+
+    // Convert the object to the instance of BookingVO
+    const bookingVOInstance = plainToInstance(BookingVO, touristDataObject);
+
+    // Assuming `toEntity()` is a valid method that converts the instance to the desired entity
     return await this.bookingDAO.delete(
       bookingId,
-      plainToInstance(Booking, {
-        tourist: FieldValue.arrayRemove(...tourists),
-      }),
+      bookingVOInstance.toEntity(),
     );
   }
 }

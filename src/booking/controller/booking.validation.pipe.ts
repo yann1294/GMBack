@@ -9,7 +9,7 @@ import { validate } from 'class-validator';
 import { log } from 'console';
 import { BookingVO } from '../vo/booking.master.vo';
 import UpdateBookingCreateDTO from './dto/booking.update.dto';
-import BookingDTO from './dto/booking.dto';
+import CreateBookingDTO from './dto/booking.create.dto';
 
 @Injectable()
 export class BookingValidationPipe
@@ -27,7 +27,7 @@ export class BookingValidationPipe
     const tourDto =
       this.origin == 'update'
         ? plainToInstance(UpdateBookingCreateDTO, value)
-        : plainToInstance(BookingDTO, value);
+        : plainToInstance(CreateBookingDTO, value);
     const errors = await validate(tourDto);
 
     // checking if there are any errors

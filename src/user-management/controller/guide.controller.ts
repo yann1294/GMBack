@@ -16,20 +16,20 @@ constructor(@Inject(GUIDE_SERVICE_TOKEN) private readonly guideService: IGuideSe
     return await this.guideService.addGuide(guideVo);
   }
 
-  @Delete(':id')
-  async deleteGuide(@Param('id') uid: string): Promise<ResponseObject> {
+  @Delete(':uid')
+  async deleteGuide(@Param('uid') uid: string): Promise<ResponseObject> {
     return await this.guideService.deleteGuide(uid);
   }
 
-  @Put(':id')
+  @Put(':uid')
   async updateGuide(
-    @Param('id') uid: string,
+    @Param('uid') uid: string,
     @Body(new GuideValidationPipe('update')) data: GuideVO,
   ): Promise<ResponseObject> {
     return await this.guideService.updateGuide(uid, data);
   }
 
-  @Get(':id')
+  @Get(':uid')
   async findGuide(@Param('uid') uid: string): Promise<ResponseObject> {
     return await this.guideService.findGuide(uid);
   }

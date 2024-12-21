@@ -25,12 +25,12 @@ export class TouristValidationPipe
       throw new BadRequestException('Request body cannot be empty');
     }
 
-    // validate input data against TouristVo
-    const touristVo =
+    // validate input data against TouristDto
+    const touristDto =
       this.origin == 'update'
         ? plainToInstance(UpdateTouristDTO, value)
         : plainToInstance(CreateTouristDTO, value);
-    const errors = await validate(touristVo);
+    const errors = await validate(touristDto);
 
     // checking if there are any errors
     if (errors.length > 0) {

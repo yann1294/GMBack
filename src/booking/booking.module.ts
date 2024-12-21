@@ -5,10 +5,9 @@ import { BookingController } from './controller/booking.controller';
 import { BookingService } from './services/booking.service';
 import { BookingDAO } from './dao/booking.dao';
 import { BOOKING_SERVICE_TOKEN, BOOKING_DAO_INTERFACE_TOKEN } from './token';
-import { TourModule } from 'src/payment/tour.module';
 
 @Module({
-  imports: [FirebaseModule, TourModule],
+  imports: [FirebaseModule],
   controllers: [BookingController],
   providers: [
     {

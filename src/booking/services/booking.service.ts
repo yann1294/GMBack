@@ -56,7 +56,7 @@ export class BookingService implements IBookingService {
   async cancelBooking(bookingId: string, touristId: string) {
     // Initialize the Map
     let touristData: Map<string, Tourist> = new Map<string, Tourist>();
-    touristData.set(touristId, { bookingStatus: 'cancelled' } as Tourist);
+    touristData.set(touristId, { bookingStatus: 'canceled' } as Tourist);
 
     // Convert the Map to a plain object
     let touristDataObject = Object.fromEntries(touristData);

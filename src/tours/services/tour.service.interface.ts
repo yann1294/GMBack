@@ -12,12 +12,18 @@ export interface ICoreService {
   findTourById(id: string): Promise<ResponseObject>;
   findAllTours(): Promise<ResponseObject>;
   deleteTour(id: string): Promise<ResponseObject>;
-  updateTourAvailability(id: string, isAvailable: boolean): Promise<ResponseObject>;
-  assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject>
+  updateTourAvailability(
+    id: string,
+    isAvailable: boolean,
+  ): Promise<ResponseObject>;
+  assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject>;
 
   // activity functions
   addActivityToTour(tourVo: TourVO): Promise<ResponseObject>;
-  removeActivityFromTour(tourId: string, activityId: string): Promise<ResponseObject>;
+  removeActivityFromTour(
+    tourId: string,
+    activityId: string,
+  ): Promise<ResponseObject>;
   listActivitiesForTour(tourId: string): Promise<ResponseObject>;
   getCurrentActivityId(): Promise<string>;
   setCurrentActivityId(id: string): Promise<string>;

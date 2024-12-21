@@ -6,12 +6,18 @@ import { FirebaseModule } from 'src/shared/firebase/firebase.module';
 import { CoreService } from './services/tour.service';
 //import { CoreDAOInterface } from './dao/tour.core.dao.interface';
 import { CoreDAO } from './dao/tour.core.dao';
-import { CORE_DAO_INTERFACE_TOKEN, CORE_SERVICE_TOKEN, PACKAGE_DAO_INTERFACE_TOKEN, PACKAGE_SERVICE_TOKEN } from './token';
+import {
+  CORE_DAO_INTERFACE_TOKEN,
+  CORE_SERVICE_TOKEN,
+  PACKAGE_DAO_INTERFACE_TOKEN,
+  PACKAGE_SERVICE_TOKEN,
+  TOUR_EXTERNAL_SERVICE_INTERFACE,
+} from './token';
 import { TourController } from './controller/core.controller';
 import { PackageController } from './controller/package.controller';
 import { PackageDAO } from './dao/package.dao';
 import { PackageService } from './services/package.service';
-
+import { TourExternalService } from './services/tour-external.service';
 
 /**
  * Reason for using the format below in the provider.
@@ -46,6 +52,12 @@ import { PackageService } from './services/package.service';
       provide: PACKAGE_SERVICE_TOKEN,
       useClass: PackageService,
     },
+    TourExternalService,
+    // {
+    //   provide: TOUR_EXTERNAL_SERVICE_INTERFACE,
+    //   useClass: TourExternalService,
+    // },
   ],
+  exports: [TourExternalService],
 })
 export class TourModule {}

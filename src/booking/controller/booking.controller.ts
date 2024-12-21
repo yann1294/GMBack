@@ -14,6 +14,7 @@ import IBookingService from '../services/booking.service.interface';
 import { BookingValidationPipe, HasAttribute } from './booking.validation.pipe';
 import { BookingVO } from '../vo/booking.master.vo';
 import { BOOKING_SERVICE_TOKEN } from '../token';
+import { TourExternalServiceInterface } from 'src/tours/services/tour-external.service.interface';
 
 @Controller('bookings')
 export class BookingController {
@@ -22,6 +23,8 @@ export class BookingController {
   constructor(
     @Inject(BOOKING_SERVICE_TOKEN)
     private readonly bookingService: IBookingService,
+    @Inject(BOOKING_SERVICE_TOKEN)
+    private readonly externalTourService: TourExternalServiceInterface,
   ) {}
 
   @Post('create')
@@ -68,6 +71,12 @@ export class BookingController {
   @Get('resource/:id')
   async getBookingByResource(@Param('id') resourceId: string) {
     return await this.bookingService.getBookingsForResource(resourceId);
+  }
+
+  @Get(':tourId')
+  async getTourAvailability(@Param('tourId') tourId: string) {
+    console.log('Get tour availability');
+    return await this.externalTourService.getTourAvailability(tourId);
   }
 
   // async makePayment() {}

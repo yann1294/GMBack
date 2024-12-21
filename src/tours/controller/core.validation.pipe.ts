@@ -1,6 +1,7 @@
 import {
   ArgumentMetadata,
   BadRequestException,
+  Inject,
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
@@ -13,7 +14,7 @@ import { UpdateTourDTO } from './dto/tour.update.dto';
 
 @Injectable()
 export class TourValidationPipe implements PipeTransform<any, Promise<TourVO>> {
-  constructor(private readonly origin: string = 'default') { }
+  constructor(@Inject('TOUR_PIPE_ORIGIN') private readonly origin: string) {}
   async transform(value: any, metadata: ArgumentMetadata): Promise<TourVO> {
     log(metadata);
     // checking if value if empty
@@ -22,7 +23,10 @@ export class TourValidationPipe implements PipeTransform<any, Promise<TourVO>> {
     }
 
     // validate input data against TourDTO
-    const tourDto = this.origin == "update" ? plainToInstance(UpdateTourDTO, value) : plainToInstance(TourDTO, value);
+    const tourDto =
+      this.origin == 'update'
+        ? plainToInstance(UpdateTourDTO, value)
+        : plainToInstance(TourDTO, value);
     const errors = await validate(tourDto);
 
     // checking if there are any errors
@@ -36,12 +40,14 @@ export class TourValidationPipe implements PipeTransform<any, Promise<TourVO>> {
 }
 
 @Injectable()
-export class HasAttribute implements PipeTransform<any, string|number> {
+export class HasAttribute implements PipeTransform<any, string | number> {
   constructor(private readonly parameters: string[]) {}
   transform(value: any, metadata: ArgumentMetadata): string | number {
-      if (!value || !this.parameters.every(param => param in value)) {
-        throw new BadRequestException(`Body must contain { ${this.parameters.join(', ')} }`);
-      }
-      return value;
+    if (!value || !this.parameters.every((param) => param in value)) {
+      throw new BadRequestException(
+        `Body must contain { ${this.parameters.join(', ')} }`,
+      );
+    }
+    return value;
   }
 }

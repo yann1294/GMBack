@@ -9,6 +9,7 @@ import {
   Post,
   Query,
   Request,
+  UsePipes,
 } from '@nestjs/common';
 import { HasAttribute, TourValidationPipe } from './core.validation.pipe';
 import { TourVO } from '../vo/tour.master.vo';
@@ -30,15 +31,14 @@ export class TourController {
 
   // tour functions
 
-   // Create a new tour
-   @Post()
-   async createTour(
-     @Body(new TourValidationPipe()) tourVo: TourVO,
-   ): Promise<ResponseObject> {
-     // process data with service
-     return await this.coreService.createTour(tourVo);
-   }
-
+  // Create a new tour
+  @Post()
+  async createTour(
+    @Body(new TourValidationPipe('create')) tourVo: TourVO,
+  ): Promise<ResponseObject> {
+    // process data with service
+    return await this.coreService.createTour(tourVo);
+  }
 
   // Get a tour by ID
   @Get(':id')
@@ -71,17 +71,28 @@ export class TourController {
   // Update tour availability
   @Patch('availability')
   async updateTourAvailability(
-    @Body(new HasAttribute(['isAvailable', 'tourId'])) body: {tourId: string, isAvailable: boolean},
+    @Body(new HasAttribute(['isAvailable', 'tourId']))
+    body: {
+      tourId: string;
+      isAvailable: boolean;
+    },
   ): Promise<ResponseObject> {
-       return await this.coreService.updateTourAvailability(body.tourId, body.isAvailable);
+    return await this.coreService.updateTourAvailability(
+      body.tourId,
+      body.isAvailable,
+    );
   }
 
   // Assign a guide to a tour
   @Patch('assign-guide')
   async assignGuideToTour(
-    @Body(new HasAttribute(['tourId', 'guideId'])) body: {tourId: string, guideId: string},
+    @Body(new HasAttribute(['tourId', 'guideId']))
+    body: {
+      tourId: string;
+      guideId: string;
+    },
   ): Promise<ResponseObject> {
-       return await this.coreService.assignGuideToTour(body.tourId, body.guideId);
+    return await this.coreService.assignGuideToTour(body.tourId, body.guideId);
   }
 
   // activity functions
@@ -97,7 +108,11 @@ export class TourController {
   // Remove an activity from a tour
   @Patch('remove-activity')
   async removeActivityFromTour(
-    @Body(new HasAttribute(['tourId', 'activityId'])) body: {tourId: string, activityId: string},
+    @Body(new HasAttribute(['tourId', 'activityId']))
+    body: {
+      tourId: string;
+      activityId: string;
+    },
   ): Promise<ResponseObject> {
     return await this.coreService.removeActivityFromTour(
       body.tourId,
@@ -107,7 +122,9 @@ export class TourController {
 
   // List activities for a tour
   @Get('activities/:tourId')
-  async listActivitiesForTour(@Param('tourId') tourId: string): Promise<ResponseObject> {
+  async listActivitiesForTour(
+    @Param('tourId') tourId: string,
+  ): Promise<ResponseObject> {
     return await this.coreService.listActivitiesForTour(tourId);
   }
 

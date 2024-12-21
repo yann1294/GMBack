@@ -1,5 +1,5 @@
 import { PartialType } from "@nestjs/mapped-types";
-import { User } from "../utitls/user.abstract";
+import { User } from "../utils/user.abstract";
 import { Admin } from "../dao/admin.entity";
 
 export class AdminVO extends User {

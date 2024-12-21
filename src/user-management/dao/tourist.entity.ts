@@ -1,5 +1,5 @@
 import { Identification, Role } from "../vo/helper.vo";
-import { User } from "../utitls/user.abstract";
+import { User } from "../utils/user.abstract";
 import { instanceToPlain } from "class-transformer";
 
 export class Tourist extends User {

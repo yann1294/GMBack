@@ -1,5 +1,5 @@
 import { Identification, Role } from "../vo/helper.vo";
-import { User } from "../utitls/user.abstract";
+import { User } from "../utils/user.abstract";
 import { instanceToPlain } from "class-transformer";
 
 export class Guide extends User {
@@ -59,9 +59,9 @@ export class Guide extends User {
 
     toUpdateObject(): object {
         return instanceToPlain(this);
-      }
-    
-      toDeleteObject(): object {
+    }
+
+    toDeleteObject(): object {
         return { ...this };
-      }
+    }
 }

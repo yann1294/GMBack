@@ -13,7 +13,6 @@ import {
 } from 'class-validator';
 import { TourLocationDTO } from './tour.location.dto';
 import { ActivityDTO } from './tour.activity.dto';
-import { User } from 'src/tours/vo/helper.vo';
 
 export class CreateTourDTO {
   @IsString()
@@ -52,7 +51,6 @@ export class CreateTourDTO {
   public readonly isAvailable: boolean;
 
   @IsString()
-  @IsOptional()
   public readonly guide: string;
 
   @ValidateNested()

@@ -14,7 +14,7 @@ import IBookingService from '../services/booking.service.interface';
 import { BookingValidationPipe, HasAttribute } from './booking.validation.pipe';
 import { BookingVO } from '../vo/booking.master.vo';
 import { BOOKING_SERVICE_TOKEN } from '../token';
-import { TourExternalServiceInterface } from 'src/tours/services/tour-external.service.interface';
+import { TourExternalService } from 'src/tours/services/tour-external.service';
 
 @Controller('bookings')
 export class BookingController {
@@ -23,8 +23,9 @@ export class BookingController {
   constructor(
     @Inject(BOOKING_SERVICE_TOKEN)
     private readonly bookingService: IBookingService,
-    @Inject(BOOKING_SERVICE_TOKEN)
-    private readonly externalTourService: TourExternalServiceInterface,
+    private readonly externalTourService: TourExternalService,
+    // @Inject(BOOKING_SERVICE_TOKEN)
+    // private readonly externalTourService: TourExternalServiceInterface,
   ) {}
 
   @Post('create')
@@ -73,10 +74,30 @@ export class BookingController {
     return await this.bookingService.getBookingsForResource(resourceId);
   }
 
-  @Get(':tourId')
+  @Get('tour/:tourId')
   async getTourAvailability(@Param('tourId') tourId: string) {
     console.log('Get tour availability');
     return await this.externalTourService.getTourAvailability(tourId);
+  }
+
+  @Get('tour/selected/:tourSelected')
+  async getTourSelected(@Param('tourSelected') tourSelected: string) {
+    console.log('Get tour selected');
+    return await this.externalTourService.getTourSelected(tourSelected);
+  }
+
+  @Patch('availability')
+  async updateTourAvailability(
+    @Body(new HasAttribute(['isAvailable', 'tourId']))
+    body: {
+      tourId: string;
+      isAvailable: boolean;
+    },
+  ) {
+    return await this.externalTourService.updateTourAvailability(
+      body.tourId,
+      body.isAvailable,
+    );
   }
 
   // async makePayment() {}

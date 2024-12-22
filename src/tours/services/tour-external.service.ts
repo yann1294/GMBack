@@ -2,21 +2,33 @@ import { Injectable, Inject } from '@nestjs/common';
 import { TourExternalServiceInterface } from './tour-external.service.interface';
 import { CoreDAOInterface } from '../dao/tour.core.dao.interface';
 
-import { CORE_DAO_INTERFACE_TOKEN } from '../token';
+import { CORE_SERVICE_TOKEN } from '../token';
 import { DataService } from 'src/shared/services/data.service';
 import { CoreService } from './tour.service';
 import { ResponseObject } from 'src/shared/types';
+import { TourDTO } from '../controller/dto/tour.dto';
+import { ICoreService } from '../services/tour.service.interface';
 
 @Injectable()
 export class TourExternalService implements TourExternalServiceInterface {
-  constructor(private readonly dataService: DataService) {}
+  constructor(
+    private readonly dataService: DataService,
+    @Inject(CORE_SERVICE_TOKEN) private readonly coreService: ICoreService,
+  ) {}
 
   // id of the tour
-  async getTourAvailability(id: string): Promise<boolean> {
-    const tour = await this.dataService.readDoc('tours', id);
-    console.log('Is tour available ', tour);
+  async getTourAvailability(tourId: string): Promise<boolean> {
+    const tour = await this.dataService.readDoc('tours', tourId);
+    console.log('Tour ID: ', tour.data['isAvailable']);
+
+    // const isAvailable = await this.dataService.readDocsWithCondition('tours', {
+    //   fieldPath: 'isAvailable',
+    //   operationString: '==',
+    //   value: true,
+    // });
+    //console.log('Is TOUR available ', isAvailable);
     //return tour.data?.isAvailable;
-    return false;
+    return tour.data['isAvailable'];
   }
   // async updateTourAvailability(
   //   id: string,
@@ -26,5 +38,24 @@ export class TourExternalService implements TourExternalServiceInterface {
   // }
   // async getAssignedGuide(BookingList: Booking[], id: number): Booking {} // the guide will be derived from the tour
   // getGuideAvailability(): boolean;
-  // getTourSelected(tour: Tour): Tour;
+  //
+
+  // The tour that has been selected from the booking
+  async getTourSelected(selectedTour: string): Promise<ResponseObject> {
+    //const tour = await this.dataService.readDoc('tours', selectedTour.id);
+    const tour = await this.dataService.readDocsWithCondition('tours', {
+      fieldPath: 'name',
+      operationString: '==',
+      value: selectedTour,
+    });
+
+    return tour;
+  }
+
+  async updateTourAvailability(
+    id: string,
+    isAvailable: boolean,
+  ): Promise<ResponseObject> {
+    return await this.coreService.updateTourAvailability(id, isAvailable);
+  }
 }

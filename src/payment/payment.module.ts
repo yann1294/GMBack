@@ -10,4 +10,4 @@ import { TourValidationPipe } from './controller/validation.pipe';
   controllers: [TourController],
   providers: [DataService, FileService, TourValidationPipe],
 })
-export class TourModule {}
+export class PaymentModule {}

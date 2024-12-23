@@ -6,7 +6,6 @@ import { CORE_SERVICE_TOKEN } from '../token';
 import { DataService } from 'src/shared/services/data.service';
 import { CoreService } from './tour.service';
 import { ResponseObject } from 'src/shared/types';
-import { TourDTO } from '../controller/dto/tour.dto';
 import { ICoreService } from '../services/tour.service.interface';
 
 @Injectable()
@@ -48,7 +47,7 @@ export class TourExternalService implements TourExternalServiceInterface {
   // The tour that has been selected from the booking
   async getTourSelected(selectedTour: string): Promise<ResponseObject> {
     //const tour = await this.dataService.readDoc('tours', selectedTour.id);
-    const tour = await this.dataService.readDocsWithCondition('tours', {
+    const tour = await this.dataService.readDocsWithConditions('tours', {
       fieldPath: 'name',
       operationString: '==',
       value: selectedTour,

@@ -1,7 +1,4 @@
 import { ResponseObject } from 'src/shared/types';
-import { Tour } from '../dao/tour.entity';
-import { Booking } from 'src/booking/dao/booking.entity';
-import { TourDTO } from '../controller/dto/tour.dto';
 
 export interface TourExternalServiceInterface {
   getTourAvailability(tourId: string): Promise<boolean>;

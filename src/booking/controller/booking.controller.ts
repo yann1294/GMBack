@@ -13,8 +13,13 @@ import {
 import IBookingService from '../services/booking.service.interface';
 import { BookingValidationPipe, HasAttribute } from './booking.validation.pipe';
 import { BookingVO } from '../vo/booking.master.vo';
-import { BOOKING_SERVICE_TOKEN } from '../token';
-import { TourExternalService } from 'src/tours/services/tour-external.service';
+import {
+  BOOKING_SERVICE_TOKEN,
+  TOUR_EXTERNAL_SERVICE_INTERFACE,
+} from '../token';
+import { TourExternalServiceInterface } from 'src/tours/services/tour-external.service.interface';
+import { UserManagementExternalServiceInterface } from 'src/user-management/services/user-management-external.service.interface';
+import { USER_MANAGEMENT_EXTERNAL_SERVICE_INTERFACE } from 'src/user-management/token';
 
 @Controller('bookings')
 export class BookingController {
@@ -23,9 +28,11 @@ export class BookingController {
   constructor(
     @Inject(BOOKING_SERVICE_TOKEN)
     private readonly bookingService: IBookingService,
-    private readonly externalTourService: TourExternalService,
-    // @Inject(BOOKING_SERVICE_TOKEN)
-    // private readonly externalTourService: TourExternalServiceInterface,
+    // private readonly externalTourService: TourExternalService,
+    @Inject(TOUR_EXTERNAL_SERVICE_INTERFACE)
+    private readonly externalTourService: TourExternalServiceInterface,
+    @Inject(USER_MANAGEMENT_EXTERNAL_SERVICE_INTERFACE)
+    private readonly externalUserManagementService: UserManagementExternalServiceInterface,
   ) {}
 
   @Post('create')
@@ -74,6 +81,8 @@ export class BookingController {
     return await this.bookingService.getBookingsForResource(resourceId);
   }
 
+  // TOUR MANAGEMENT SERVICES START
+
   /**
    * It is getting the availability of a given tour based on its id
    * The tourId of the tour must be a string and it is required.
@@ -109,4 +118,14 @@ export class BookingController {
 
   // async makePayment() {}
   // async reserveBooking() {}
+
+  // TOUR MANAGEMENT SERVICES END
+
+  // USER MANAGEMENT SERVICES   START
+
+  // Just an example. To be changed later
+  @Get('users/bookings')
+  async getBookingDetails(): Promise<void> {
+    await this.externalUserManagementService.getBookingDetails(null);
+  }
 }

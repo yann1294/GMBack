@@ -11,7 +11,7 @@ import {
   CORE_SERVICE_TOKEN,
   PACKAGE_DAO_INTERFACE_TOKEN,
   PACKAGE_SERVICE_TOKEN,
-  //TOUR_EXTERNAL_SERVICE_INTERFACE,
+  TOUR_EXTERNAL_SERVICE_INTERFACE,
 } from './token';
 import { TourController } from './controller/core.controller';
 import { PackageController } from './controller/package.controller';
@@ -52,12 +52,12 @@ import { TourExternalService } from './services/tour-external.service';
       provide: PACKAGE_SERVICE_TOKEN,
       useClass: PackageService,
     },
-    TourExternalService,
-    // {
-    //   provide: TOUR_EXTERNAL_SERVICE_INTERFACE,
-    //   useClass: TourExternalService,
-    // },
+
+    {
+      provide: TOUR_EXTERNAL_SERVICE_INTERFACE,
+      useClass: TourExternalService,
+    },
   ],
-  exports: [TourExternalService],
+  exports: [TOUR_EXTERNAL_SERVICE_INTERFACE],
 })
 export class TourModule {}

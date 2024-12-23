@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEmail, IsDateString } from "class-validator";
+import { IsString, IsOptional, IsEmail, IsDateString, IsIn } from "class-validator";
 import { Role } from "../vo/helper.vo";
 import { Type } from "class-transformer";
 
@@ -37,6 +37,7 @@ export abstract class User {
 
     @IsString()
     @IsOptional()
+    @IsIn(["active", "inactive"])
     public accountStatus: string;
 
     @IsDateString()

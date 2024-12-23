@@ -2,10 +2,11 @@ import { BookingVO } from "src/booking/vo/booking.master.vo";
 import { ResponseObject } from "src/shared/types";
 import { TouristVO } from "../vo/user.tourist.vo";
 import { ITouristService } from "./tourist.service.interface";
-import { Inject } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { TOURIST_DAO_TOKEN } from "../vo/token";
 import { ITouristDAO } from "../dao/tourist.dao.interface";
 
+@Injectable()
 export class TouristService implements ITouristService {
 
     constructor(@Inject(TOURIST_DAO_TOKEN) private readonly touristService: ITouristDAO) {}

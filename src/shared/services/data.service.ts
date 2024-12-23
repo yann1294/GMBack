@@ -63,8 +63,12 @@ export class DataService {
         .collection(collectionName)
         .doc();
 
-      // update data with doc id
+      // update data with doc id/uid
+      if (Object.keys(data).includes('uid')) {
+        data['uid'] = doc.id;
+      } else {
       data['id'] = doc.id;
+      }
 
       // adding data to doc
       await doc.set(data.toObject());

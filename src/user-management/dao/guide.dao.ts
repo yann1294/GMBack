@@ -18,7 +18,7 @@ export class GuideDAO implements IGuideDAO {
         return await this.dataService.deleteDoc(this.collectionName, uid);
     }
     async update(uid: string, guide: Guide): Promise<ResponseObject> {
-        return await this.dataService.updateDoc(this.collectionName, uid, guide);
+        return await this.dataService.updateDoc(this.collectionName, uid, guide.toUpdateObject());
     }
     async findById(uid: string): Promise<ResponseObject> {
         return await this.dataService.readDoc(this.collectionName, uid);

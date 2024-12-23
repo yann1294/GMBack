@@ -24,7 +24,7 @@ export class TouristController {
   async updateTourist(
     @Param('uid') uid: string,
     @Body(new TouristValidationPipe('update')) data: TouristVO,
-  ): Promise<ResponseObject> {
+  ): Promise<ResponseObject> {    
     return await this.touristService.updateTourist(uid, data);
   }
 

@@ -115,7 +115,12 @@ export class DataService {
           .doc(); // this generates a unique id
 
         // add id to data
-        docData['id'] = docRef.id;
+        if (Object.keys(data).includes('uid')) {
+          docData['uid'] = docRef.id;
+        } else {
+          docData['id'] = docRef.id;
+        }
+        
 
         // add document and data to batch
         batch.set(docRef, docData);

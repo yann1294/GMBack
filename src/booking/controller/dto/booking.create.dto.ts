@@ -1,6 +1,8 @@
-import { IsArray, IsDateString, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsDateString, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Tourist } from 'src/booking/vo/helper.vo';
 
-export default class BookingCreateDTO {
+export default class CreateBookingDTO {
   @IsString()
   @IsOptional()
   public readonly id?: string;
@@ -9,11 +11,11 @@ export default class BookingCreateDTO {
   public readonly status: string;
 
   @IsDateString()
-  public readonly bookedOn: Date;
+  public readonly bookedOn: string;
 
-  @IsArray()
-  @IsString({ each: true })
-  public readonly tourist: string[];
+  @Type(() => Tourist)
+  @ValidateNested()
+  public readonly tourist: Map<String, Tourist>;
 
   @IsString()
   @IsOptional()

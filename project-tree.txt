@@ -36,6 +36,7 @@ Assumptions and Constraints for Beta version:
    After the guide accepts the request from the user, a signal is sent to the user space allowing him to pay for the tour.
 - Price could be static
 
+
 src/
 ├── shared/
 │   ├── services/
@@ -60,11 +61,30 @@ src/
 │   └── auth.controller.spec.ts
 │
 ├── users/
-│   ├── user.controller.ts
-│   ├── user.service.ts
+│   ├── components
+│   │   ├── admin management
+│   │   ├── guide management
+│   │   ├── tourist management
+│   ├── controller/
+│   │   ├── user.validation.pipe.ts
+│   │   ├── dto/
+│   │   │   ├── user.update.dto.ts
+│   │   │   ├── user.create.dto.ts
+│   │   │   ├── user.dto.ts
+│   ├── service/
+│   │   ├── user.service.ts
+│   │   ├── user.service.interface.ts
+│   ├── dao/
+│   │   ├── user.dao.interface.ts
+│   │   ├── user.dao.ts
+│   │   ├── user.entity.ts
+│   ├── vo/
+│   │   ├── helperUser.vo.ts
+│   │   ├── user.master.vo.ts
+│   ├── utilitary/
+│   │   ├── inventory.management.ts
+│   │   ├── price.engine.ts
 │   ├── user.module.ts
-│   ├── dto/
-│   ├── entities/
 │   └── user.controller.spec.ts
 │
 ├── tours/

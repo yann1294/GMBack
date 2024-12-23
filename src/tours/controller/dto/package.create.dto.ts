@@ -1,8 +1,6 @@
 import {
   IsBoolean,
   IsNumber,
-  IsObject,
-  IsOptional,
   IsString,
   Max,
   Min,
@@ -10,7 +8,6 @@ import {
 } from 'class-validator';
 import { PackageLocationDTO } from './package.location.dto';
 import { Type } from 'class-transformer';
-import { User } from 'src/payment/vo/helper.vo';
 
 export class CreatePackageDTO {
   @IsString()
@@ -20,7 +17,6 @@ export class CreatePackageDTO {
   public readonly price: number;
 
   @IsString()
-  @IsOptional()
   public readonly images?: string[];
 
   @IsNumber()
@@ -41,14 +37,8 @@ export class CreatePackageDTO {
   @IsBoolean()
   public readonly isAvailable: boolean;
 
-  @ValidateNested()
-  @Type(() => User)
-  guide: User;
-
-  @ValidateNested()
-  @Type(() => Object)
-  @IsObject()
-  toObject: { (): object };
+  @IsString()
+  guide: string;
 
   @ValidateNested()
   @Type(() => PackageLocationDTO)

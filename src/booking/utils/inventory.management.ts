@@ -5,5 +5,3 @@ class InventoryManagement {
   getTourAvailability() {}
   updateTourAvailability() {}
 }
-
-// TODO: Rename utilitary to utils

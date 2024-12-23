@@ -3,41 +3,45 @@ import { DataService } from 'src/shared/services/data.service';
 import { DataServiceCondition, ResponseObject } from 'src/shared/types';
 import IBookingDAO from './booking.dao.interface';
 import { Booking } from './booking.entity';
-import { log } from 'console';
-import { FieldValue } from 'firebase-admin/firestore';
-import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class BookingDAO implements IBookingDAO {
   private readonly collectionName = 'bookings';
 
-  constructor(private readonly dataService: DataService) {}
+  constructor(private readonly dataService: DataService) { }
 
   async findAll(): Promise<ResponseObject> {
     return await this.dataService.readAllDocs(this.collectionName);
   }
 
-  // TODO: What are the possible values for booking status
   async create(data: Booking): Promise<ResponseObject> {
     // checking whether booking for resource id already exist
-    // TODO: Fetching only booking that are not done yet
-    let booking: ResponseObject = await this.dataService.readDocsWithCondition(
+    let booking: ResponseObject = await this.dataService.readDocsWithConditions(
       this.collectionName,
-      {
-        fieldPath: 'resourceId',
-        operationString: '==',
-        value: data.resourceId,
-      } as DataServiceCondition,
+      [
+        // filters by resource Id
+        {
+          fieldPath: 'resourceId',
+          operationString: '==',
+          value: data.resourceId,
+        },
+        // filters by status
+        {
+          fieldPath: 'status',
+          operationString: '==',
+          value: 'in-process',
+        },
+      ] as DataServiceCondition[],
     );
 
-    // check whether resoruce was found
+    // check whether resource was found
     if ((booking.data as object[]).length !== 0) {
       // update tourist in booking
       return await this.dataService.updateDoc(
         this.collectionName,
         booking.data[0]['id'],
         {
-          tourist: FieldValue.arrayUnion(...data.tourist),
+          tourists: data.tourists,
         },
       );
     }
@@ -46,16 +50,16 @@ export class BookingDAO implements IBookingDAO {
     return await this.dataService.createDoc(data, this.collectionName);
   }
 
-  async findByResourceId(resoruceId: string): Promise<ResponseObject> {
-    return await this.dataService.readDocsWithCondition(this.collectionName, {
+  async findByResourceId(resourceId: string): Promise<ResponseObject> {
+    return await this.dataService.readDocsWithConditions(this.collectionName, {
       fieldPath: 'resourceId',
       operationString: '==',
-      value: resoruceId,
+      value: resourceId,
     } as DataServiceCondition);
   }
 
   async findAllByTourist(id: string): Promise<ResponseObject> {
-    return await this.dataService.readDocsWithCondition(this.collectionName, {
+    return await this.dataService.readDocsWithConditions(this.collectionName, {
       fieldPath: 'tourist',
       operationString: 'array-contains',
       value: id,
@@ -64,7 +68,7 @@ export class BookingDAO implements IBookingDAO {
 
   async findAllByGuide(id: string): Promise<ResponseObject> {
     // retrieving all tours guided by guide id
-    let tours: ResponseObject = (await this.dataService.readDocsWithCondition(
+    let tours: ResponseObject = (await this.dataService.readDocsWithConditions(
       'tours',
       {
         fieldPath: 'guide',
@@ -75,7 +79,7 @@ export class BookingDAO implements IBookingDAO {
 
     // retrieving all packages guided by guide id
     let packages: ResponseObject =
-      (await this.dataService.readDocsWithCondition('packages', {
+      (await this.dataService.readDocsWithConditions('packages', {
         fieldPath: 'guide',
         operationString: '==',
         value: id,
@@ -97,8 +101,8 @@ export class BookingDAO implements IBookingDAO {
       };
     }
 
-    // retrive all bookings where resourceId is in tourIds
-    return await this.dataService.readDocsWithCondition(this.collectionName, {
+    // retrieve all bookings where resourceId is in tourIds
+    return await this.dataService.readDocsWithConditions(this.collectionName, {
       fieldPath: 'resourceId',
       operationString: 'in',
       value: [...tourIds, ...packageIds],

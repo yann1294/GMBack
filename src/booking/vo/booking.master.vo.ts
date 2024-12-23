@@ -1,12 +1,14 @@
 import { Booking } from '../dao/booking.entity';
-import { Expose, instanceToPlain } from 'class-transformer';
-import { IsOptional } from 'class-validator';
+import { Expose, instanceToPlain, Type } from 'class-transformer';
+import { IsIn, IsOptional, ValidateNested } from 'class-validator';
+import { Tourist } from './helper.vo';
 
 export class BookingVO {
   @Expose({ name: 'id' })
   @IsOptional()
   private _id: string;
   @Expose({ name: 'status' })
+  @IsIn(["in-process", "full", "completed", "canceled"])
   @IsOptional()
   private _status: string;
   @Expose({ name: 'bookedOn' })
@@ -14,7 +16,9 @@ export class BookingVO {
   private _bookedOn: Date;
   @Expose({ name: 'tourist' })
   @IsOptional()
-  private _tourist: string[];
+  @Type(() => Tourist)
+  @ValidateNested()
+  private _tourist: Map<string, Tourist>;
   @Expose({ name: 'tour' })
   @IsOptional()
   private _tour?: string;
@@ -53,11 +57,11 @@ export class BookingVO {
 
   // Getter and Setter for tourist
   @Expose()
-  getTourist(): string[] {
+  getTourist(): Map<string, Tourist> {
     return this._tourist;
   }
 
-  setTourist(tourist: string[]): void {
+  setTourist(tourist: Map<string, Tourist>): void {
     this._tourist = tourist;
   }
 

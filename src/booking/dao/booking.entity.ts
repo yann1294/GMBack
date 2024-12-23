@@ -1,15 +1,16 @@
 import { instanceToPlain } from 'class-transformer';
 import { Timestamp } from 'firebase-admin/firestore';
+import { Tourist } from '../vo/helper.vo';
 
 export class Booking {
   constructor(
     public id: string,
     public status: string,
     public bookedOn: Date,
-    public tourist: string[],
+    public tourists: Map<String, Tourist>,
     public bookingType: string,
     public resourceId: string,
-  ) {}
+  ) { }
 
   // Convert to object representation
   toObject(): object {
@@ -20,7 +21,12 @@ export class Booking {
         this.bookedOn === undefined
           ? this.bookedOn
           : Timestamp.fromDate(this.bookedOn),
-      tourist: this.tourist ?? [],
+      tourists: Object.fromEntries(
+              Array.from(this.tourists).map(([key, tourist]) => [
+                key,
+                tourist.toObject()
+              ]),
+            ),
       resourceId: this.resourceId,
       bookingType: this.bookingType,
     };

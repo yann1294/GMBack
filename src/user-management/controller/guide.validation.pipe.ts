@@ -1,42 +1,42 @@
 import {
   ArgumentMetadata,
   BadRequestException,
-  Inject,
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { log } from 'console';
-import { TourVO } from '../vo/tour.master.vo';
-import { UpdateTourDTO } from './dto/tour.update.dto';
-import { CreateTourDTO } from './dto/tour.create.dto';
+import { GuideVO } from '../vo/user.guide.vo';
+import { UpdateGuideDTO } from './dto/guide.update.dto';
+import { CreateGuideDTO } from './dto/guide.create.dto';
 
 @Injectable()
-export class TourValidationPipe implements PipeTransform<any, Promise<TourVO>> {
-  constructor(@Inject('TOUR_PIPE_ORIGIN') private readonly origin: string) {}
-  async transform(value: any, metadata: ArgumentMetadata): Promise<TourVO> {
+export class GuideValidationPipe
+  implements PipeTransform<any, Promise<GuideVO>>
+{
+  constructor(private readonly origin: string = 'default') {}
+  async transform(value: any, metadata: ArgumentMetadata): Promise<GuideVO> {
     log(metadata);
     // checking if value if empty
     if (!value) {
       throw new BadRequestException('Request body cannot be empty');
     }
 
-    // validate input data against TourDTO
-    const tourDto =
+    // validate input data against GuideDTO
+    const guideDto =
       this.origin == 'update'
-        ? plainToInstance(UpdateTourDTO, value)
-        : plainToInstance(CreateTourDTO, value);
-
-    const errors = await validate(tourDto);
+        ? plainToInstance(UpdateGuideDTO, value)
+        : plainToInstance(CreateGuideDTO, value);
+    const errors = await validate(guideDto);
 
     // checking if there are any errors
     if (errors.length > 0) {
       throw new BadRequestException(errors);
     }
 
-    // transform data into TourVO
-    return plainToInstance(TourVO, value);
+    // transform data into GuidVO
+    return plainToInstance(GuideVO, value);
   }
 }
 

@@ -9,23 +9,23 @@ import { ITouristDAO } from "../dao/tourist.dao.interface";
 @Injectable()
 export class TouristService implements ITouristService {
 
-    constructor(@Inject(TOURIST_DAO_TOKEN) private readonly touristService: ITouristDAO) {}
+    constructor(@Inject(TOURIST_DAO_TOKEN) private readonly touristDAO: ITouristDAO) {}
 
     async addTourist(touristVo: TouristVO): Promise<ResponseObject> {
-        return await this.touristService.create(touristVo.toEntity());
+        return await this.touristDAO.create(touristVo.toEntity());
     }
     async deleteTourist(uid: string): Promise<ResponseObject> {
-        return await this.touristService.delete(uid);
+        return await this.touristDAO.delete(uid);
     }
     async updateTourist(uid: string, data: TouristVO): Promise<ResponseObject> {
-        return await this.touristService.update(uid, data.toEntity());
+        return await this.touristDAO.update(uid, data.toEntity());
     }
     async findTourist(uid: string): Promise<ResponseObject> {
-        return await this.touristService.findById(uid);
+        return await this.touristDAO.findById(uid);
     }
 
     async getAllTourists(): Promise<ResponseObject> {
-        return await this.touristService.findAll();
+        return await this.touristDAO.findAll();
     }
 
     // TODO: Implement using booking container

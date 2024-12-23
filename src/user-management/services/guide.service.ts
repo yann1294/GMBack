@@ -7,22 +7,22 @@ import { IGuideDAO } from "../dao/guide.dao.interface";
 
 @Injectable()
 export class GuideService implements IGuideService {
-    constructor(@Inject(GUIDE_DAO_TOKEN) private readonly guideService: IGuideDAO) {}
+    constructor(@Inject(GUIDE_DAO_TOKEN) private readonly guideDAO: IGuideDAO) {}
     async addGuide(guideVo: GuideVO): Promise<ResponseObject> {
-        return await this.guideService.create(guideVo.toEntity());
+        return await this.guideDAO.create(guideVo.toEntity());
     }
     async deleteGuide(uid: string): Promise<ResponseObject> {
-        return await this.guideService.delete(uid);
+        return await this.guideDAO.delete(uid);
     }
     async updateGuide(uid: string, data: GuideVO): Promise<ResponseObject> {
-        return await this.guideService.update(uid, data.toEntity());
+        return await this.guideDAO.update(uid, data.toEntity());
     }
     async findGuide(uid: string): Promise<ResponseObject> {
-        return await this.guideService.findById(uid);
+        return await this.guideDAO.findById(uid);
     }
 
     async getAllGuides(): Promise<ResponseObject> {
-        return await this.guideService.findAll();
+        return await this.guideDAO.findAll();
     }
 
 

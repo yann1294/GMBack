@@ -18,7 +18,7 @@ export class TouristDAO implements ITouristDAO {
         return await this.dataService.deleteDoc(this.collectionName, uid);
     }
     async update(uid: string, tourist: Tourist): Promise<ResponseObject> {
-        return await this.dataService.updateDoc(this.collectionName, uid, tourist);
+        return await this.dataService.updateDoc(this.collectionName, uid, tourist.toUpdateObject());
     }
     async findById(uid: string): Promise<ResponseObject> {
         return await this.dataService.readDoc(this.collectionName, uid);

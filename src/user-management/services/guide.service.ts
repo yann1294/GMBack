@@ -1,10 +1,11 @@
-import { Inject } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { IGuideService } from "./guide.service.interface";
 import { GUIDE_DAO_TOKEN } from "../vo/token";
 import { ResponseObject } from "src/shared/types";
 import { GuideVO } from "../vo/user.guide.vo";
 import { IGuideDAO } from "../dao/guide.dao.interface";
 
+@Injectable()
 export class GuideService implements IGuideService {
     constructor(@Inject(GUIDE_DAO_TOKEN) private readonly guideService: IGuideDAO) {}
     async addGuide(guideVo: GuideVO): Promise<ResponseObject> {

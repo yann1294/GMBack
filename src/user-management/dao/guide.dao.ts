@@ -1,10 +1,11 @@
 import { ResponseObject } from "src/shared/types";
 import { IGuideDAO } from "./guide.dao.interface";
 import { Guide } from "./guide.entity";
-import { Inject } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { GUIDE_DAO_TOKEN } from "../vo/token";
 import { DataService } from "src/shared/services/data.service";
 
+@Injectable()
 export class GuideDAO implements IGuideDAO {
     collectionName: string = 'guides';
 

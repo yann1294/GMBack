@@ -1,4 +1,4 @@
-import { ITourDao } from './tour.dao.interface';
+import { ITourDao } from './payment.dao.interface';
 
 class TourDao implements ITourDao {
   updateTour(id: string): string {

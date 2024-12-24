@@ -12,12 +12,18 @@ export class TouristService implements ITouristService {
     constructor(@Inject(TOURIST_DAO_TOKEN) private readonly touristDAO: ITouristDAO) {}
 
     async addTourist(touristVo: TouristVO): Promise<ResponseObject> {
+        // TODO: upload user profile photo
+
+        // TODO: upload user identification document
         return await this.touristDAO.create(touristVo.toEntity());
     }
     async deleteTourist(uid: string): Promise<ResponseObject> {
         return await this.touristDAO.delete(uid);
     }
     async updateTourist(uid: string, data: TouristVO): Promise<ResponseObject> {
+        // TODO: upload user profile photo
+
+        // TODO: upload user identification document
         return await this.touristDAO.update(uid, data.toEntity());
     }
     async findTourist(uid: string): Promise<ResponseObject> {
@@ -34,3 +40,5 @@ export class TouristService implements ITouristService {
     }
     
 }
+
+// TODO: Implement user file upload in create and update services

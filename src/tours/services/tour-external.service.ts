@@ -24,14 +24,6 @@ export class TourExternalService implements TourExternalServiceInterface {
   async getTourAvailability(tourId: string): Promise<boolean> {
     const tour = await this.dataService.readDoc('tours', tourId);
     console.log('Tour ID: ', tour.data['isAvailable']);
-
-    // const isAvailable = await this.dataService.readDocsWithCondition('tours', {
-    //   fieldPath: 'isAvailable',
-    //   operationString: '==',
-    //   value: true,
-    // });
-    //console.log('Is TOUR available ', isAvailable);
-    //return tour.data?.isAvailable;
     return tour.data['isAvailable'];
   }
   // async updateTourAvailability(

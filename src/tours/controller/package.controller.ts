@@ -22,8 +22,9 @@ import { HasAttribute } from './core.validation.pipe';
 @Controller('packages')
 export class PackageController {
   constructor(
-    @Inject(PACKAGE_SERVICE_TOKEN) private readonly packageService: IPackageService,
-  ) { }
+    @Inject(PACKAGE_SERVICE_TOKEN)
+    private readonly packageService: IPackageService,
+  ) {}
 
   @Get()
   async findAll(): Promise<ResponseObject> {
@@ -54,34 +55,51 @@ export class PackageController {
   }
 
   @Get(':id/tours')
-  async getToursFromPackage(@Param('id') packageId: string) {    
+  async getToursFromPackage(@Param('id') packageId: string) {
     return await this.packageService.readTours(packageId);
   }
 
   @Patch(':id/tours')
-  addTourToPackage(@Param('id') packageId: string, @Body(new HasAttribute(['tourId'])) body: { tourId: string | string[] }) {
+  addTourToPackage(
+    @Param('id') packageId: string,
+    @Body(new HasAttribute(['tourId'])) body: { tourId: string | string[] },
+  ) {
     return this.packageService.addTourToPackage(packageId, body.tourId);
   }
 
   @Delete(':id/tours')
   removeTourFromPackage(
-    @Param('id') packageId: string, @Body(new HasAttribute(['tourId'])) body: { tourId: string | string[] }
+    @Param('id') packageId: string,
+    @Body(new HasAttribute(['tourId'])) body: { tourId: string | string[] },
   ) {
     return this.packageService.removeTourFromPackage(packageId, body.tourId);
   }
 
   @Patch('assign-guide')
-  async assignGuideToTour(
-    @Body(new HasAttribute(['packageId', 'guideId'])) body: { packageId: string, guideId: string },
+  async assignGuideToPackage(
+    @Body(new HasAttribute(['packageId', 'guideId']))
+    body: {
+      packageId: string;
+      guideId: string;
+    },
   ): Promise<ResponseObject> {
-    return await this.packageService.assignGuideToPackage(body.packageId, body.guideId);
+    return await this.packageService.assignGuideToPackage(
+      body.packageId,
+      body.guideId,
+    );
   }
 
   @Patch('availability')
-  async updateTourAvailability(
-    @Body(new HasAttribute(['isAvailable', 'packageId'])) body: {packageId: string, isAvailable: boolean},
+  async updatePackageAvailability(
+    @Body(new HasAttribute(['isAvailable', 'packageId']))
+    body: {
+      packageId: string;
+      isAvailable: boolean;
+    },
   ): Promise<ResponseObject> {
-       return await this.packageService.updatePackageAvailability(body.packageId, body.isAvailable);
+    return await this.packageService.updatePackageAvailability(
+      body.packageId,
+      body.isAvailable,
+    );
   }
-
 }

@@ -18,6 +18,7 @@ import { PackageController } from './controller/package.controller';
 import { PackageDAO } from './dao/package.dao';
 import { PackageService } from './services/package.service';
 import { TourExternalService } from './services/tour-external.service';
+import { UserModule } from 'src/user-management/user.module';
 
 /**
  * Reason for using the format below in the provider.
@@ -31,7 +32,7 @@ import { TourExternalService } from './services/tour-external.service';
     do not have to use tokens.
  */
 @Module({
-  imports: [FirebaseModule],
+  imports: [FirebaseModule, UserModule],
   controllers: [TourController, PackageController],
   providers: [
     {

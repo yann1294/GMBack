@@ -20,6 +20,7 @@ import {
 import { TourExternalServiceInterface } from 'src/tours/services/tour-external.service.interface';
 import { UserManagementExternalServiceInterface } from 'src/user-management/services/user-management-external.service.interface';
 import { USER_MANAGEMENT_EXTERNAL_SERVICE_INTERFACE } from 'src/user-management/token';
+import CreateBookingDTO from './dto/booking.create.dto';
 
 @Controller('bookings')
 export class BookingController {
@@ -114,6 +115,11 @@ export class BookingController {
       body.tourId,
       body.isAvailable,
     );
+  }
+
+  @Get('assigned-guide/')
+  async getAssignedGuide(@Query() currentBooking: CreateBookingDTO) {
+    return await this.externalTourService.getAssignedGuide(currentBooking);
   }
 
   // async makePayment() {}

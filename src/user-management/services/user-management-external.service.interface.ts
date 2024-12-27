@@ -1,8 +1,7 @@
 import { BookingVO } from 'src/booking/vo/booking.master.vo';
-import { ResponseObject } from 'src/shared/types';
 
 export interface UserManagementExternalServiceInterface {
   getBookingDetails(booking: BookingVO): Promise<void>;
-  getBookingStatus(): Promise<void>;
-  getGuideAvailability(): Promise<boolean>;
+  getBookingStatus(guideId: string): Promise<void>;
+  getGuideAvailability(tourId: string): Promise<boolean>;
 }

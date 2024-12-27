@@ -1,8 +1,9 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsIn, IsOptional, IsString } from "class-validator";
 
 export class Role {
     @IsString()
     @IsOptional()
+    @IsIn(['admin', 'guide', 'tourist'])
     public name: string;
 }
 

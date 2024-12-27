@@ -81,7 +81,7 @@ src/
 │   ├── vo/
 │   │   ├── helperUser.vo.ts
 │   │   ├── user.master.vo.ts
-│   ├── utilitary/
+│   ├── utils/
 │   │   ├── inventory.management.ts
 │   │   ├── price.engine.ts
 │   ├── user.module.ts
@@ -127,7 +127,7 @@ src/
 │   │   ├── helper.vo.ts
 │   │   ├── tour.master.vo.ts
 │   │   ├── package.master.vo.ts
-│   ├── utilitary/
+│   ├── utils/
 │   │   ├── tour.X.ts (to define)
 │   ├── tour.module.ts
 │   └── tour.controller.spec.ts
@@ -153,10 +153,36 @@ src/
 │   ├── vo/
 │   │   ├── helper.vo.ts
 │   │   ├── booking.master.vo.ts
-│   ├── utilitary/
+│   ├── utils/
 │   │   ├── inventory.management.ts
 │   │   ├── price.engine.ts
 │   ├── tour.module.ts
 │   └── tour.controller.spec.ts
+│
+├── payment/
+│   ├── components/
+│   │   ├── payment component
+│   ├── controller/
+│   │   ├── payment.validation.pipe.ts
+│   │   ├── payment.controller.ts
+│   │   ├── dto/
+│   │   │   ├── payment.update.dto.ts
+│   │   │   ├── payment.create.dto.ts
+│   ├── service/
+│   │   ├── stripe.service.ts
+│   │   ├── stripe.service.interface.ts
+│   │   ├── momo.service.ts
+│   │   ├── momo.service.interface.ts
+│   │   ├── paypal.service.ts
+│   │   ├── paypal.service.interface.ts
+│   ├── dao/
+│   │   ├── payment.dao.interface.ts
+│   │   ├── payment.dao.ts
+│   │   ├── payment.entity.ts
+│   ├── vo/
+│   │   ├── helper.vo.ts
+│   │   ├── payment.master.vo.ts
+│   ├── utils/
+│   │   ├── payment.workflow.ts
 ├── app.module.ts
 └── main.ts

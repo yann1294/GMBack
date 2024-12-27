@@ -2,29 +2,36 @@ import { BookingVO } from "src/booking/vo/booking.master.vo";
 import { ResponseObject } from "src/shared/types";
 import { TouristVO } from "../vo/user.tourist.vo";
 import { ITouristService } from "./tourist.service.interface";
-import { Inject } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { TOURIST_DAO_TOKEN } from "../vo/token";
 import { ITouristDAO } from "../dao/tourist.dao.interface";
 
+@Injectable()
 export class TouristService implements ITouristService {
 
-    constructor(@Inject(TOURIST_DAO_TOKEN) private readonly touristService: ITouristDAO) {}
+    constructor(@Inject(TOURIST_DAO_TOKEN) private readonly touristDAO: ITouristDAO) {}
 
     async addTourist(touristVo: TouristVO): Promise<ResponseObject> {
-        return await this.touristService.create(touristVo.toEntity());
+        // TODO: upload user profile photo
+
+        // TODO: upload user identification document
+        return await this.touristDAO.create(touristVo.toEntity());
     }
     async deleteTourist(uid: string): Promise<ResponseObject> {
-        return await this.touristService.delete(uid);
+        return await this.touristDAO.delete(uid);
     }
     async updateTourist(uid: string, data: TouristVO): Promise<ResponseObject> {
-        return await this.touristService.update(uid, data.toEntity());
+        // TODO: upload user profile photo
+
+        // TODO: upload user identification document
+        return await this.touristDAO.update(uid, data.toEntity());
     }
     async findTourist(uid: string): Promise<ResponseObject> {
-        return await this.touristService.findById(uid);
+        return await this.touristDAO.findById(uid);
     }
 
     async getAllTourists(): Promise<ResponseObject> {
-        return await this.touristService.findAll();
+        return await this.touristDAO.findAll();
     }
 
     // TODO: Implement using booking container
@@ -33,3 +40,5 @@ export class TouristService implements ITouristService {
     }
     
 }
+
+// TODO: Implement user file upload in create and update services

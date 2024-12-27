@@ -2,7 +2,10 @@ import { DataService } from "src/shared/services/data.service";
 import { ITouristDAO } from "./tourist.dao.interface";
 import { Tourist } from "./tourist.entity";
 import { ResponseObject } from "src/shared/types";
+import { log } from "console";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class TouristDAO implements ITouristDAO {
     collectionName: string = 'tourists';
 
@@ -15,7 +18,7 @@ export class TouristDAO implements ITouristDAO {
         return await this.dataService.deleteDoc(this.collectionName, uid);
     }
     async update(uid: string, tourist: Tourist): Promise<ResponseObject> {
-        return await this.dataService.updateDoc(this.collectionName, uid, tourist);
+        return await this.dataService.updateDoc(this.collectionName, uid, tourist.toUpdateObject());
     }
     async findById(uid: string): Promise<ResponseObject> {
         return await this.dataService.readDoc(this.collectionName, uid);

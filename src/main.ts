@@ -4,7 +4,7 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
-import multipath from '@fastify/multipart';
+import multipart from '@fastify/multipart';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -12,8 +12,8 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
-  // registering multipath
-  app.register(multipath as any);
+  // registering multipart
+  app.register(multipart as any);
 
   // enable cors
   app.enableCors();

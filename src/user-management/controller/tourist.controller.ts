@@ -4,6 +4,7 @@ import { ITouristService } from '../services/tourist.service.interface';
 import { ResponseObject } from 'src/shared/types';
 import { TouristVO } from '../vo/user.tourist.vo';
 import { TouristValidationPipe } from './tourist.validation.pipe';
+import { log } from 'console';
 
 @Controller('tourists')
 export class TouristController {
@@ -23,7 +24,7 @@ export class TouristController {
   async updateTourist(
     @Param('uid') uid: string,
     @Body(new TouristValidationPipe('update')) data: TouristVO,
-  ): Promise<ResponseObject> {
+  ): Promise<ResponseObject> {    
     return await this.touristService.updateTourist(uid, data);
   }
 

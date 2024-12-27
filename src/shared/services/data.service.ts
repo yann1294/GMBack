@@ -63,8 +63,12 @@ export class DataService {
         .collection(collectionName)
         .doc();
 
-      // update data with doc id
+      // update data with doc id/uid
+      if (Object.keys(data).includes('uid')) {
+        data['uid'] = doc.id;
+      } else {
       data['id'] = doc.id;
+      }
 
       // adding data to doc
       await doc.set(data.toObject());
@@ -111,7 +115,12 @@ export class DataService {
           .doc(); // this generates a unique id
 
         // add id to data
-        docData['id'] = docRef.id;
+        if (Object.keys(data).includes('uid')) {
+          docData['uid'] = docRef.id;
+        } else {
+          docData['id'] = docRef.id;
+        }
+        
 
         // add document and data to batch
         batch.set(docRef, docData);

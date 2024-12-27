@@ -1,5 +1,7 @@
+import { Injectable } from "@nestjs/common";
 import { PaymentVO } from "../vo/payment.master.vo";
 
+@Injectable()
 export class PayPalGateway {
   async processPayment(payment: PaymentVO): Promise<string> {
     // Logic to process payment using PayPal API

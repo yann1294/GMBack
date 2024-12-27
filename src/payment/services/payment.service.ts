@@ -1,37 +1,48 @@
 import { Injectable } from '@nestjs/common';
 import { PaymentVO } from '../vo/payment.master.vo';
 import { IPaymentService } from './payment.service.interface';
-
+import { StripeGateway } from '../utils/stripe.gateway';
+import { PayPalGateway } from '../utils/paypal.gateway';
+import { ResponseObject } from 'src/shared/types';
 
 @Injectable()
 export class PaymentService implements IPaymentService {
-  
+  private gateway: { [key: string]: StripeGateway | PayPalGateway };
+
+  constructor(
+    private readonly stripeGateway: StripeGateway,
+    private readonly paypalGateway: PayPalGateway,
+  ) {
+    this.gateway = {
+      stripe: this.stripeGateway,
+      paypal: this.paypalGateway,
+    };
+  }
+
   async processPayment(payment: PaymentVO): Promise<any> {
-    // route payment to the appropriate gateway
+    const gateway = this.gateway[payment.gateway];
+    if (!gateway) {
+      return {
+        status: 'failure',
+        code: 400,
+        message: `Unsupported payment gateway: ${payment.gateway}`,
+        data: null,
+      } as ResponseObject;
+    }
+
+    return await gateway.processPayment(payment);
   }
 
-  async getTransactionHistory(): Promise<void> {
-    // Logic to get payment history
+  getTransactionHistory(): Promise<ResponseObject> {
+    throw new Error('Method not implemented.');
   }
-
-  async confirmPayment(): Promise<void> {
-    // Logic to confirm a payment
-    // Talks with payment validator
+  confirmPayment(): Promise<ResponseObject> {
+    throw new Error('Method not implemented.');
   }
-
-  async generatePaymentReceipt(): Promise<void> {
-    // Logic to generate a payment receipt
+  generatePaymentReceipt(): Promise<ResponseObject> {
+    throw new Error('Method not implemented.');
   }
-
-  // async getBookingFees(): Promise<void> {
-  //   // Logic to get booking fees
-  // }
-
-  async savePaymentDetails(): Promise<void> {
-    // Logic to save payment details
-  }
-
-  async refundPayment(): Promise<void> {
-    // Logic to refund a payment
+  savePaymentDetails(): Promise<ResponseObject> {
+    throw new Error('Method not implemented.');
   }
 }

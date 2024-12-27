@@ -9,6 +9,7 @@ export class PaymentVO {
 
   @IsString()
   @Expose({ name: 'gateway' })
+  @IsIn(['stripe', 'paypal'])
   private _gateway: string;
 
   @IsString()
@@ -24,7 +25,7 @@ export class PaymentVO {
   private _currency: string;
 
   @IsString()
-  @IsIn(['pending', 'completed', 'canceled', 'refunded', 'refund-in-progress'])
+  @IsIn(['pending', 'completed', 'canceled', 'refunded', 'refund-in-progress', 'in-progress'])
   @Expose({ name: 'status' })
   private _status: string;
 

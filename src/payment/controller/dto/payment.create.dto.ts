@@ -1,13 +1,16 @@
-import { IsString, IsNumber, IsIn, IsUUID, IsDateString } from 'class-validator';
+import { IsString, IsNumber, IsIn, IsUUID, IsDateString, IsOptional } from 'class-validator';
 
 export class CreatePaymentDTO {
-  @IsUUID()
+  @IsString()
+  @IsOptional()
   id: string;
 
   @IsString()
+  @IsIn(['stripe', 'paypal'])
   gateway: string;
 
   @IsString()
+  @IsOptional()
   paymentId: string;
 
   @IsNumber()
@@ -17,8 +20,9 @@ export class CreatePaymentDTO {
   currency: string;
 
   @IsString()
-  @IsIn(['pending', 'completed', 'canceled', 'refunded', 'refund-in-progress'])
-  status: string;
+  @IsIn(['pending', 'completed', 'canceled', 'refunded', 'refund-in-progress', 'in-progress'])
+  @IsOptional()
+  status: string = "in-progress";
 
   @IsString()
   bookingId: string;

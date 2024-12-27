@@ -1,114 +1,126 @@
-import { Expose, Type } from 'class-transformer';
-import { Activity, TourLocation, User } from './helper.vo';
-import { Tour } from '../dao/payment.entity';
+import { IsString, IsNumber, IsIn, IsUUID, IsDateString, IsOptional } from 'class-validator';
+import { Expose } from 'class-transformer';
 
-export class TourVO {
-  @Expose({ name: 'id' }) private _id: string;
-  @Expose({ name: 'name' }) private _name: string;
-  @Expose({ name: 'location' }) private _location: TourLocation;
-  @Expose({ name: 'price' }) private _price: number;
-  @Expose({ name: 'durationDays' }) private _durationDays: number;
-  @Expose({ name: 'discount' }) private _discount: number;
-  @Expose({ name: 'isAvailable' }) private _isAvailable: boolean;
-  @Expose({ name: 'guide' }) private _guide: string;
-  @Expose({ name: 'activities' })
-  @Type(() => Activity)
-  private _activities: Map<number, Activity>;
+export class PaymentVO {
+  @IsString()
+  @IsOptional()
+  @Expose({ name: 'id' })
+  private _id: string;
 
-  // Getters
-  @Expose()
+  @IsString()
+  @Expose({ name: 'gateway' })
+  private _gateway: string;
+
+  @IsString()
+  @Expose({ name: 'paymentId' })
+  private _paymentId: string;
+
+  @IsNumber()
+  @Expose({ name: 'amount' })
+  private _amount: number;
+
+  @IsString()
+  @Expose({ name: 'currency' })
+  private _currency: string;
+
+  @IsString()
+  @IsIn(['pending', 'completed', 'canceled', 'refunded', 'refund-in-progress'])
+  @Expose({ name: 'status' })
+  private _status: string;
+
+  @IsString()
+  @Expose({ name: 'bookingId' })
+  private _bookingId: string;
+
+  @IsString()
+  @Expose({ name: 'userId' })
+  private _userId: string;
+
+  @IsDateString()
+  @Expose({ name: 'createdAt' })
+  private _createdAt: string;
+
+  @IsDateString()
+  @Expose({ name: 'updatedAt' })
+  private _updatedAt: string;
+
   get id(): string {
     return this._id;
   }
 
-  @Expose()
-  get name(): string {
-    return this._name;
-  }
-
-  @Expose()
-  get location(): TourLocation {
-    return this._location;
-  }
-
-  @Expose()
-  get price(): number {
-    return this._price;
-  }
-
-  @Expose()
-  get durationDays(): number {
-    return this._durationDays;
-  }
-
-  @Expose()
-  get discount(): number {
-    return this._discount;
-  }
-
-  @Expose()
-  get isAvailable(): boolean {
-    return this._isAvailable;
-  }
-
-  @Expose()
-  get guide(): string {
-    return this._guide;
-  }
-
-  @Expose()
-  get activities(): Map<number, Activity> {
-    return this._activities;
-  }
-
-  // Setters
   set id(value: string) {
     this._id = value;
   }
 
-  set name(value: string) {
-    this._name = value;
+  get gateway(): string {
+    return this._gateway;
   }
 
-  set location(value: TourLocation) {
-    this._location = value;
+  set gateway(value: string) {
+    this._gateway = value;
   }
 
-  set price(value: number) {
-    this._price = value;
+  get paymentId(): string {
+    return this._paymentId;
   }
 
-  set durationDays(value: number) {
-    this._durationDays = value;
+  set paymentId(value: string) {
+    this._paymentId = value;
   }
 
-  set discount(value: number) {
-    this._discount = value;
+  get amount(): number {
+    return this._amount;
   }
 
-  set isAvailable(value: boolean) {
-    this._isAvailable = value;
+  set amount(value: number) {
+    this._amount = value;
   }
 
-  set guide(value: string) {
-    this._guide = value;
+  get currency(): string {
+    return this._currency;
   }
 
-  set activities(value: Map<number, Activity>) {
-    this._activities = value;
+  set currency(value: string) {
+    this._currency = value;
   }
 
-  toEntity(): Tour {
-    return new Tour(
-      this._id,
-      this._name,
-      this._location,
-      this._price,
-      this._durationDays,
-      this._discount,
-      this._isAvailable,
-      this._activities,
-      this._guide,
-    );
+  get status(): string {
+    return this._status;
+  }
+
+  set status(value: string) {
+    this._status = value;
+  }
+
+  get bookingId(): string {
+    return this._bookingId;
+  }
+
+  set bookingId(value: string) {
+    this._bookingId = value;
+  }
+
+  get userId(): string {
+    return this._userId;
+  }
+
+  set userId(value: string) {
+    this._userId = value;
+  }
+
+  get createdAt(): string {
+    return this._createdAt;
+  }
+
+  set createdAt(value: string) {
+    this._createdAt = value;
+  }
+
+  get updatedAt(): string {
+    return this._updatedAt;
+  }
+
+  set updatedAt(value: string) {
+    this._updatedAt = value;
   }
 }

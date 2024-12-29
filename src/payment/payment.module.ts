@@ -7,9 +7,10 @@ import { PaymentController } from './controller/payment.controller';
 import { PaymentDAO } from './dao/payment.dao';
 import { StripeGateway } from './utils/stripe.gateway';
 import { PayPalGateway } from './utils/paypal.gateway';
+import { PaymentFromNats } from './controller/payment.nats.controller';
 @Module({
   imports: [FirebaseModule],
-  controllers: [PaymentController],
+  controllers: [PaymentController, PaymentFromNats],
   providers: [
     StripeGateway,
     PayPalGateway,

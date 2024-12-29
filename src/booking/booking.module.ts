@@ -12,9 +12,11 @@ import {
 import { TourModule } from 'src/tours/tour.module';
 import { UserModule } from 'src/user-management/user.module';
 import { BookingExternalService } from './services/booking-external.service';
+import { NatsModule } from 'src/shared/event-communication/nats.module';
+import { BookingMessageService } from './services/booking-message.service';
 
 @Module({
-  imports: [FirebaseModule, TourModule, UserModule],
+  imports: [FirebaseModule, TourModule, UserModule, NatsModule],
   controllers: [BookingController],
   providers: [
     {
@@ -30,6 +32,7 @@ import { BookingExternalService } from './services/booking-external.service';
       useClass: BookingExternalService,
     },
     DataService,
+    BookingMessageService,
   ],
   exports: [BOOKING_EXTERNAL_SERVICE_INTERFACE],
 })

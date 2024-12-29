@@ -5,7 +5,7 @@ export default interface IBookingService {
   // This will not be required because the tours have guide information in them
   // displayGuide(): Promise<ResponseObject>;
   getAllBookings(): Promise<ResponseObject>;
-  getBookingsForResource(resoruceId: string): Promise<ResponseObject>;
+  getBookingsForResource(resourceId: string): Promise<ResponseObject>;
   cancelBooking(
     bookingId: string,
     touristId: string | string[],

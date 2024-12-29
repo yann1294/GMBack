@@ -11,6 +11,7 @@ import { UpdateTouristDTO } from './dto/tourist.update.dto';
 import { CreateTouristDTO } from './dto/tourist.create.dto';
 import { FastifyRequest } from 'fastify';
 import { FileDTO } from './dto/helper.dto';
+import { Identification } from '../vo/helper.vo';
 
 @Injectable()
 export class TouristValidationPipe
@@ -44,17 +45,17 @@ export class TouristValidationPipe
     }
 
     // checking whether file contains more than required files
-    if (files.size > 2) {
+    if (this.origin !== 'update' && files.size > 2) {
       throw new BadRequestException('Request must contain only two files');
     }
 
     // checking whether profilePhoto and identificationPhoto are present
-    if (!files.has('profilePhoto') || !files.has('identificationPhoto')) {
+    if (this.origin !== 'update' && (!files.has('profilePhoto') || !files.has('identificationPhoto'))) {
       throw new BadRequestException('Request must contain "profilePhoto" and "identificationPhoto"');
     }
 
     // checking whether data is present    
-    if (Object.keys(data).length === 0) {
+    if (this.origin !== "update" && Object.keys(data).length === 0) {
       throw new BadRequestException('JSON field "data" is required');
     }
 
@@ -73,9 +74,19 @@ export class TouristValidationPipe
     // transform data into TouristVO
     let tourist: TouristVO = plainToInstance(TouristVO, data);
 
-    // adding profilePhoto and identificationPhoto to tourist
-    tourist.profilePhoto = files.get('profilePhoto');
-    tourist.identification.file = files.get('identificationPhoto');
+    // adding profilePhoto and identificationPhoto to tourist if present
+    if (files.has('profilePhoto')) {
+      tourist.profilePhoto = files.get('profilePhoto');
+    }
+    if (files.has('identificationPhoto')) {
+      // if identification is empty then type is not being updated
+      if (tourist.identification === undefined) {
+        tourist.identification = new Identification();
+      }
+
+      // set identification file
+      tourist.identification.file = files.get('identificationPhoto');
+    }
 
     return tourist;
   }

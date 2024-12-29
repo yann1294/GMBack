@@ -35,18 +35,32 @@ export class TouristController {
     return await this.touristService.deleteTourist(uid);
   }
 
-//   @Put(':uid')
-//   async updateTourist(
-//     @Param('uid') uid: string,
-//     @Body(new TouristValidationPipe('update')) data: TouristVO,
-//   ): Promise<ResponseObject> {    
-//     return await this.touristService.updateTourist(uid, data);
-//   }
+  @Put(':uid')
+  async updateTourist(
+    @Param('uid') uid: string,
+    @Req() req: FastifyRequest,
+  ): Promise<ResponseObject> { 
+    let touristVo: TouristVO;
 
-//   @Get(':uid')
-//   async findTourist(@Param('uid') uid: string): Promise<ResponseObject> {
-//     return await this.touristService.findTourist(uid);
-//   }
+    // Manually apply the validation pipe
+    const validationPipe = new TouristValidationPipe('update');
+
+    try {
+      touristVo = await validationPipe.transform(req, { type: 'body', metatype: TouristVO });
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+
+    // return {} as ResponseObject;
+    console.log(touristVo);
+    
+    return await this.touristService.updateTourist(uid, touristVo);
+  }
+
+  @Get(':uid')
+  async findTourist(@Param('uid') uid: string): Promise<ResponseObject> {
+    return await this.touristService.findTourist(uid);
+  }
 
 //   @Get()
 //   async getAllTourists(): Promise<ResponseObject> {

@@ -18,9 +18,6 @@ export class TouristService implements ITouristService {
         return await this.touristDAO.delete(uid);
     }
     async updateTourist(uid: string, data: TouristVO): Promise<ResponseObject> {
-        // TODO: upload user profile photo
-
-        // TODO: upload user identification document
         return await this.touristDAO.update(uid, data.toEntity());
     }
     async findTourist(uid: string): Promise<ResponseObject> {

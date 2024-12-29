@@ -50,6 +50,35 @@ export class TouristDAO implements ITouristDAO {
         return await this.dataService.deleteDoc(this.collectionName, uid);
     }
     async update(uid: string, tourist: Tourist): Promise<ResponseObject> {
+        if (tourist.profilePhoto !== undefined) {
+            let profilePhotoResponse: FileServiceResponse = await this.fileService.uploadFile(
+                (tourist.profilePhoto as FileDTO).buffer,
+                (tourist.profilePhoto as FileDTO).mimeType,
+                `${this.profilePhotoStoragePath}/${Timestamp.now().toMillis()}`,
+            );        
+    
+            if (profilePhotoResponse.status !== "success") {
+                return profilePhotoResponse;
+            }
+
+        tourist.profilePhoto = profilePhotoResponse.data as string;
+        }
+
+        if (tourist.identification !== undefined) {
+            let identityPhotoResponse = await this.fileService.uploadFile(
+                (tourist.identification.file as FileDTO).buffer,
+                (tourist.identification.file as FileDTO).mimeType,
+                `${this.identificationPhotoStoragePath}/${Timestamp.now().toMillis()}`,
+            );
+    
+            if (identityPhotoResponse.status !== "success") {
+                return identityPhotoResponse;
+            }
+
+        tourist.identification.file = identityPhotoResponse.data as string;
+
+        }
+
         return await this.dataService.updateDoc(this.collectionName, uid, tourist.toUpdateObject());
     }
     async findById(uid: string): Promise<ResponseObject> {

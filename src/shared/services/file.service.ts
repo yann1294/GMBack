@@ -86,69 +86,33 @@ export class FileService {
    * @param destination - Folder path where files should be uploaded.
    * @returns A promise that resolves to a FileServiceResponse containing download URLs or an error message.
    */
-  // async uploadFiles(
-  //   files: AsyncIterableIterator<MultipartFile>,
-  //   destination: string,
-  // ): Promise<FileServiceResponse> {
-  //   try {
-  //     // hold ref to uploaded files
-  //     const downloadUrls: string[] = [];
-
-  //     for await (const file of files) {
-  //       // concat file destination with file name
-  //       // const filePath =
-  //       //   destination +
-  //       //   `/${Timestamp.now().toMillis()}.${file.filename.split('.').slice(-1)[0]}`;
-  //       const filePath = `${destination}/${Timestamp.now().toMillis()}`;
-
-  //       // create file
-  //       const fileRef: File = this.storageRef.file(filePath);
-
-  //       // add save promise to save promises
-  //       await fileRef.save(await file.toBuffer(), {
-  //         contentType: file.mimetype,
-  //       });
-
-  //       // get download url
-  //       downloadUrls.push(await getDownloadURL(fileRef));
-  //     }
-
-  //     return {
-  //       status: 'success',
-  //       code: 200,
-  //       message: 'Files successfully uploaded',
-  //       data: downloadUrls,
-  //     } as FileServiceResponse;
-  //   } catch (e) {
-  //     return this.errorHandler(e);
-  //   }
-  // }
-
   async uploadFiles(
-    destinations: Record<string, MultipartFile>
+    files: AsyncIterableIterator<MultipartFile>,
+    destination: string,
   ): Promise<FileServiceResponse> {
     try {
+      // hold ref to uploaded files
       const downloadUrls: string[] = [];
-  
-      // Iterate over each destination and file
-      for (const [destination, file] of Object.entries(destinations)) {
-        // Generate a unique file path using the destination and timestamp
+
+      for await (const file of files) {
+        // concat file destination with file name
+        // const filePath =
+        //   destination +
+        //   `/${Timestamp.now().toMillis()}.${file.filename.split('.').slice(-1)[0]}`;
         const filePath = `${destination}/${Timestamp.now().toMillis()}`;
-  
-        // Create a reference to the file in storage
+
+        // create file
         const fileRef: File = this.storageRef.file(filePath);
-  
-        // Save the file to the storage
+
+        // add save promise to save promises
         await fileRef.save(await file.toBuffer(), {
           contentType: file.mimetype,
         });
-  
-        // Get the download URL for the file
-        const downloadUrl = await getDownloadURL(fileRef);
-        downloadUrls.push(downloadUrl);
+
+        // get download url
+        downloadUrls.push(await getDownloadURL(fileRef));
       }
-  
-      // Return the response with all the download URLs
+
       return {
         status: 'success',
         code: 200,
@@ -159,7 +123,6 @@ export class FileService {
       return this.errorHandler(e);
     }
   }
-
   
   /**
    * Deletes a file from Cloud Storage.

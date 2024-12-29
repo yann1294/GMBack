@@ -11,6 +11,7 @@ import { TourController } from './controller/core.controller';
 import { PackageController } from './controller/package.controller';
 import { PackageDAO } from './dao/package.dao';
 import { PackageService } from './services/package.service';
+import { FileService } from 'src/shared/services/file.service';
 
 
 /**
@@ -28,11 +29,12 @@ import { PackageService } from './services/package.service';
   imports: [FirebaseModule],
   controllers: [TourController, PackageController],
   providers: [
+    DataService,
+    FileService,
     {
       provide: CORE_DAO_INTERFACE_TOKEN,
       useClass: CoreDAO,
     },
-    DataService,
     {
       provide: CORE_SERVICE_TOKEN,
       useClass: CoreService,
@@ -41,7 +43,6 @@ import { PackageService } from './services/package.service';
       provide: PACKAGE_DAO_INTERFACE_TOKEN,
       useClass: PackageDAO,
     },
-    DataService,
     {
       provide: PACKAGE_SERVICE_TOKEN,
       useClass: PackageService,

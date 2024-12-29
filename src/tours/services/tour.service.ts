@@ -3,12 +3,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Tour } from '../dao/tour.entity';
 import { TourVO } from '../vo/tour.master.vo';
 import { CoreDAOInterface } from '../dao/tour.core.dao.interface';
-
 import { CORE_DAO_INTERFACE_TOKEN } from '../token';
 import { plainToClass } from 'class-transformer';
 import { Activity } from '../vo/helper.vo';
 import { FieldValue } from 'firebase-admin/firestore';
 import { ResponseObject } from 'src/shared/types';
+import { MultipartFile } from '@fastify/multipart';
+import { deleteImage, uploadImages } from '../utils/upload-images.util';
 
 @Injectable()
 export class CoreService implements ICoreService {
@@ -16,6 +17,13 @@ export class CoreService implements ICoreService {
     @Inject(CORE_DAO_INTERFACE_TOKEN)
     private readonly coreDAO: CoreDAOInterface,
   ) {}
+
+  async uploadImages(tourId: string, images: AsyncIterableIterator<MultipartFile>): Promise<ResponseObject> {
+    return await uploadImages(tourId, images, 'tours');
+  }
+  async deleteImage(tourId: string, image: string): Promise<ResponseObject> {
+    return await deleteImage(tourId, image, 'tours');
+  }
 
   async createTour(tourVO: TourVO): Promise<ResponseObject> {
     // converting VO to Entity and returning entity

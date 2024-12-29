@@ -1,5 +1,6 @@
 import { ResponseObject } from 'src/shared/types';
 import { Tour } from './tour.entity';
+import { MultipartFile } from '@fastify/multipart';
 
 export interface CoreDAOInterface {
   findAll(): Promise<ResponseObject>;

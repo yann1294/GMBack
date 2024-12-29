@@ -43,7 +43,6 @@ export class PackageService implements IPackageService {
     return this.packageDAO.delete(id);
   }
 
-  // TODO: Return tour data
   async readTours(packageId: string): Promise<ResponseObject> {    
     let response: ResponseObject = await this.packageDAO.findById(packageId);
     

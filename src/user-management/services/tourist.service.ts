@@ -34,5 +34,3 @@ export class TouristService implements ITouristService {
     }
     
 }
-
-// TODO: Implement user file upload in create and update services

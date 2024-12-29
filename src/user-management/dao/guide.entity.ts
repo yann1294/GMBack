@@ -1,6 +1,7 @@
 import { Identification, Role } from "../vo/helper.vo";
 import { User } from "../utils/user.abstract";
 import { instanceToPlain } from "class-transformer";
+import { FileDTO } from "../controller/dto/helper.dto";
 
 export class Guide extends User {
     public identification: Identification;
@@ -11,10 +12,9 @@ export class Guide extends User {
         uid: string,
         firstName: string,
         lastName: string,
-        password: string,
         phoneNumber: string,
         emailAddress: string,
-        profilePhoto: string,
+        profilePhoto: string | FileDTO,
         role: Role,
         accountStatus: string,
         createdAt: string,
@@ -27,7 +27,6 @@ export class Guide extends User {
         this.uid = uid;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.password = password;
         this.phoneNumber = phoneNumber;
         this.emailAddress = emailAddress;
         this.profilePhoto = profilePhoto;

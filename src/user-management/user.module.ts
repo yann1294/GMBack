@@ -8,12 +8,14 @@ import { DataService } from "src/shared/services/data.service";
 import { TouristDAO } from "./dao/tourist.dao";
 import { GuideService } from "./services/guide.service";
 import { TouristService } from "./services/tourist.service";
+import { FileService } from "src/shared/services/file.service";
 
 @Module({
   imports: [FirebaseModule],
   controllers: [GuideController, TouristController],
   providers: [
     DataService,
+    FileService,
     {
       provide: GUIDE_DAO_TOKEN,
       useClass: GuideDAO,

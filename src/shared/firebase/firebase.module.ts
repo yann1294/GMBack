@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { FirebaseRepository } from './firebase.service';
 import * as path from 'path';
+require('dotenv').config();
 
 const firebaseProvider = {
   provide: 'FIREBASE_APP',

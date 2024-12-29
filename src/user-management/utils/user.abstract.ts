@@ -1,6 +1,8 @@
-import { IsString, IsOptional, IsEmail, IsDateString, IsIn } from "class-validator";
+import { IsString, IsOptional, IsEmail, IsDateString, IsIn, IsUrl } from "class-validator";
 import { Role } from "../vo/helper.vo";
 import { Type } from "class-transformer";
+import { IsUrlOrFile } from "./is-url-or-filedto.decorator";
+import { FileDTO } from "../controller/dto/helper.dto";
 
 export abstract class User {
     @IsString()
@@ -17,19 +19,15 @@ export abstract class User {
 
     @IsString()
     @IsOptional()
-    public password: string;
-
-    @IsString()
-    @IsOptional()
     public phoneNumber: string;
 
     @IsEmail()
     @IsOptional()
     public emailAddress: string;
 
-    @IsString()
     @IsOptional()
-    public profilePhoto: string;
+    @IsUrlOrFile()
+    public profilePhoto: string | FileDTO;
 
     @Type(() => Role)
     @IsOptional()

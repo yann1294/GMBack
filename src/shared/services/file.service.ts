@@ -9,7 +9,7 @@ import { Timestamp } from 'firebase-admin/firestore';
 
 @Injectable()
 export class FileService {
-  // holds firebase storage referrence
+  // holds firebase storage reference
   storageRef: Bucket;
 
   constructor(private readonly firebaseRepository: FirebaseRepository) {
@@ -72,7 +72,7 @@ export class FileService {
       return {
         status: 'success',
         message: 'File uploaded successfully',
-        data: [await getDownloadURL(file)],
+        data: await getDownloadURL(file),
       } as FileServiceResponse;
     } catch (e) {
       return this.errorHandler(e);
@@ -86,32 +86,69 @@ export class FileService {
    * @param destination - Folder path where files should be uploaded.
    * @returns A promise that resolves to a FileServiceResponse containing download URLs or an error message.
    */
+  // async uploadFiles(
+  //   files: AsyncIterableIterator<MultipartFile>,
+  //   destination: string,
+  // ): Promise<FileServiceResponse> {
+  //   try {
+  //     // hold ref to uploaded files
+  //     const downloadUrls: string[] = [];
+
+  //     for await (const file of files) {
+  //       // concat file destination with file name
+  //       // const filePath =
+  //       //   destination +
+  //       //   `/${Timestamp.now().toMillis()}.${file.filename.split('.').slice(-1)[0]}`;
+  //       const filePath = `${destination}/${Timestamp.now().toMillis()}`;
+
+  //       // create file
+  //       const fileRef: File = this.storageRef.file(filePath);
+
+  //       // add save promise to save promises
+  //       await fileRef.save(await file.toBuffer(), {
+  //         contentType: file.mimetype,
+  //       });
+
+  //       // get download url
+  //       downloadUrls.push(await getDownloadURL(fileRef));
+  //     }
+
+  //     return {
+  //       status: 'success',
+  //       code: 200,
+  //       message: 'Files successfully uploaded',
+  //       data: downloadUrls,
+  //     } as FileServiceResponse;
+  //   } catch (e) {
+  //     return this.errorHandler(e);
+  //   }
+  // }
+
   async uploadFiles(
-    files: AsyncIterableIterator<MultipartFile>,
-    destination: string,
+    destinations: Record<string, MultipartFile>
   ): Promise<FileServiceResponse> {
     try {
-      // hold ref to uploaded files
       const downloadUrls: string[] = [];
-
-      for await (const file of files) {
-        // concat file destination with file name
-        const filePath =
-          destination +
-          `/${Timestamp.now().toMillis()}.${file.filename.split('.').slice(-1)[0]}`;
-
-        // create file
+  
+      // Iterate over each destination and file
+      for (const [destination, file] of Object.entries(destinations)) {
+        // Generate a unique file path using the destination and timestamp
+        const filePath = `${destination}/${Timestamp.now().toMillis()}`;
+  
+        // Create a reference to the file in storage
         const fileRef: File = this.storageRef.file(filePath);
-
-        // add save promise to save promises
+  
+        // Save the file to the storage
         await fileRef.save(await file.toBuffer(), {
           contentType: file.mimetype,
         });
-
-        // get download url
-        downloadUrls.push(await getDownloadURL(fileRef));
+  
+        // Get the download URL for the file
+        const downloadUrl = await getDownloadURL(fileRef);
+        downloadUrls.push(downloadUrl);
       }
-
+  
+      // Return the response with all the download URLs
       return {
         status: 'success',
         code: 200,
@@ -123,6 +160,7 @@ export class FileService {
     }
   }
 
+  
   /**
    * Deletes a file from Cloud Storage.
    *

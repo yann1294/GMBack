@@ -12,9 +12,6 @@ export class TouristService implements ITouristService {
     constructor(@Inject(TOURIST_DAO_TOKEN) private readonly touristDAO: ITouristDAO) {}
 
     async addTourist(touristVo: TouristVO): Promise<ResponseObject> {
-        // TODO: upload user profile photo
-
-        // TODO: upload user identification document
         return await this.touristDAO.create(touristVo.toEntity());
     }
     async deleteTourist(uid: string): Promise<ResponseObject> {

@@ -16,6 +16,7 @@ export class BookingMessageService {
     price: 100,
     tourId: 4562,
     touristId: 9652,
+    name: 'Second attempt',
   };
 
   constructor(private readonly natsService: NatsService) {
@@ -25,12 +26,12 @@ export class BookingMessageService {
 
   // TODO: the subject should be added to the .env file
   sendDataToPayment(subject: string, data: any) {
-    console.log('booking.payment');
+    console.log('booking.payment From producer');
     this.natsService.sendDataToContainer(this.client, this.subject, this.data);
   }
 
   requestResponseFromPayment(client: ClientProxy, subject: string, data: any) {
-    console.log('booking.payment');
+    console.log('booking.payment Request Response');
     this.natsService.requestResponseFromContainer(
       this.client,
       this.subject,

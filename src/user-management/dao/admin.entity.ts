@@ -36,6 +36,7 @@ export class Admin extends User {
             lastName: this.lastName,
             phoneNumber: this.phoneNumber,
             emailAddress: this.emailAddress,
+            profilePhoto: this.profilePhoto,
             role: Object.assign({}, this.role),
             accountStatus: this.accountStatus,
             createdAt: this.createdAt,

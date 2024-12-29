@@ -62,8 +62,8 @@ export class TouristController {
     return await this.touristService.findTourist(uid);
   }
 
-//   @Get()
-//   async getAllTourists(): Promise<ResponseObject> {
-//     return await this.touristService.getAllTourists();
-//   }
+  @Get()
+  async getAllTourists(): Promise<ResponseObject> {
+    return await this.touristService.getAllTourists();
+  }
 }

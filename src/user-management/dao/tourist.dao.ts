@@ -20,22 +20,29 @@ export class TouristDAO implements ITouristDAO {
     ) { }
 
     async create(tourist: Tourist): Promise<ResponseObject> {
+        // generate uid
+        tourist.uid = this.dataService.getDocId(this.collectionName);
+
+        // upload profile photo
         let profilePhotoResponse: FileServiceResponse = await this.fileService.uploadFile(
             (tourist.profilePhoto as FileDTO).buffer,
             (tourist.profilePhoto as FileDTO).mimeType,
-            `${this.profilePhotoStoragePath}/${Timestamp.now().toMillis()}`,
-        );        
+            `${this.profilePhotoStoragePath}/${tourist.uid}`,
+        );
 
+        // check whether profile photo was uploaded successfully
         if (profilePhotoResponse.status !== "success") {
             return profilePhotoResponse;
         }
 
+        // upload identity photo
         let identityPhotoResponse = await this.fileService.uploadFile(
             (tourist.identification.file as FileDTO).buffer,
             (tourist.identification.file as FileDTO).mimeType,
-            `${this.identificationPhotoStoragePath}/${Timestamp.now().toMillis()}`,
+            `${this.identificationPhotoStoragePath}/${tourist.uid}`,
         );
 
+        // check whether identity photo was uploaded successfully
         if (identityPhotoResponse.status !== "success") {
             return identityPhotoResponse;
         }
@@ -44,39 +51,45 @@ export class TouristDAO implements ITouristDAO {
         tourist.profilePhoto = profilePhotoResponse.data as string;
         tourist.identification.file = identityPhotoResponse.data as string;
 
-        return await this.dataService.createDoc(tourist, this.collectionName);
+        return await this.dataService.createDoc(tourist, this.collectionName, true);
     }
     async delete(uid: string): Promise<ResponseObject> {
         return await this.dataService.deleteDoc(this.collectionName, uid);
     }
     async update(uid: string, tourist: Tourist): Promise<ResponseObject> {
+        // check if profile photo is available
         if (tourist.profilePhoto !== undefined) {
+            // upload profile photo
             let profilePhotoResponse: FileServiceResponse = await this.fileService.uploadFile(
                 (tourist.profilePhoto as FileDTO).buffer,
                 (tourist.profilePhoto as FileDTO).mimeType,
-                `${this.profilePhotoStoragePath}/${Timestamp.now().toMillis()}`,
-            );        
-    
+                `${this.profilePhotoStoragePath}/${uid}`,
+            );
+
+            // check whether profile photo was uploaded successfully
             if (profilePhotoResponse.status !== "success") {
                 return profilePhotoResponse;
             }
 
-        tourist.profilePhoto = profilePhotoResponse.data as string;
+            // update profile photo field
+            tourist.profilePhoto = profilePhotoResponse.data as string;
         }
 
+        // check if identification photo is available
         if (tourist.identification !== undefined) {
+            // upload identity photo
             let identityPhotoResponse = await this.fileService.uploadFile(
                 (tourist.identification.file as FileDTO).buffer,
                 (tourist.identification.file as FileDTO).mimeType,
-                `${this.identificationPhotoStoragePath}/${Timestamp.now().toMillis()}`,
+                `${this.identificationPhotoStoragePath}/${uid}`,
             );
-    
+
+            // check whether identity photo was uploaded successfully
             if (identityPhotoResponse.status !== "success") {
                 return identityPhotoResponse;
             }
-
-        tourist.identification.file = identityPhotoResponse.data as string;
-
+            // update identity photo field
+            tourist.identification.file = identityPhotoResponse.data as string;
         }
 
         return await this.dataService.updateDoc(this.collectionName, uid, tourist.toUpdateObject());

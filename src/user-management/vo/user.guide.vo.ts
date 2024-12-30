@@ -23,7 +23,6 @@ export class GuideVO extends User {
             this.uid,
             this.firstName,
             this.lastName,
-            this.password,
             this.phoneNumber,
             this.emailAddress,
             this.profilePhoto,

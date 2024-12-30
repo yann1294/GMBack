@@ -74,7 +74,7 @@ export type FileServiceResponse = {
   status: string;
   code: string | number;
   message: string;
-  data: string[] | null;
+  data: string[] | null | string;
 };
 
 export interface IUser {

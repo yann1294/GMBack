@@ -4,6 +4,7 @@ import { Activity } from '../vo/helper.vo';
 import { Tour } from '../dao/tour.entity';
 import { TourVO } from '../vo/tour.master.vo';
 import { ResponseObject } from 'src/shared/types';
+import { MultipartFile } from '@fastify/multipart';
 
 export interface ICoreService {
   // tour functions
@@ -17,6 +18,11 @@ export interface ICoreService {
     isAvailable: boolean,
   ): Promise<ResponseObject>;
   assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject>;
+  uploadImages(
+    tourId: string,
+    images: AsyncIterableIterator<MultipartFile>,
+  ): Promise<ResponseObject>;
+  deleteImage(tourId: string, image: string): Promise<ResponseObject>;
 
   // activity functions
   addActivityToTour(tourVo: TourVO): Promise<ResponseObject>;

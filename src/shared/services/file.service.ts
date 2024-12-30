@@ -9,7 +9,7 @@ import { Timestamp } from 'firebase-admin/firestore';
 
 @Injectable()
 export class FileService {
-  // holds firebase storage referrence
+  // holds firebase storage reference
   storageRef: Bucket;
 
   constructor(private readonly firebaseRepository: FirebaseRepository) {
@@ -72,7 +72,7 @@ export class FileService {
       return {
         status: 'success',
         message: 'File uploaded successfully',
-        data: [await getDownloadURL(file)],
+        data: await getDownloadURL(file),
       } as FileServiceResponse;
     } catch (e) {
       return this.errorHandler(e);
@@ -96,9 +96,10 @@ export class FileService {
 
       for await (const file of files) {
         // concat file destination with file name
-        const filePath =
-          destination +
-          `/${Timestamp.now().toMillis()}.${file.filename.split('.').slice(-1)[0]}`;
+        // const filePath =
+        //   destination +
+        //   `/${Timestamp.now().toMillis()}.${file.filename.split('.').slice(-1)[0]}`;
+        const filePath = `${destination}/${Timestamp.now().toMillis()}`;
 
         // create file
         const fileRef: File = this.storageRef.file(filePath);
@@ -122,7 +123,7 @@ export class FileService {
       return this.errorHandler(e);
     }
   }
-
+  
   /**
    * Deletes a file from Cloud Storage.
    *

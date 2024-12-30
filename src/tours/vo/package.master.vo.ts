@@ -189,7 +189,6 @@ export class PackageVO {
       this._tours,
     );
   }
-  //  TODO: add description
   toObject(): object {
     return instanceToPlain(this);
   }

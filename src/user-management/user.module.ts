@@ -14,16 +14,15 @@ import { DataService } from 'src/shared/services/data.service';
 import { TouristDAO } from './dao/tourist.dao';
 import { GuideService } from './services/guide.service';
 import { TouristService } from './services/tourist.service';
-
+import { FileService } from 'src/shared/services/file.service';
 import { UserManagementExternalService } from './services/user-management-external.service';
-
-//import { USER_MANAGEMENT_EXTERNAL_SERVICE_INTERFACE } from './token';
 
 @Module({
   imports: [FirebaseModule],
   controllers: [GuideController, TouristController],
   providers: [
     DataService,
+    FileService,
     {
       provide: GUIDE_DAO_TOKEN,
       useClass: GuideDAO,

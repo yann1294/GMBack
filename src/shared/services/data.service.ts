@@ -46,6 +46,10 @@ export class DataService {
     };
   }
 
+  getDocId(collectionName: string): string { 
+    return this.firestore.collection(collectionName).doc().id;
+  }
+
   /**
    * Creates a document in a Firestore collection.
    *
@@ -56,18 +60,19 @@ export class DataService {
   async createDoc(
     data: Tour | Package | Booking | Admin | Guide | Tourist,
     collectionName: string,
+    useUid: boolean = false,
   ): Promise<ResponseObject> {
     try {
       // create doc to auto generate doc id
-      const doc: DocumentReference = this.firestore
+      const doc: DocumentReference = useUid ? this.firestore
+        .collection(collectionName)
+        .doc(data['uid']) :  this.firestore
         .collection(collectionName)
         .doc();
 
       // update data with doc id/uid
-      if (Object.keys(data).includes('uid')) {
-        data['uid'] = doc.id;
-      } else {
-      data['id'] = doc.id;
+      if (!useUid) {
+        data['id'] = doc.id;
       }
 
       // adding data to doc
@@ -120,7 +125,7 @@ export class DataService {
         } else {
           docData['id'] = docRef.id;
         }
-        
+
 
         // add document and data to batch
         batch.set(docRef, docData);
@@ -227,18 +232,18 @@ export class DataService {
     try {
       // Initialize query with collection reference
       let query: FirebaseFirestore.Query = this.firestore.collection(collectionName);
-  
+
       // If conditions is a single object, make it an array
       const conditionsArray = Array.isArray(conditions) ? conditions : [conditions];
-  
+
       // Loop through each condition and apply it to the query
       conditionsArray.forEach((condition) => {
         query = query.where(condition.fieldPath, condition.operationString, condition.value);
       });
-  
+
       // Execute the query
       const results: QuerySnapshot = await query.get();
-  
+
       // Return document data
       return {
         status: 'success',
@@ -250,7 +255,7 @@ export class DataService {
       return this.errorHandler(e);
     }
   }
-  
+
   // async readDocsWithCondition(
   //   collectionName: string,
   //   condition: DataServiceCondition,

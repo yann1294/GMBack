@@ -1,4 +1,6 @@
 import { IsIn, IsOptional, IsString } from "class-validator";
+import { IsUrlOrFile } from "../utils/is-url-or-filedto.decorator";
+import { FileDTO } from "../controller/dto/helper.dto";
 
 export class Role {
     @IsString()
@@ -8,9 +10,9 @@ export class Role {
 }
 
 export class Identification {
-    @IsString()
     @IsOptional()
-    public file: string;
+    @IsUrlOrFile()
+    public file: string | FileDTO;
 
     @IsString()
     @IsOptional()

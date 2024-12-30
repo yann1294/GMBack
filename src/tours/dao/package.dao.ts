@@ -2,13 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { PackageDAOInterface } from './package.dao.interface';
 import { Package } from './package.entity';
 import { DataService } from 'src/shared/services/data.service';
-import { ResponseObject } from 'src/shared/types';
+import { FileServiceResponse, ResponseObject } from 'src/shared/types';
+import { MultipartFile } from '@fastify/multipart';
+import { FileService } from 'src/shared/services/file.service';
+import { plainToInstance } from 'class-transformer';
+import { FieldValue } from 'firebase-admin/firestore';
 
 @Injectable()
 export class PackageDAO implements PackageDAOInterface {
   private readonly collectionName = 'packages';
-
-  constructor(private readonly dataService: DataService) {}
+  private readonly imageStoragePath = 'packages';
+  
+  
+  constructor(
+      private readonly dataService: DataService,
+      private readonly fileService: FileService,
+    ) { }
 
   async findAll(): Promise<ResponseObject> {
     return await this.dataService.readAllDocs(this.collectionName);

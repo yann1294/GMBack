@@ -1,9 +1,53 @@
+Notes:
+- The DTOs will be used only for reponse and request validation. They would not have constructors, only accessors.
+ Help transfer only necessary data to avoid security leak,to prevent network overhead,
+ avoid heavily loaded request where we transfer the unnecessary data around again and again.
+ With DTOs, we can build different views from our domain models, allowing us to create other representations of
+ the same domain but optimizing them to the client’s needs without affecting our domain design.
+ Such flexibility is a powerful tool to solve complex problems.
+    - TourDTO will be broken down into -> TourLocationDTO, UserDTO, ActivityDTO
+- Entities will be used when persisting data (database).
+- Services: Will contain business logic... any processing or algorithms
+- VO (view object): Defines the data structure of data to be moved within the application. They are the actual
+ domain objects.
+- Types would be used to shape all models such as VO & entities
+
+Has getters and setters:
+- All VOs will have getters and setters
+
+Processes (through containers):
+- guide creation
+- guide assignment
+- booking : start from User Management (selecting tour or package), goes through Tour Management
+  (tour or package creation, guide assignment) and booking (core business logic of booking), ends at paymnent
+- authentication
+- logging
+- payment
+
+Assumptions and Constraints for Beta version:
+- This structure balances modularity with maintainability and follows a clean, scalable design.
+- Guides are by default assigned to tours/packages
+- A user will log in then he will be redirected to the user management space.
+   From there, he can book tours or packages.
+   After booking a tour, the flow of the app will to go to the tour management component.
+   That is :
+    - adding the user to the tour while he is waiting the confirmation from the guide.
+    - Notifications will be sent to the guide so that he can accept the user.
+   After the guide accepts the request from the user, a signal is sent to the user space allowing him to pay for the tour.
+- Price could be static
+
+
 src/
 ├── shared/
 │   ├── services/
 │      ├── data.service.ts
 │      ├── file.service.ts
-|
+│   ├── firebase/
+│      ├── firebase.module.ts
+│      ├── file.service.ts
+│   ├── types/
+│      ├── index.d.ts
+│
 ├── auth/
 │   ├── auth.controller.ts
 │   ├── auth.service.ts
@@ -17,20 +61,128 @@ src/
 │   └── auth.controller.spec.ts
 │
 ├── users/
-│   ├── user.controller.ts
-│   ├── user.service.ts
+│   ├── components
+│   │   ├── admin management
+│   │   ├── guide management
+│   │   ├── tourist management
+│   ├── controller/
+│   │   ├── user.validation.pipe.ts
+│   │   ├── dto/
+│   │   │   ├── user.update.dto.ts
+│   │   │   ├── user.create.dto.ts
+│   │   │   ├── user.dto.ts
+│   ├── service/
+│   │   ├── user.service.ts
+│   │   ├── user.service.interface.ts
+│   ├── dao/
+│   │   ├── user.dao.interface.ts
+│   │   ├── user.dao.ts
+│   │   ├── user.entity.ts
+│   ├── vo/
+│   │   ├── helperUser.vo.ts
+│   │   ├── user.master.vo.ts
+│   ├── utils/
+│   │   ├── inventory.management.ts
+│   │   ├── price.engine.ts
 │   ├── user.module.ts
-│   ├── dto/
-│   ├── entities/
 │   └── user.controller.spec.ts
 │
 ├── tours/
-│   ├── tour.controller.ts
-│   ├── tour.service.ts
+│   ├── components
+│   │   ├── tour engine
+│   │   ├── tour request handler
+│   │   ├── tour package handler
+│   │   ├── path finder
+│   ├── controller/
+│   │   ├── core.validation.pipe.ts
+│   │   ├── package.validation.pipe.ts
+│   │   ├── core.controller.ts
+│   │   ├── pathfinder.controller.ts
+│   │   ├── package.controller.ts
+│   │   ├── dto/
+│   │   │   ├── tour.location.dto.ts
+│   │   │   ├── tour.activity.dto.ts
+│   │   │   ├── tour.update.dto.ts
+│   │   │   ├── tour.create.dto.ts
+│   │   │   ├── package.dto.ts
+│   │   │   ├── package.location.dto.ts
+│   │   │   ├── package.create.dto.ts
+│   │   │   ├── package.update.dto.ts
+│   ├── service/
+│   │   ├── tour.core.service.ts
+│   │   ├── pathfinder.service.ts
+│   │   ├── package.service.ts
+│   │   ├── tour.core.service.interface.ts
+│   │   ├── pathfinder.service.interface.ts
+│   │   ├── package.service.interface.ts
+│   ├── repository/
+│   │   ├── tour.core.dao.ts
+│   │   ├── pathfinder.dao.ts
+│   │   ├── package.dao.ts
+│   │   ├── tour.core.dao.interface.ts
+│   │   ├── pathfinder.dao.interface.ts
+│   │   ├── package.dao.interface.ts
+│   │   ├── entities/
+│   ├── vo/
+│   │   ├── helper.vo.ts
+│   │   ├── tour.master.vo.ts
+│   │   ├── package.master.vo.ts
+│   ├── utils/
+│   │   ├── tour.X.ts (to define)
 │   ├── tour.module.ts
-│   ├── dto/
-│   ├── entities/
 │   └── tour.controller.spec.ts
-|
+│
+├── booking/
+│   ├── components
+│   │   ├── booking.engine.ts
+│   │   ├── price.engine.ts
+│   │   ├── inventory.management.ts
+│   ├── controller/
+│   │   ├── booking.validation.pipe.ts
+│   │   ├── dto/
+│   │   │   ├── booking.update.dto.ts
+│   │   │   ├── booking.create.dto.ts
+│   │   │   ├── booking.dto.ts
+│   ├── service/
+│   │   ├── booking.service.ts
+│   │   ├── booking.service.interface.ts
+│   ├── dao/
+│   │   ├── booking.dao.interface.ts
+│   │   ├── booking.dao.ts
+│   │   ├── booking.entity.ts
+│   ├── vo/
+│   │   ├── helper.vo.ts
+│   │   ├── booking.master.vo.ts
+│   ├── utils/
+│   │   ├── inventory.management.ts
+│   │   ├── price.engine.ts
+│   ├── tour.module.ts
+│   └── tour.controller.spec.ts
+│
+├── payment/
+│   ├── components/
+│   │   ├── payment component
+│   ├── controller/
+│   │   ├── payment.validation.pipe.ts
+│   │   ├── payment.controller.ts
+│   │   ├── dto/
+│   │   │   ├── payment.update.dto.ts
+│   │   │   ├── payment.create.dto.ts
+│   ├── service/
+│   │   ├── stripe.service.ts
+│   │   ├── stripe.service.interface.ts
+│   │   ├── momo.service.ts
+│   │   ├── momo.service.interface.ts
+│   │   ├── paypal.service.ts
+│   │   ├── paypal.service.interface.ts
+│   ├── dao/
+│   │   ├── payment.dao.interface.ts
+│   │   ├── payment.dao.ts
+│   │   ├── payment.entity.ts
+│   ├── vo/
+│   │   ├── helper.vo.ts
+│   │   ├── payment.master.vo.ts
+│   ├── utils/
+│   │   ├── payment.workflow.ts
 ├── app.module.ts
 └── main.ts

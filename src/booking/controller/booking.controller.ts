@@ -84,13 +84,6 @@ export class BookingController {
 
   // TOUR MANAGEMENT SERVICES START
 
-  /**
-   * It is getting the availability of a given tour based on its id
-   * The tourId of the tour must be a string and it is required.
-   * @param tourId
-   * @returns a boolean
-   *
-   */
   @Get('tour/:tourId')
   async getTourAvailability(@Param('tourId') tourId: string) {
     console.log('Get tour availability');

@@ -1,5 +1,5 @@
 import { ResponseObject } from 'src/shared/types';
-import { BookingExternalServiceInterface } from './booking-external.service.interface';
+import { IBookingExternalService } from './booking-external.service.interface';
 import IBookingService from './booking.service.interface';
 
 import { BOOKING_SERVICE_TOKEN } from '../token';

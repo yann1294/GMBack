@@ -1,7 +1,7 @@
 import CreateBookingDTO from 'src/booking/controller/dto/booking.create.dto';
 import { ResponseObject } from 'src/shared/types';
 
-export interface TourExternalServiceInterface {
+export interface ITourExternalService {
   /**
    * Preconditions: The tourId must exist in the 'tours' collection.
    * Postconditions: Returns true if the tour is available, otherwise false.

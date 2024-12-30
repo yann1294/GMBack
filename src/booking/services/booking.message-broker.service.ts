@@ -20,18 +20,15 @@ export class BookingMessageService {
   };
 
   constructor(private readonly natsService: NatsService) {
-    console.log(natsConfig);
     this.client = ClientProxyFactory.create(natsConfig);
   }
 
   // TODO: the subject should be added to the .env file
   sendDataToPayment(subject: string, data: any) {
-    console.log('booking.payment From producer');
     this.natsService.sendDataToContainer(this.client, this.subject, this.data);
   }
 
   requestResponseFromPayment(client: ClientProxy, subject: string, data: any) {
-    console.log('booking.payment Request Response');
     this.natsService.requestResponseFromContainer(
       this.client,
       this.subject,

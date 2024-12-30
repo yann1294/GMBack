@@ -13,7 +13,7 @@ import { TourModule } from 'src/tours/tour.module';
 import { UserModule } from 'src/user-management/user.module';
 import { BookingExternalService } from './services/booking-external.service';
 import { NatsModule } from 'src/shared/event-communication/nats.module';
-import { BookingMessageService } from './services/booking-message.service';
+import { BookingMessageService } from './services/booking.message-broker.service';
 
 @Module({
   imports: [FirebaseModule, TourModule, UserModule, NatsModule],

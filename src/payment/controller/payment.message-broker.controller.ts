@@ -9,6 +9,5 @@ export class PaymentFromNats {
   //@MessagePattern('booking.payment')
   handleMessageFromBooking(@Payload() data: any) {
     console.log('Received message : ', data);
-    //return { success: true, processed: data };
   }
 }

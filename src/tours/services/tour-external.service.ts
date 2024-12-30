@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { TourExternalServiceInterface } from './tour-external.service.interface';
+import { ITourExternalService } from './tour-external.service.interface';
 import { CoreDAOInterface } from '../dao/tour.core.dao.interface';
 
 import { CORE_SERVICE_TOKEN, PACKAGE_SERVICE_TOKEN } from '../token';
@@ -11,7 +11,7 @@ import CreateBookingDTO from 'src/booking/controller/dto/booking.create.dto';
 import { IPackageService } from './package.service.interface';
 
 @Injectable()
-export class TourExternalService implements TourExternalServiceInterface {
+export class TourExternalService implements ITourExternalService {
   constructor(
     private readonly dataService: DataService,
     @Inject(CORE_SERVICE_TOKEN) private readonly coreService: ICoreService,

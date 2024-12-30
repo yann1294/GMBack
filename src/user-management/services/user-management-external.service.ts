@@ -1,5 +1,5 @@
 import { BookingVO } from 'src/booking/vo/booking.master.vo';
-import { UserManagementExternalServiceInterface } from './user-management-external.service.interface';
+import { IUserManagementExternalService } from './user-management-external.service.interface';
 
 import { GuideDAO } from '../dao/guide.dao';
 import { GUIDE_DAO_TOKEN } from '../vo/token';
@@ -7,7 +7,7 @@ import { Inject } from '@nestjs/common';
 import { IGuideDAO } from '../dao/guide.dao.interface';
 
 export class UserManagementExternalService
-  implements UserManagementExternalServiceInterface
+  implements IUserManagementExternalService
 {
   //constructor(@Inject(GUIDE_DAO_TOKEN) private readonly guideDAO: IGuideDAO) {}
 

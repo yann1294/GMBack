@@ -25,4 +25,7 @@ export interface ITourExternalService {
   getAssignedGuide(currentBooking: CreateBookingDTO): Promise<ResponseObject>; // the guide will be derived from the tour
   getGuideAvailability(tourId: string): Promise<boolean>;
   // TODO: Initial value in the diagram
+  getTours(): Promise<ResponseObject>;
+  getPackages(): Promise<ResponseObject>;
+  //readBookings(): Promise<ResponseObject>;
 }

@@ -10,7 +10,7 @@ import { BookingVO } from '../vo/booking.master.vo';
 import { BOOKING_DAO_INTERFACE_TOKEN } from '../token';
 import IBookingServiceDAO from '../dao/booking.dao.interface';
 import { Tourist } from '../vo/helper.vo';
-import { BookingMessageService } from './booking-message.service';
+import { BookingMessageService } from './booking.message-broker.service';
 
 @Injectable()
 export class BookingService implements IBookingService {
@@ -23,12 +23,11 @@ export class BookingService implements IBookingService {
   ) {}
 
   async getAllBookings(): Promise<ResponseObject> {
-    this.bookingMessageBroker.sendDataToPayment('nothing', 'anything');
     return await this.bookingDAO.findAll();
   }
 
-  async getBookingsForResource(resoruceId: string): Promise<ResponseObject> {
-    return await this.bookingDAO.findByResourceId(resoruceId);
+  async getBookingsForResource(resourceId: string): Promise<ResponseObject> {
+    return await this.bookingDAO.findByResourceId(resourceId);
   }
 
   async displayTouristBookingHistory(

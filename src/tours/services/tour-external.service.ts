@@ -63,4 +63,14 @@ export class TourExternalService implements ITourExternalService {
   async getGuideAvailability(tourId: string): Promise<boolean> {
     return null;
   }
+
+  getTours(): Promise<ResponseObject> {
+    return this.coreService.findAllTours();
+  }
+  getPackages(): Promise<ResponseObject> {
+    return this.packageService.findAllPackages();
+  }
+  readBookings(): Promise<ResponseObject> {
+    return null;
+  }
 }

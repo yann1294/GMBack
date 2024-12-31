@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { DataService } from 'src/shared/services/data.service';
 import { FirebaseModule } from 'src/shared/firebase/firebase.module';
 //import { FileService } from 'src/shared/services/file.service';
@@ -33,7 +33,7 @@ import { FileService } from 'src/shared/services/file.service';
     do not have to use tokens.
  */
 @Module({
-  imports: [FirebaseModule, UserModule],
+  imports: [FirebaseModule],
   controllers: [TourController, PackageController],
   providers: [
     DataService,

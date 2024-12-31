@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { FirebaseModule } from 'src/shared/firebase/firebase.module';
 import { GuideController } from './controller/guide.controller';
 import { TouristController } from './controller/tourist.controller';
@@ -16,9 +16,11 @@ import { GuideService } from './services/guide.service';
 import { TouristService } from './services/tourist.service';
 import { FileService } from 'src/shared/services/file.service';
 import { UserManagementExternalService } from './services/user-management-external.service';
+import { TourModule } from 'src/tours/tour.module';
+import { BookingModule } from 'src/booking/booking.module';
 
 @Module({
-  imports: [FirebaseModule],
+  imports: [FirebaseModule, TourModule],
   controllers: [GuideController, TouristController],
   providers: [
     DataService,

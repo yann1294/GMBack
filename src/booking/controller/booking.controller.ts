@@ -17,8 +17,8 @@ import {
   BOOKING_SERVICE_TOKEN,
   TOUR_EXTERNAL_SERVICE_INTERFACE,
 } from '../token';
-import { TourExternalServiceInterface } from 'src/tours/services/tour-external.service.interface';
-import { UserManagementExternalServiceInterface } from 'src/user-management/services/user-management-external.service.interface';
+import { ITourExternalService } from 'src/tours/services/tour-external.service.interface';
+import { IUserManagementExternalService } from 'src/user-management/services/user-management-external.service.interface';
 import { USER_MANAGEMENT_EXTERNAL_SERVICE_INTERFACE } from 'src/user-management/token';
 import CreateBookingDTO from './dto/booking.create.dto';
 
@@ -31,9 +31,9 @@ export class BookingController {
     private readonly bookingService: IBookingService,
     // private readonly externalTourService: TourExternalService,
     @Inject(TOUR_EXTERNAL_SERVICE_INTERFACE)
-    private readonly externalTourService: TourExternalServiceInterface,
-    @Inject(USER_MANAGEMENT_EXTERNAL_SERVICE_INTERFACE)
-    private readonly externalUserManagementService: UserManagementExternalServiceInterface,
+    private readonly externalTourService: ITourExternalService,
+    // @Inject(USER_MANAGEMENT_EXTERNAL_SERVICE_INTERFACE)
+    // private readonly externalUserManagementService: IUserManagementExternalService,
   ) {}
 
   @Post('create')
@@ -121,10 +121,4 @@ export class BookingController {
   // TOUR MANAGEMENT SERVICES END
 
   // USER MANAGEMENT SERVICES   START
-
-  // Just an example. To be changed later
-  @Get('users/bookings')
-  async getBookingDetails(): Promise<void> {
-    await this.externalUserManagementService.getBookingDetails(null);
-  }
 }

@@ -16,7 +16,7 @@ import { NatsModule } from 'src/shared/event-communication/nats.module';
 import { BookingMessageService } from './services/booking.message-broker.service';
 
 @Module({
-  imports: [FirebaseModule, TourModule, UserModule, NatsModule],
+  imports: [FirebaseModule, TourModule, NatsModule],
   controllers: [BookingController],
   providers: [
     {

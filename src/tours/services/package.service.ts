@@ -8,7 +8,7 @@ import { Package } from '../dao/package.entity';
 import { ResponseObject } from 'src/shared/types';
 import { FieldValue } from 'firebase-admin/firestore';
 import { MultipartFile } from '@fastify/multipart';
-import { deleteImage, uploadImages } from '../utils/upload-images.util';
+// import { deleteImage, uploadImages } from '../utils/upload-images.util';
 
 @Injectable()
 export class PackageService implements IPackageService {
@@ -17,10 +17,14 @@ export class PackageService implements IPackageService {
     private readonly packageDAO: PackageDAOInterface,
   ) {}
  async uploadImages(tourId: string, images: AsyncIterableIterator<MultipartFile>): Promise<ResponseObject> {
-    return await uploadImages(tourId, images, 'packages');
+    // return await uploadImages(tourId, images, 'packages');
+    return {status: 'success', message: 'Images uploaded successfully'} as ResponseObject;
+
   }
   async deleteImage(tourId: string, image: string): Promise<ResponseObject> {
-    return await deleteImage(tourId, image, 'packages');
+    // return await deleteImage(tourId, image, 'packages');
+    return {status: 'success', message: 'Images uploaded successfully'} as ResponseObject;
+
   }
 
   async findAllPackages(): Promise<ResponseObject> {

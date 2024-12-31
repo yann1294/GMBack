@@ -14,6 +14,7 @@ import IBookingService from '../services/booking.service.interface';
 import { BookingValidationPipe, HasAttribute } from './booking.validation.pipe';
 import { BookingVO } from '../vo/booking.master.vo';
 import { BOOKING_SERVICE_TOKEN } from '../token';
+import { ResponseObject } from 'src/shared/types';
 
 @Controller('bookings')
 export class BookingController {
@@ -25,7 +26,7 @@ export class BookingController {
   ) {}
 
   @Post('create')
-  async makeBooking(@Body(new BookingValidationPipe()) bookingVo: BookingVO) {
+  async makeBooking(@Body(new BookingValidationPipe()) bookingVo: BookingVO): Promise<ResponseObject> {
     return await this.bookingService.makeBooking(bookingVo);
   }
 

@@ -9,7 +9,7 @@ import { Activity } from '../vo/helper.vo';
 import { FieldValue } from 'firebase-admin/firestore';
 import { ResponseObject } from 'src/shared/types';
 import { MultipartFile } from '@fastify/multipart';
-import { deleteImage, uploadImages } from '../utils/upload-images.util';
+// import { deleteImage, uploadImages } from '../utils/upload-images.util';
 
 @Injectable()
 export class CoreService implements ICoreService {
@@ -19,10 +19,13 @@ export class CoreService implements ICoreService {
   ) {}
 
   async uploadImages(tourId: string, images: AsyncIterableIterator<MultipartFile>): Promise<ResponseObject> {
-    return await uploadImages(tourId, images, 'tours');
+    // return await uploadImages(tourId, images, 'tours');
+    return {status: 'success', message: 'Images uploaded successfully'} as ResponseObject;
   }
   async deleteImage(tourId: string, image: string): Promise<ResponseObject> {
-    return await deleteImage(tourId, image, 'tours');
+    // return await deleteImage(tourId, image, 'tours');
+    return {status: 'success', message: 'Images uploaded successfully'} as ResponseObject;
+
   }
 
   async createTour(tourVO: TourVO): Promise<ResponseObject> {

@@ -36,9 +36,6 @@ export class FileDTO {
 
 export abstract class UserDTO {
     @IsString()
-    public uid: string;
-
-    @IsString()
     public firstName: string;
 
     @IsString()

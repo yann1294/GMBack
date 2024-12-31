@@ -4,10 +4,6 @@ import { Tourist } from 'src/booking/vo/helper.vo';
 
 export default class CreateBookingDTO {
   @IsString()
-  @IsOptional()
-  public readonly id?: string;
-
-  @IsString()
   public readonly status: string;
 
   @IsDateString()
@@ -15,7 +11,7 @@ export default class CreateBookingDTO {
 
   @Type(() => Tourist)
   @ValidateNested()
-  public readonly tourist: Map<String, Tourist>;
+  public readonly tourist: Map<string, Tourist>;
 
   @IsString()
   @IsOptional()

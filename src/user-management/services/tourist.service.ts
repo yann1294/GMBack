@@ -17,14 +17,14 @@ export class TouristService implements ITouristService {
         touristVo.role = userRoles.guide;
         return await this.touristDAO.create(touristVo.toEntity());
     }
-    async deleteTourist(uid: string): Promise<ResponseObject> {
-        return await this.touristDAO.delete(uid);
+    async deleteTourist(tourist: TouristVO): Promise<ResponseObject> {
+        return await this.touristDAO.delete(tourist.toEntity());
     }
-    async updateTourist(uid: string, data: TouristVO): Promise<ResponseObject> {
-        return await this.touristDAO.update(uid, data.toEntity());
+    async updateTourist(tourist: TouristVO): Promise<ResponseObject> {
+        return await this.touristDAO.update(tourist.toEntity());
     }
-    async findTourist(uid: string): Promise<ResponseObject> {
-        return await this.touristDAO.findById(uid);
+    async findTourist(tourist: TouristVO): Promise<ResponseObject> {
+        return await this.touristDAO.findById(tourist.toEntity());
     }
 
     async getAllTourists(): Promise<ResponseObject> {

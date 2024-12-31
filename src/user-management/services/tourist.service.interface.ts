@@ -4,10 +4,10 @@ import { BookingVO } from "src/booking/vo/booking.master.vo";
 
 export interface ITouristService {
     addTourist(touristVo: TouristVO): Promise<ResponseObject>;
-    deleteTourist(uid: string): Promise<ResponseObject>;
-    updateTourist(uid: string, data: TouristVO): Promise<ResponseObject>;
-    findTourist(uid: string): Promise<ResponseObject>;
-    bookTour(booking: BookingVO): Promise<ResponseObject>;
+    deleteTourist(touristVo: TouristVO): Promise<ResponseObject>;
+    updateTourist(touristVo: TouristVO): Promise<ResponseObject>;
+    findTourist(touristVo: TouristVO): Promise<ResponseObject>;
+    bookTour(bookingVo: BookingVO): Promise<ResponseObject>;
     getAllTourists(): Promise<ResponseObject>;
 
     // From tour container

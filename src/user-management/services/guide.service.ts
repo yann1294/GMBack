@@ -5,6 +5,7 @@ import { ResponseObject } from "src/shared/types";
 import { GuideVO } from "../vo/user.guide.vo";
 import { IGuideDAO } from "../dao/guide.dao.interface";
 import { userRoles } from "../utils/roles.util";
+import { BookingVO } from "src/booking/vo/booking.master.vo";
 
 @Injectable()
 export class GuideService implements IGuideService {
@@ -14,14 +15,14 @@ export class GuideService implements IGuideService {
         guideVo.role = userRoles.guide;
         return await this.guideDAO.create(guideVo.toEntity());
     }
-    async deleteGuide(uid: string): Promise<ResponseObject> {
-        return await this.guideDAO.delete(uid);
+    async deleteGuide(guideVo: GuideVO): Promise<ResponseObject> {
+        return await this.guideDAO.delete(guideVo.toEntity());
     }
-    async updateGuide(uid: string, data: GuideVO): Promise<ResponseObject> {
-        return await this.guideDAO.update(uid, data.toEntity());
+    async updateGuide(guideVo: GuideVO): Promise<ResponseObject> {
+        return await this.guideDAO.update(guideVo.toEntity());
     }
-    async findGuide(uid: string): Promise<ResponseObject> {
-        return await this.guideDAO.findById(uid);
+    async findGuide(guideVo: GuideVO): Promise<ResponseObject> {
+        return await this.guideDAO.findById(guideVo.toEntity());
     }
 
     async getAllGuides(): Promise<ResponseObject> {
@@ -30,10 +31,10 @@ export class GuideService implements IGuideService {
 
 
     // TODO: Implement this with booking and tour containers
-    async approveBooking(bookingId: string): Promise<ResponseObject> {
+    async approveBooking(bookingVo: BookingVO): Promise<ResponseObject> {
         throw new Error("Method not implemented.");
     }
-    async declineBooking(bookingId: string): Promise<ResponseObject> {
+    async declineBooking(bookingVo: BookingVO): Promise<ResponseObject> {
         throw new Error("Method not implemented.");
     }
     async getTours(): Promise<ResponseObject> {

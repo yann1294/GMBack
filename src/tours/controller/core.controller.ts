@@ -10,7 +10,7 @@ import {
   Query,
   Request,
 } from '@nestjs/common';
-import { HasAttribute, TourValidationPipe } from './core.validation.pipe';
+import { TourValidationPipe } from './core.validation.pipe';
 import { TourVO } from '../vo/tour.master.vo';
 import { ICoreService } from '../services/tour.service.interface';
 import { Tour } from '../dao/tour.entity';
@@ -18,6 +18,7 @@ import { Activity } from '../vo/helper.vo';
 import { log } from 'console';
 import { CORE_SERVICE_TOKEN } from '../token';
 import { ResponseObject } from 'src/shared/types';
+import { HasAttribute } from 'src/shared/pipes/has-attribute.pipe';
 
 @Controller('tours')
 export class TourController {

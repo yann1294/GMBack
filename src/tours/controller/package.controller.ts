@@ -17,7 +17,7 @@ import { ResponseObject } from 'src/shared/types';
 import { PackageValidationPipe } from './package.validation.pipe';
 import { PackageVO } from '../vo/package.master.vo';
 import { IPackageService } from '../services/package.service.interface';
-import { HasAttribute } from './core.validation.pipe';
+import { HasAttribute } from 'src/shared/pipes/has-attribute.pipe';
 
 @Controller('packages')
 export class PackageController {

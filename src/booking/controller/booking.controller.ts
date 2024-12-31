@@ -11,10 +11,11 @@ import {
   Request,
 } from '@nestjs/common';
 import IBookingService from '../services/booking.service.interface';
-import { BookingValidationPipe, HasAttribute } from './booking.validation.pipe';
+import { BookingValidationPipe } from './booking.validation.pipe';
 import { BookingVO } from '../vo/booking.master.vo';
 import { BOOKING_SERVICE_TOKEN } from '../token';
 import { ResponseObject } from 'src/shared/types';
+import { HasAttribute } from 'src/shared/pipes/has-attribute.pipe';
 
 @Controller('bookings')
 export class BookingController {

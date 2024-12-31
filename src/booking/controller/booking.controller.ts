@@ -32,18 +32,22 @@ export class BookingController {
     private readonly bookingService: IBookingService,
   ) { }
 
-  @Post('create')
+  // create new booking
+  @Post()
   async makeBooking(@Body(new BookingValidationPipe()) bookingVo: BookingVO): Promise<ResponseObject> {
     return await this.bookingService.makeBooking(bookingVo);
   }
 
-  @Patch('update')
+  // update an existing booking
+  @Patch(':id')
   async modifyBooking(
     @Body(new BookingValidationPipe('update')) bookingVo: BookingVO,
   ) {
     return await this.bookingService.modifyBooking(bookingVo);
   }
-  @Patch('cancel')
+
+  // delete an existing booking
+  @Delete(':id')
   async cancelBooking(
     @Req() req: FastifyRequest
   ) {
@@ -52,6 +56,7 @@ export class BookingController {
     return await this.bookingService.cancelBooking(bookingVo);
   }
 
+  // get a booking by id
   @Get(':id')
   async displayBooking(
     @Req() req: FastifyRequest
@@ -62,6 +67,7 @@ export class BookingController {
     return await this.bookingService.displayBooking(bookingVo);
   }
 
+  // get booking history for a specific guide
   @Get('guide/:uid/history')
   async displayGuideBookingHistory(
     @Req() req: FastifyRequest
@@ -71,6 +77,7 @@ export class BookingController {
     return await this.bookingService.displayGuideBookingHistory(guideVo);
   }
 
+  // get booking history for a specific tourist
   @Get('tourist/:uid/history')
   async displayTouristBookingHistory(
     @Req() req: FastifyRequest
@@ -80,6 +87,7 @@ export class BookingController {
     return await this.bookingService.displayTouristBookingHistory(touristVo);
   }
 
+  // get all bookings
   @Get()
   async getAllBooking(
     @Req() req: FastifyRequest
@@ -87,7 +95,8 @@ export class BookingController {
     return await this.bookingService.getAllBookings();
   }
 
-  @Get('tour/:tour')
+  // get bookings for a specific tour
+  @Get('tours/:tour')
   async getBookingByTour(
     @Req() req: FastifyRequest
   ) {
@@ -97,7 +106,8 @@ export class BookingController {
     return await this.bookingService.getBookingsForResource(bookingVo);
   }
 
-  @Get('package/:tourPackage')
+  // get bookings for a specific package
+  @Get('packages/:tourPackage')
   async getBookingByPackage(
     @Req() req: FastifyRequest
   ) {

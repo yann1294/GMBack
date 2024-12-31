@@ -9,19 +9,17 @@ import { MultipartFile } from '@fastify/multipart';
 export interface ICoreService {
   // tour functions
   createTour(tourVO: TourVO): Promise<ResponseObject>;
-  updateTour(id: string, tourVO: TourVO): Promise<ResponseObject>;
-  findTourById(id: string): Promise<ResponseObject>;
+  updateTour(tourVO: TourVO): Promise<ResponseObject>;
+  findTourById(tourVO: TourVO): Promise<ResponseObject>;
   findAllTours(): Promise<ResponseObject>;
-  deleteTour(id: string): Promise<ResponseObject>;
-  updateTourAvailability(id: string, isAvailable: boolean): Promise<ResponseObject>;
-  assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject>
-  uploadImages(tourId: string, images: AsyncIterableIterator<MultipartFile>): Promise<ResponseObject>;
-  deleteImage(tourId: string, image: string): Promise<ResponseObject>;
+  deleteTour(tourVO: TourVO): Promise<ResponseObject>;
+  updateTourAvailability(tourVO: TourVO): Promise<ResponseObject>;
+  assignGuideToTour(tourVO: TourVO): Promise<ResponseObject>;
 
   // activity functions
   addActivityToTour(tourVo: TourVO): Promise<ResponseObject>;
-  removeActivityFromTour(tourId: string, activityId: string): Promise<ResponseObject>;
-  listActivitiesForTour(tourId: string): Promise<ResponseObject>;
+  removeActivityFromTour(tourVo: TourVO): Promise<ResponseObject>;
+  listActivitiesForTour(tourVo: TourVO): Promise<ResponseObject>;
   getCurrentActivityId(): Promise<string>;
   setCurrentActivityId(id: string): Promise<string>;
   startCurrentActivity(): Promise<boolean>;

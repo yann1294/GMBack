@@ -8,17 +8,21 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Request,
 } from '@nestjs/common';
 import { TourValidationPipe } from './core.validation.pipe';
 import { TourVO } from '../vo/tour.master.vo';
-import { ICoreService } from '../services/tour.service.interface';
+import { ICoreService } from '../services/tour.core.service.interface';
 import { Tour } from '../dao/tour.entity';
 import { Activity } from '../vo/helper.vo';
 import { log } from 'console';
 import { CORE_SERVICE_TOKEN } from '../token';
 import { ResponseObject } from 'src/shared/types';
 import { HasAttribute } from 'src/shared/pipes/has-attribute.pipe';
+import { ConvertToVoPipe } from 'src/shared/pipes/convert-to-vo.pipe';
+import { FastifyRequest } from 'fastify';
+import { deleteImage, uploadImages } from '../utils/upload-images.util';
 
 @Controller('tours')
 export class TourController {
@@ -32,7 +36,7 @@ export class TourController {
   // tour functions
 
    // Create a new tour
-   @Post()
+   @Post("create")
    async createTour(
      @Body(new TourValidationPipe()) tourVo: TourVO,
    ): Promise<ResponseObject> {
@@ -43,17 +47,18 @@ export class TourController {
 
   // Get a tour by ID
   @Get(':id')
-  async findById(@Param('id') id: string): Promise<ResponseObject> {
-    return await this.coreService.findTourById(id);
+  async findById(@Req() req: FastifyRequest): Promise<ResponseObject> {
+    const validationPipe = new ConvertToVoPipe("tour", false, "id");
+    const tourVo: TourVO = await validationPipe.transform(req, { type: 'param', metatype: TourVO }) as TourVO;
+    return await this.coreService.findTourById(tourVo);
   }
 
   // Update an existing tour
-  @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body(new TourValidationPipe('update')) tourVO: TourVO,
-  ): Promise<ResponseObject> {
-    return await this.coreService.updateTour(id, tourVO);
+  @Patch("update")
+  async update(@Req() req: FastifyRequest): Promise<ResponseObject> {
+    const validationPipe = new ConvertToVoPipe("tour", true, "id");
+    const tourVo: TourVO = await validationPipe.transform(req, { type: 'param', metatype: TourVO }) as TourVO;
+    return await this.coreService.updateTour(tourVo);
   }
 
   // Get all tours
@@ -63,28 +68,39 @@ export class TourController {
   }
 
   // Delete a tour
-  @Delete(':id')
-  async deleteTour(@Param('id') id: string): Promise<ResponseObject> {
-    return await this.coreService.deleteTour(id);
-  }
-
-  // Update tour availability
-  @Patch('availability')
-  async updateTourAvailability(
-    @Body(new HasAttribute(['isAvailable', 'tourId'])) body: {tourId: string, isAvailable: boolean},
-  ): Promise<ResponseObject> {
-       return await this.coreService.updateTourAvailability(body.tourId, body.isAvailable);
+  @Delete('delete')
+  async Delete(@Req() req: FastifyRequest): Promise<ResponseObject> {
+    const validationPipe = new ConvertToVoPipe("tour", true, "id");
+    const tourVo: TourVO = await validationPipe.transform(req, { type: 'param', metatype: TourVO }) as TourVO;
+    return await this.coreService.deleteTour(tourVo);
   }
 
   // Assign a guide to a tour
   @Patch('assign-guide')
-  async assignGuideToTour(
-    @Body(new HasAttribute(['tourId', 'guideId'])) body: {tourId: string, guideId: string},
-  ): Promise<ResponseObject> {
-       return await this.coreService.assignGuideToTour(body.tourId, body.guideId);
+  async assignGuideToTour(@Req() req: FastifyRequest): Promise<ResponseObject> {
+    const validationPipe = new ConvertToVoPipe("package", true);
+    const tourVo: TourVO = await validationPipe.transform(req, { type: 'param', metatype: TourVO }) as TourVO;
+    return this.coreService.assignGuideToTour(tourVo);
   }
 
-  // activity functions
+  @Patch('availability')
+  async updateTourAvailability(@Req() req: FastifyRequest): Promise<ResponseObject> {
+    const validationPipe = new ConvertToVoPipe("package", true);
+    const tourVo: TourVO = await validationPipe.transform(req, { type: 'param', metatype: TourVO }) as TourVO;
+    return this.coreService.updateTourAvailability(tourVo);
+  }
+
+  // upload an image for a tour
+  @Post('upload-image/:tourId/')
+  async uploadImage(@Req() req: FastifyRequest): Promise<ResponseObject> {
+    return await uploadImages(req.params['tourId'], req.files(), 'tours');
+  }
+
+  // Delete an image for a tour
+  @Delete('delete-image')
+  async deleteImage(@Body(new HasAttribute(['tourId', 'image'])) body: { tourId: string, image: string}): Promise<ResponseObject> {
+    return await deleteImage(body.tourId, body.image, 'tours');
+  }
 
   // Add an activity to a tour
   @Patch('add-activity')
@@ -96,19 +112,18 @@ export class TourController {
 
   // Remove an activity from a tour
   @Patch('remove-activity')
-  async removeActivityFromTour(
-    @Body(new HasAttribute(['tourId', 'activityId'])) body: {tourId: string, activityId: string},
-  ): Promise<ResponseObject> {
-    return await this.coreService.removeActivityFromTour(
-      body.tourId,
-      body.activityId,
-    );
+  async removeActivityFromTour(@Req() req: FastifyRequest): Promise<ResponseObject> {
+    const validationPipe = new ConvertToVoPipe("package", true);
+    const tourVo: TourVO = await validationPipe.transform(req, { type: 'param', metatype: TourVO }) as TourVO;
+    return await this.coreService.removeActivityFromTour(tourVo);
   }
 
   // List activities for a tour
-  @Get('activities/:tourId')
-  async listActivitiesForTour(@Param('tourId') tourId: string): Promise<ResponseObject> {
-    return await this.coreService.listActivitiesForTour(tourId);
+  @Get('activities/:id')
+  async listActivitiesForTour(@Req() req: FastifyRequest): Promise<ResponseObject> {
+    const validationPipe = new ConvertToVoPipe("package", false);
+    const tourVo: TourVO = await validationPipe.transform(req, { type: 'param', metatype: TourVO }) as TourVO;
+    return await this.coreService.listActivitiesForTour(tourVo);
   }
 
   // Get the current activity ID

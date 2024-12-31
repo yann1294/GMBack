@@ -5,6 +5,7 @@ import { ITouristService } from "./tourist.service.interface";
 import { Inject, Injectable } from "@nestjs/common";
 import { TOURIST_DAO_TOKEN } from "../vo/token";
 import { ITouristDAO } from "../dao/tourist.dao.interface";
+import { userRoles } from "../utils/roles.util";
 
 @Injectable()
 export class TouristService implements ITouristService {
@@ -12,6 +13,8 @@ export class TouristService implements ITouristService {
     constructor(@Inject(TOURIST_DAO_TOKEN) private readonly touristDAO: ITouristDAO) {}
 
     async addTourist(touristVo: TouristVO): Promise<ResponseObject> {
+        // assign tourist role
+        touristVo.role = userRoles.guide;
         return await this.touristDAO.create(touristVo.toEntity());
     }
     async deleteTourist(uid: string): Promise<ResponseObject> {

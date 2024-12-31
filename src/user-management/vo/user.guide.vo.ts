@@ -1,22 +1,47 @@
-import { Type } from "class-transformer";
 import { User } from "../utils/user.abstract";
 import { Identification } from "./helper.vo";
 import { IsArray, IsBoolean, IsOptional, IsString } from "class-validator";
 import { Guide } from "../dao/guide.entity";
+import { Expose, Type } from "class-transformer";
 
 export class GuideVO extends User {
+    private _identification: Identification;
+    private _spokenLanguages: string[];
+    private _availability: boolean;
+
+    @Expose({ name: 'identification' })
     @Type(() => Identification)
     @IsOptional()
-    public identification: Identification;
+    public get identification(): Identification {
+        return this._identification;
+    }
 
+    public set identification(value: Identification) {
+        this._identification = value;
+    }
+
+    @Expose({ name: 'spokenLanguages' })
     @IsArray()
-    @IsString({each: true})
+    @IsString({ each: true })
     @IsOptional()
-    public spokenLanguages: string[];
+    public get spokenLanguages(): string[] {
+        return this._spokenLanguages;
+    }
 
+    public set spokenLanguages(value: string[]) {
+        this._spokenLanguages = value;
+    }
+
+    @Expose({ name: 'availability' })
     @IsBoolean()
     @IsOptional()
-    public availability: boolean;
+    public get availability(): boolean {
+        return this._availability;
+    }
+
+    public set availability(value: boolean) {
+        this._availability = value;
+    }
 
     toEntity(): Guide {
         return new Guide(
@@ -33,6 +58,6 @@ export class GuideVO extends User {
             this.identification,
             this.spokenLanguages,
             this.availability
-          );
+        );
     }
 }

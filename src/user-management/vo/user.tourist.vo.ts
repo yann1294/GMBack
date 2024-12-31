@@ -1,18 +1,36 @@
-import { Type } from "class-transformer";
 import { User } from "../utils/user.abstract";
 import { Identification } from "./helper.vo";
 import { IsArray, IsOptional, IsString } from "class-validator";
 import { Tourist } from "../dao/tourist.entity";
+import { Expose, Type } from "class-transformer";
 
 export class TouristVO extends User {
     @Type(() => Identification)
     @IsOptional()
-    public identification: Identification;
+    @Expose({ name: 'identification' })
+    private _identification: Identification;
 
     @IsArray()
     @IsString({ each: true })
     @IsOptional()
-    public spokenLanguages: string[];
+    @Expose({ name: 'spokenLanguages' })
+    private _spokenLanguages: string[];
+
+    get identification(): Identification {
+        return this._identification;
+    }
+
+    set identification(value: Identification) {
+        this._identification = value;
+    }
+
+    get spokenLanguages(): string[] {
+        return this._spokenLanguages;
+    }
+
+    set spokenLanguages(value: string[]) {
+        this._spokenLanguages = value;
+    }
 
     toEntity(): Tourist {
         return new Tourist(
@@ -26,8 +44,8 @@ export class TouristVO extends User {
             this.accountStatus,
             this.createdAt,
             this.updatedAt,
-            this.identification,
-            this.spokenLanguages
-          );
+            this._identification,
+            this._spokenLanguages
+        );
     }
 }

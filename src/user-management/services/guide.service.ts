@@ -4,11 +4,14 @@ import { GUIDE_DAO_TOKEN } from "../vo/token";
 import { ResponseObject } from "src/shared/types";
 import { GuideVO } from "../vo/user.guide.vo";
 import { IGuideDAO } from "../dao/guide.dao.interface";
+import { userRoles } from "../utils/roles.util";
 
 @Injectable()
 export class GuideService implements IGuideService {
     constructor(@Inject(GUIDE_DAO_TOKEN) private readonly guideDAO: IGuideDAO) {}
     async addGuide(guideVo: GuideVO): Promise<ResponseObject> {
+        // assign guide role
+        guideVo.role = userRoles.guide;
         return await this.guideDAO.create(guideVo.toEntity());
     }
     async deleteGuide(uid: string): Promise<ResponseObject> {

@@ -3,6 +3,8 @@ import { DataService } from 'src/shared/services/data.service';
 import { DataServiceCondition, ResponseObject } from 'src/shared/types';
 import IBookingDAO from './booking.dao.interface';
 import { Booking } from './booking.entity';
+import { Tourist } from 'src/user-management/dao/tourist.entity';
+import { Guide } from 'src/user-management/dao/guide.entity';
 
 @Injectable()
 export class BookingDAO implements IBookingDAO {
@@ -14,16 +16,16 @@ export class BookingDAO implements IBookingDAO {
     return await this.dataService.readAllDocs(this.collectionName);
   }
 
-  async create(data: Booking): Promise<ResponseObject> {
+  async create(booking: Booking): Promise<ResponseObject> {
     // checking whether booking for resource id already exist
-    let booking: ResponseObject = await this.dataService.readDocsWithConditions(
+    let response: ResponseObject = await this.dataService.readDocsWithConditions(
       this.collectionName,
       [
         // filters by resource Id
         {
           fieldPath: 'resourceId',
           operationString: '==',
-          value: data.resourceId,
+          value: booking.resourceId,
         },
         // filters by status
         {
@@ -35,45 +37,45 @@ export class BookingDAO implements IBookingDAO {
     );
 
     // check whether resource was found
-    if ((booking.data as object[]).length !== 0) {
+    if ((response.data as object[]).length !== 0) {
       // update tourist in booking
       return await this.dataService.updateDoc(
         this.collectionName,
-        booking.data[0]['id'],
+        response.data[0]['id'],
         {
-          tourists: data.tourists,
+          tourists: booking.tourists,
         },
       );
     }
 
     // create new booking
-    return await this.dataService.createDoc(data, this.collectionName);
+    return await this.dataService.createDoc(booking, this.collectionName);
   }
 
-  async findByResourceId(resourceId: string): Promise<ResponseObject> {
+  async findByResourceId(booking: Booking): Promise<ResponseObject> {
     return await this.dataService.readDocsWithConditions(this.collectionName, {
       fieldPath: 'resourceId',
       operationString: '==',
-      value: resourceId,
+      value: booking.resourceId,
     } as DataServiceCondition);
   }
 
-  async findAllByTourist(id: string): Promise<ResponseObject> {
+  async findAllByTourist(tourist: Tourist): Promise<ResponseObject> {
     return await this.dataService.readDocsWithConditions(this.collectionName, {
-      fieldPath: 'tourist',
-      operationString: 'array-contains',
-      value: id,
+      fieldPath: `tourists.${tourist.uid}.bookedOn`,
+      operationString: '!=',
+      value: null,
     } as DataServiceCondition);
   }
 
-  async findAllByGuide(id: string): Promise<ResponseObject> {
+  async findAllByGuide(guide: Guide): Promise<ResponseObject> {
     // retrieving all tours guided by guide id
     let tours: ResponseObject = (await this.dataService.readDocsWithConditions(
       'tours',
       {
         fieldPath: 'guide',
         operationString: '==',
-        value: id,
+        value: guide.uid,
       } as DataServiceCondition,
     )) as ResponseObject;
 
@@ -82,7 +84,7 @@ export class BookingDAO implements IBookingDAO {
       (await this.dataService.readDocsWithConditions('packages', {
         fieldPath: 'guide',
         operationString: '==',
-        value: id,
+        value: guide.uid,
       } as DataServiceCondition)) as ResponseObject;
 
     // creating a list of tour ids and package ids
@@ -96,7 +98,7 @@ export class BookingDAO implements IBookingDAO {
       return {
         status: 'success',
         code: 200,
-        message: `Guide ${id} is not assigned to any tour or package`,
+        message: `Guide ${guide.uid} is not assigned to any tour or package`,
         data: [],
       };
     }
@@ -109,29 +111,21 @@ export class BookingDAO implements IBookingDAO {
     } as DataServiceCondition);
   }
 
-  async findById(id: string): Promise<ResponseObject> {
-    return await this.dataService.readDoc(this.collectionName, id);
+  async findById(booking: Booking): Promise<ResponseObject> {
+    return await this.dataService.readDoc(this.collectionName, booking.id);
   }
 
-  async update(id: string, data: Booking): Promise<ResponseObject> {
+  async update(booking: Booking): Promise<ResponseObject> {
     // Call the DataService's updateDoc method
     return await this.dataService.updateDoc(
       this.collectionName,
-      id,
-      data.toUpdateObject(),
+      booking.id,
+      booking.toUpdateObject(),
     );
   }
 
-  // if only id is passed, then document id will be deleted.
-  async delete(id: string, data?: Booking): Promise<ResponseObject> {
+  async delete(booking: Booking): Promise<ResponseObject> {
     // Call the DataService's deleteDoc method
-    if (data) {
-      return await this.dataService.updateDoc(
-        this.collectionName,
-        id,
-        data.toDeleteObject(),
-      );
-    }
-    return await this.dataService.deleteDoc(this.collectionName, id);
+    return await this.dataService.deleteDoc(this.collectionName, booking.id);
   }
 }

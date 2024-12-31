@@ -1,11 +1,13 @@
 import {
+  registerDecorator,
   ValidationArguments,
+  ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
 
 @ValidatorConstraint({ name: 'ExclusiveFields', async: false })
-export default class ExclusiveFieldsValidator
+class ExclusiveFieldsValidator
   implements ValidatorConstraintInterface
 {
   validate(value: any, args: ValidationArguments): boolean {
@@ -18,4 +20,16 @@ export default class ExclusiveFieldsValidator
   defaultMessage(args: ValidationArguments): string {
     return "Only one of 'tour' or 'tourPackage' should be provided.";
   }
+}
+
+export function IsExclusiveFields(validationOptions?: ValidationOptions) {
+  return function (object: Object, propertyName: string) {
+    registerDecorator({
+      name: 'IsExclusiveFields',
+      target: object.constructor,
+      propertyName: propertyName,
+      options: validationOptions,
+      validator: ExclusiveFieldsValidator,
+    });
+  };
 }

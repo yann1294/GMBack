@@ -24,7 +24,7 @@ export class TouristController {
     try {
       touristVo = await validationPipe.transform(req, { type: 'body', metatype: TouristVO });
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error.response);
     }
 
     // Perform the logic to add a tourist
@@ -51,7 +51,7 @@ export class TouristController {
     try {
       touristVo = await validationPipe.transform(req, { type: 'body', metatype: TouristVO });
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error.response);
     }
     
     return await this.touristService.updateTourist(touristVo);

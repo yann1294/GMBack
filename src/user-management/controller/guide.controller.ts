@@ -13,7 +13,7 @@ export class GuideController {
   constructor(@Inject(GUIDE_SERVICE_TOKEN) private readonly guideService: IGuideService) { }
 
   @Post()
-  async addTourist(
+  async addGuide(
     @Req() req: FastifyRequest
   ): Promise<ResponseObject> {
     let guideVo: GuideVO;
@@ -23,9 +23,10 @@ export class GuideController {
     try {
       guideVo = await validationPipe.transform(req, { type: 'body', metatype: GuideVO });
     } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+    console.log(error.response);
 
+      throw new BadRequestException(error.response);
+    }
     // Perform the logic to add a tourist
     return await this.guideService.addGuide(guideVo);
   }
@@ -50,7 +51,7 @@ export class GuideController {
     try {
       guideVo = await validationPipe.transform(req, { type: 'body', metatype: GuideVO });
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error.response);
     }
 
     return await this.guideService.updateGuide(guideVo);

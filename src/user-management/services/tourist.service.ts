@@ -14,7 +14,7 @@ export class TouristService implements ITouristService {
 
     async addTourist(touristVo: TouristVO): Promise<ResponseObject> {
         // assign tourist role
-        touristVo.role = userRoles.guide;
+        touristVo.role = userRoles.tourist;
         return await this.touristDAO.create(touristVo.toEntity());
     }
     async deleteTourist(tourist: TouristVO): Promise<ResponseObject> {

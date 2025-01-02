@@ -9,7 +9,6 @@ import { Activity } from '../vo/helper.vo';
 import { FieldValue } from 'firebase-admin/firestore';
 import { ResponseObject } from 'src/shared/types';
 import { MultipartFile } from '@fastify/multipart';
-import { deleteImage, uploadImages } from '../utils/upload-images.util';
 // import { deleteImage, uploadImages } from '../utils/upload-images.util';
 
 @Injectable()

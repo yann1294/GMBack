@@ -8,7 +8,6 @@ import { Package } from '../dao/package.entity';
 import { ResponseObject } from 'src/shared/types';
 import { FieldValue } from 'firebase-admin/firestore';
 import { MultipartFile } from '@fastify/multipart';
-import { deleteImage, uploadImages } from '../utils/upload-images.util';
 // import { deleteImage, uploadImages } from '../utils/upload-images.util';
 
 @Injectable()
@@ -38,12 +37,7 @@ export class PackageService implements IPackageService {
   }
 
   async readTours(packageVo: PackageVO): Promise<ResponseObject> {    
-    let response: ResponseObject = await this.packageDAO.findById(packageVo.toEntity());
-    
-    if  (response.status !== 'success') {
-      return response;
-    }
-    return {...response, data: response.data['tours']} as ResponseObject;
+    return await this.packageDAO.readTours(packageVo.toEntity());
   }
 
   async addTourToPackage(packageVo: PackageVO): Promise<ResponseObject> {

@@ -22,7 +22,6 @@ import { ResponseObject } from 'src/shared/types';
 import { HasAttribute } from 'src/shared/pipes/has-attribute.pipe';
 import { ConvertToVoPipe } from 'src/shared/pipes/convert-to-vo.pipe';
 import { FastifyRequest } from 'fastify';
-import { deleteImage, uploadImages } from '../utils/upload-images.util';
 
 @Controller('tours')
 export class TourController {
@@ -90,17 +89,17 @@ export class TourController {
     return this.coreService.updateTourAvailability(tourVo);
   }
 
-  // upload an image for a tour
-  @Post('upload-image/:tourId/')
-  async uploadImage(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    return await uploadImages(req.params['tourId'], req.files(), 'tours');
-  }
+  // // upload an image for a tour
+  // @Post('upload-image/:tourId/')
+  // async uploadImage(@Req() req: FastifyRequest): Promise<ResponseObject> {
+  //   return await uploadImages(req.params['tourId'], req.files(), 'tours');
+  // }
 
-  // Delete an image for a tour
-  @Delete('delete-image')
-  async deleteImage(@Body(new HasAttribute(['tourId', 'image'])) body: { tourId: string, image: string}): Promise<ResponseObject> {
-    return await deleteImage(body.tourId, body.image, 'tours');
-  }
+  // // Delete an image for a tour
+  // @Delete('delete-image')
+  // async deleteImage(@Body(new HasAttribute(['tourId', 'image'])) body: { tourId: string, image: string}): Promise<ResponseObject> {
+  //   return await deleteImage(body.tourId, body.image, 'tours');
+  // }
 
   // Add an activity to a tour
   @Patch('add-activity')

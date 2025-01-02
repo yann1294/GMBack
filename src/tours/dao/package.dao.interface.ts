@@ -7,4 +7,5 @@ export interface PackageDAOInterface {
   create(packageEntity: Package): Promise<ResponseObject>;
   update(packageEntity: Package): Promise<ResponseObject>;
   delete(packageEntity: Package): Promise<ResponseObject>;
+  readTours(packageEntity: Package): Promise<ResponseObject>;
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PackageDAOInterface } from './package.dao.interface';
 import { Package } from './package.entity';
 import { DataService } from 'src/shared/services/data.service';
-import { FileServiceResponse, ResponseObject } from 'src/shared/types';
+import { DataServiceCondition, FileServiceResponse, ResponseObject } from 'src/shared/types';
 import { MultipartFile } from '@fastify/multipart';
 import { FileService } from 'src/shared/services/file.service';
 import { plainToInstance } from 'class-transformer';
@@ -18,6 +18,24 @@ export class PackageDAO implements PackageDAOInterface {
       private readonly dataService: DataService,
       private readonly fileService: FileService,
     ) { }
+  async readTours(packageEntity: Package): Promise<ResponseObject> {
+    // read tour details
+    let response: ResponseObject = await this.findById(packageEntity);
+    if  (response.status !== 'success') {
+      return response;
+    }
+
+    // read tour documents
+    return await this.dataService.readDocsWithConditions(
+      "tours", 
+      {
+        fieldPath: "id",
+        operationString: "in",
+        value: response.data['tours']
+      } as DataServiceCondition
+    )
+
+  }
 
   async findAll(): Promise<ResponseObject> {
     return await this.dataService.readAllDocs(this.collectionName);

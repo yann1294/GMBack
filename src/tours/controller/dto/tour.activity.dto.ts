@@ -74,3 +74,4 @@ export class ActivityDTO {
     accommodation: AccommodationDTO;
   }
   
+  // TODO: Add activity description

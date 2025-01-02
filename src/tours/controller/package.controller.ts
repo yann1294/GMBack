@@ -21,7 +21,6 @@ import { IPackageService } from '../services/package.service.interface';
 import { HasAttribute } from 'src/shared/pipes/has-attribute.pipe';
 import { ConvertToVoPipe } from 'src/shared/pipes/convert-to-vo.pipe';
 import { FastifyRequest } from 'fastify';
-import { deleteImage, uploadImages } from '../utils/upload-images.util';
 
 @Controller('packages')
 export class PackageController {
@@ -98,17 +97,17 @@ export class PackageController {
     return this.packageService.updatePackageAvailability(packageVo);
   }
 
-  // upload an image for a tour
-    @Post('upload-image/:packageId/')
-    async uploadImage(@Req() req: FastifyRequest): Promise<ResponseObject> {
-      return await uploadImages(req.params['packageId'], req.files(), 'packages');
-    }
+  // // upload an image for a tour
+  //   @Post('upload-image/:packageId/')
+  //   async uploadImage(@Req() req: FastifyRequest): Promise<ResponseObject> {
+  //     return await uploadImages(req.params['packageId'], req.files(), 'packages');
+  //   }
   
-    // Delete an image for a tour
-    @Delete('delete-image')
-    async deleteImage(@Body(new HasAttribute(['packageId', 'image'])) body: { packageId: string, image: string}): Promise<ResponseObject> {
-      return await deleteImage(body.packageId, body.image, 'packages');
-    }
+  //   // Delete an image for a tour
+  //   @Delete('delete-image')
+  //   async deleteImage(@Body(new HasAttribute(['packageId', 'image'])) body: { packageId: string, image: string}): Promise<ResponseObject> {
+  //     return await deleteImage(body.packageId, body.image, 'packages');
+  //   }
   
 
 }

@@ -23,6 +23,7 @@ export class TourVO {
 
   @Expose({ name: "date" })
   @IsDateString()
+  @IsOptional()
   public _date: string;
 
   @Expose({ name: "images" })

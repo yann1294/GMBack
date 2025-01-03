@@ -1,4 +1,4 @@
-import { Identification } from "src/user-management/vo/helper.vo";
+import { Identification } from "src/user-management/utils/helper";
 import { UserDTO } from "./helper.dto";
 import { Type } from "class-transformer";
 import { IsArray, IsString } from "class-validator";

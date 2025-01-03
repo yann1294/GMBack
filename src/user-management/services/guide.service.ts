@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IGuideService } from "./guide.service.interface";
-import { GUIDE_DAO_TOKEN } from "../vo/token";
+import { GUIDE_DAO_TOKEN } from "../utils/token";
 import { ResponseObject } from "src/shared/types";
-import { GuideVO } from "../vo/user.guide.vo";
+import { GuideVO } from "../vo/guide.vo";
 import { IGuideDAO } from "../dao/guide.dao.interface";
 
 @Injectable()
@@ -14,8 +14,8 @@ export class GuideService implements IGuideService {
     async deleteGuide(uid: string): Promise<ResponseObject> {
         return await this.guideDAO.delete(uid);
     }
-    async updateGuide(uid: string, data: GuideVO): Promise<ResponseObject> {
-        return await this.guideDAO.update(uid, data.toEntity());
+    async updateGuide(uid: string, guide: GuideVO): Promise<ResponseObject> {
+        return await this.guideDAO.update(uid, guide.toEntity());
     }
     async findGuide(uid: string): Promise<ResponseObject> {
         return await this.guideDAO.findById(uid);

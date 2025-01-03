@@ -1,19 +1,10 @@
-import {
-    ArgumentMetadata,
-    BadRequestException,
-    Injectable,
-    PipeTransform,
-  } from '@nestjs/common';
-  import { plainToInstance } from 'class-transformer';
-  import { validate } from 'class-validator';
-  import { log } from 'console';
-  import { UpdateGuideDTO } from './dto/guide.update.dto';
-  import { CreateGuideDTO } from './dto/guide.create.dto';
-  import { TouristVO } from '../vo/user.tourist.vo';
-  import { UpdateTouristDTO } from './dto/tourist.update.dto';
-  import { CreateTouristDTO } from './dto/tourist.create.dto';
-import { AdminVO } from '../vo/user.admin.vo';
+import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
+import { log } from 'console';
+import { AdminVO } from '../vo/admin.vo';
 import { UpdateAdminDTO } from './dto/admin.update.dto';
+import { CreateAdminDTO } from './dto/admin.create.dto';
   
   @Injectable()
   export class AdminValidationPipe
@@ -27,11 +18,11 @@ import { UpdateAdminDTO } from './dto/admin.update.dto';
         throw new BadRequestException('Request body cannot be empty');
       }
   
-      // validate input data against AdminVO
+      // validate input data against AdminDTO
       const adminDto =
         this.origin == 'update'
           ? plainToInstance(UpdateAdminDTO, value)
-          : plainToInstance(UpdateAdminDTO, value);
+          : plainToInstance(CreateAdminDTO, value);
       const errors = await validate(adminDto);
   
       // checking if there are any errors

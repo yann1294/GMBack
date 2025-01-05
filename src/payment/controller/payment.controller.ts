@@ -11,6 +11,7 @@ export class PaymentController {
 
     @Post()
     async makePayment(@Body(new PaymentValidationPipe()) payment: PaymentVO): Promise<any> {
+        console.log("Payment request", payment)
         return await this.paymentService.processPayment(payment);
     }
 }

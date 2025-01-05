@@ -2,6 +2,7 @@ import { Identification, Role } from "../vo/helper.vo";
 import { User } from "../utils/user.abstract";
 import { instanceToPlain } from "class-transformer";
 import { FileDTO } from "../controller/dto/helper.dto";
+import { Timestamp } from "firebase-admin/firestore";
 
 export class Guide extends User {
     public identification: Identification;
@@ -49,8 +50,8 @@ export class Guide extends User {
             profilePhoto: this.profilePhoto,
             role: Object.assign({}, this.role),
             accountStatus: this.accountStatus,
-            createdAt: this.createdAt,
-            updatedAt: this.updatedAt,
+            createdAt: this.createdAt ? Timestamp.fromDate(new Date(this.createdAt)) : this.createdAt,
+            updatedAt: this.updatedAt ? Timestamp.fromDate(new Date(this.updatedAt)) : this.updatedAt,
             identification: Object.assign({}, this.identification),
             spokenLanguages: this.spokenLanguages,
             availability: this.availability

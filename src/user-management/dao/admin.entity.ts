@@ -2,6 +2,7 @@ import { Role } from "../vo/helper.vo";
 import { User } from "../utils/user.abstract";
 import { instanceToPlain } from "class-transformer";
 import { FileDTO } from "../controller/dto/helper.dto";
+import { Timestamp } from "firebase-admin/firestore";
 
 export class Admin extends User {
     constructor(
@@ -39,16 +40,16 @@ export class Admin extends User {
             profilePhoto: this.profilePhoto,
             role: Object.assign({}, this.role),
             accountStatus: this.accountStatus,
-            createdAt: this.createdAt,
-            updatedAt: this.updatedAt,
+            createdAt: this.createdAt ? Timestamp.fromDate(new Date(this.createdAt)) : this.createdAt,
+            updatedAt: this.updatedAt ? Timestamp.fromDate(new Date(this.updatedAt)) : this.updatedAt,
         };
     }
 
     toUpdateObject(): object {
         return instanceToPlain(this);
-      }
-    
-      toDeleteObject(): object {
+    }
+
+    toDeleteObject(): object {
         return { ...this };
-      }
+    }
 }

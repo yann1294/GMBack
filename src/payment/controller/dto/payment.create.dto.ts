@@ -21,9 +21,11 @@ export class CreatePaymentDTO {
   status: string = "in-progress";
 
   @IsString()
+  @IsOptional()
   bookingId: string;
 
   @IsString()
+  @IsOptional()
   userId: string;
 
   @IsDateString()

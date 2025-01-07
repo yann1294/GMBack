@@ -4,11 +4,11 @@ import { CoreDAOInterface } from '../dao/tour.core.dao.interface';
 
 import { CORE_SERVICE_TOKEN, PACKAGE_SERVICE_TOKEN } from '../token';
 import { DataService } from 'src/shared/services/data.service';
-import { CoreService } from './tour.service';
 import { ResponseObject } from 'src/shared/types';
-import { ICoreService } from '../services/tour.service.interface';
+import { ICoreService } from './tour.core.service.interface';
 import CreateBookingDTO from 'src/booking/controller/dto/booking.create.dto';
 import { IPackageService } from './package.service.interface';
+import { TourVO } from '../vo/tour.master.vo';
 
 @Injectable()
 export class TourExternalService implements ITourExternalService {
@@ -40,11 +40,8 @@ export class TourExternalService implements ITourExternalService {
     return tour;
   }
 
-  async updateTourAvailability(
-    id: string,
-    isAvailable: boolean,
-  ): Promise<ResponseObject> {
-    return await this.coreService.updateTourAvailability(id, isAvailable);
+  async updateTourAvailability(tourVO: TourVO): Promise<ResponseObject> {
+    return await this.coreService.updateTourAvailability(tourVO);
   }
 
   async getAssignedGuide(
@@ -54,9 +51,12 @@ export class TourExternalService implements ITourExternalService {
     const packageId = currentBooking.tourPackage;
 
     if (tourId != null) {
-      return this.coreService.findTourById(tourId);
+      //return this.coreService.findTourById(currentBooking.tour);
+      throw new Error('Method not implemented.');
     } else if (packageId != null) {
-      return this.packageService.readTours(packageId);
+      //return this.packageService.readTours(packageId);
+      //throw new Error('Method not implemented.');
+      return null;
     }
   }
 

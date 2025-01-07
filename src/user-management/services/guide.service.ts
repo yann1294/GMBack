@@ -25,6 +25,7 @@ export class GuideService implements IGuideService {
     // assign guide role
     guideVo.role = userRoles.guide;
     return await this.guideDAO.create(guideVo.toEntity());
+    // TODO: the information of the guide should be sent to the admin via message-broker and that should be done here !!!
   }
   async deleteGuide(guideVo: GuideVO): Promise<ResponseObject> {
     return await this.guideDAO.delete(guideVo.toEntity());

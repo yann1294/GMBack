@@ -36,8 +36,11 @@ export class PackageController {
 
   @Get(':id')
   async findOne(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    const validationPipe = new ConvertToVoPipe("package", false, "id");
-    const packageVo: PackageVO = await validationPipe.transform(req, { type: 'param', metatype: PackageVO }) as PackageVO;
+    const validationPipe = new ConvertToVoPipe('package', false, 'id');
+    const packageVo: PackageVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: PackageVO,
+    })) as PackageVO;
     return this.packageService.findPackageById(packageVo);
   }
 
@@ -47,104 +50,76 @@ export class PackageController {
   }
 
   @Patch(':id')
-  update(
-    @Body(new PackageValidationPipe('update')) packageVo: PackageVO,
-  ) {
+  update(@Body(new PackageValidationPipe('update')) packageVo: PackageVO) {
     return this.packageService.updatePackage(packageVo);
   }
 
-
   @Delete(':id')
   async remove(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    const validationPipe = new ConvertToVoPipe("package", false, "id");
-    const packageVo: PackageVO = await validationPipe.transform(req, { type: 'param', metatype: PackageVO }) as PackageVO;
+    const validationPipe = new ConvertToVoPipe('package', false, 'id');
+    const packageVo: PackageVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: PackageVO,
+    })) as PackageVO;
     return this.packageService.deletePackage(packageVo);
   }
 
   @Get(':id/tours')
-<<<<<<< HEAD
-  async getToursFromPackage(@Param('id') packageId: string) {
-    return await this.packageService.readTours(packageId);
-  }
-
-  @Patch(':id/tours')
-  addTourToPackage(
-    @Param('id') packageId: string,
-    @Body(new HasAttribute(['tourId'])) body: { tourId: string | string[] },
-  ) {
-    return this.packageService.addTourToPackage(packageId, body.tourId);
-  }
-
-  @Delete(':id/tours')
-  removeTourFromPackage(
-    @Param('id') packageId: string,
-    @Body(new HasAttribute(['tourId'])) body: { tourId: string | string[] },
-  ) {
-    return this.packageService.removeTourFromPackage(packageId, body.tourId);
-=======
-  async getToursFromPackage(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    console.log("Request", req.url)
-    const validationPipe = new ConvertToVoPipe("package", false, "id");
-    const packageVo: PackageVO = await validationPipe.transform(req, { type: 'param', metatype: PackageVO }) as PackageVO;
+  async getToursFromPackage(
+    @Req() req: FastifyRequest,
+  ): Promise<ResponseObject> {
+    console.log('Request', req.url);
+    const validationPipe = new ConvertToVoPipe('package', false, 'id');
+    const packageVo: PackageVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: PackageVO,
+    })) as PackageVO;
     return this.packageService.readTours(packageVo);
   }
 
   @Patch('tours')
   async addTourToPackage(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    const validationPipe = new ConvertToVoPipe("package", true);
-    const packageVo: PackageVO = await validationPipe.transform(req, { type: 'param', metatype: PackageVO }) as PackageVO;
+    const validationPipe = new ConvertToVoPipe('package', true);
+    const packageVo: PackageVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: PackageVO,
+    })) as PackageVO;
     return this.packageService.addTourToPackage(packageVo);
   }
 
-
   @Delete('tours')
-  async removeTourFromPackage(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    const validationPipe = new ConvertToVoPipe("package", true);
-    const packageVo: PackageVO = await validationPipe.transform(req, { type: 'param', metatype: PackageVO }) as PackageVO;
+  async removeTourFromPackage(
+    @Req() req: FastifyRequest,
+  ): Promise<ResponseObject> {
+    const validationPipe = new ConvertToVoPipe('package', true);
+    const packageVo: PackageVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: PackageVO,
+    })) as PackageVO;
     return this.packageService.removeTourFromPackage(packageVo);
->>>>>>> develop
   }
-
 
   @Patch('assign-guide')
-<<<<<<< HEAD
   async assignGuideToPackage(
-    @Body(new HasAttribute(['packageId', 'guideId']))
-    body: {
-      packageId: string;
-      guideId: string;
-    },
+    @Req() req: FastifyRequest,
   ): Promise<ResponseObject> {
-    return await this.packageService.assignGuideToPackage(
-      body.packageId,
-      body.guideId,
-    );
-  }
-
-  @Patch('availability')
-  async updatePackageAvailability(
-    @Body(new HasAttribute(['isAvailable', 'packageId']))
-    body: {
-      packageId: string;
-      isAvailable: boolean;
-    },
-  ): Promise<ResponseObject> {
-    return await this.packageService.updatePackageAvailability(
-      body.packageId,
-      body.isAvailable,
-    );
-  }
-=======
-  async assignGuideToPackage(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    const validationPipe = new ConvertToVoPipe("package", true);
-    const packageVo: PackageVO = await validationPipe.transform(req, { type: 'param', metatype: PackageVO }) as PackageVO;
+    const validationPipe = new ConvertToVoPipe('package', true);
+    const packageVo: PackageVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: PackageVO,
+    })) as PackageVO;
     return this.packageService.assignGuideToPackage(packageVo);
   }
 
   @Patch('availability')
-  async updatePackageAvailability(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    const validationPipe = new ConvertToVoPipe("package", true);
-    const packageVo: PackageVO = await validationPipe.transform(req, { type: 'param', metatype: PackageVO }) as PackageVO;
+  async updatePackageAvailability(
+    @Req() req: FastifyRequest,
+  ): Promise<ResponseObject> {
+    const validationPipe = new ConvertToVoPipe('package', true);
+    const packageVo: PackageVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: PackageVO,
+    })) as PackageVO;
     return this.packageService.updatePackageAvailability(packageVo);
   }
 
@@ -153,13 +128,10 @@ export class PackageController {
   //   async uploadImage(@Req() req: FastifyRequest): Promise<ResponseObject> {
   //     return await uploadImages(req.params['packageId'], req.files(), 'packages');
   //   }
-  
+
   //   // Delete an image for a tour
   //   @Delete('delete-image')
   //   async deleteImage(@Body(new HasAttribute(['packageId', 'image'])) body: { packageId: string, image: string}): Promise<ResponseObject> {
   //     return await deleteImage(body.packageId, body.image, 'packages');
   //   }
-  
-
->>>>>>> develop
 }

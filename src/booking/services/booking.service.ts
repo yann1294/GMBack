@@ -20,8 +20,8 @@ export class BookingService implements IBookingService {
 
   constructor(
     @Inject(BOOKING_DAO_INTERFACE_TOKEN)
-    private readonly bookingMessageBroker: BookingMessageService,
     private readonly bookingDAO: IBookingDAO,
+    private readonly bookingMessageBroker: BookingMessageService,
   ) {}
 
   async getAllBookings(): Promise<ResponseObject> {

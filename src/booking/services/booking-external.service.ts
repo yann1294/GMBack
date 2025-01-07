@@ -4,17 +4,18 @@ import { Inject } from '@nestjs/common';
 import { IBookingExternalService } from './booking-external.service.interface';
 import IBookingService from './booking.service.interface';
 import { BOOKING_SERVICE_TOKEN } from '../token';
+import { BookingVO } from '../vo/booking.master.vo';
 
 export class BookingExternalService implements IBookingExternalService {
   constructor(
     @Inject(BOOKING_SERVICE_TOKEN)
     private readonly bookingService: IBookingService,
   ) {}
-  getBookingDetails(bookingId: string): Promise<ResponseObject> {
-    return this.bookingService.displayBooking(bookingId);
+  getBookingDetails(bookingVo: BookingVO): Promise<ResponseObject> {
+    return this.bookingService.displayBooking(bookingVo);
   }
-  getBookingStatus(bookingId: string): Promise<string> {
-    const booking = this.bookingService.displayBooking(bookingId);
+  getBookingStatus(bookingVo: BookingVO): Promise<string> {
+    const booking = this.bookingService.displayBooking(bookingVo);
     return booking['status'];
   }
 

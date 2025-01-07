@@ -50,6 +50,8 @@ export class BookingController {
   async makeBooking(
     @Body(new BookingValidationPipe()) bookingVo: BookingVO,
   ): Promise<ResponseObject> {
+    // TODO: code to send the data to the payment module should come after confirmation of successfull booking.
+    // i.e here
     return await this.bookingService.makeBooking(bookingVo);
   }
 
@@ -158,10 +160,11 @@ export class BookingController {
       isAvailable: boolean;
     },
   ) {
-    return await this.externalTourService.updateTourAvailability(
-      body.tourId,
-      body.isAvailable,
-    );
+    // return await this.externalTourService.updateTourAvailability(
+    //   body.tourId,
+    //   body.isAvailable,
+    // );
+    return null;
   }
 
   @Get('assigned-guide/')

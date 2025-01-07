@@ -36,9 +36,6 @@ export class FileDTO {
 
 export abstract class UserDTO {
     @IsString()
-    public uid: string;
-
-    @IsString()
     public firstName: string;
 
     @IsString()
@@ -54,9 +51,10 @@ export abstract class UserDTO {
     @IsOptional()
     public profilePhoto: string | FileDTO;
 
-    @Type(() => Role)
-    @ValidateNested()
-    public role: Role;
+    // will be assigned automatically based on route
+    // @Type(() => Role)
+    // @ValidateNested()
+    // public role: Role;
 
     @IsString()
     public accountStatus: string;

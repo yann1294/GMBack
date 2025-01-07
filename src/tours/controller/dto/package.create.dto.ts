@@ -44,3 +44,6 @@ export class CreatePackageDTO {
   @Type(() => PackageLocationDTO)
   location: PackageLocationDTO;
 }
+
+
+// TODO: Add package date

@@ -2,10 +2,6 @@ import { IsString, IsNumber, IsIn, IsUUID, IsDateString, IsOptional } from 'clas
 
 export class CreatePaymentDTO {
   @IsString()
-  @IsOptional()
-  id: string;
-
-  @IsString()
   @IsIn(['stripe', 'paypal'])
   gateway: string;
 
@@ -25,9 +21,11 @@ export class CreatePaymentDTO {
   status: string = "in-progress";
 
   @IsString()
+  @IsOptional()
   bookingId: string;
 
   @IsString()
+  @IsOptional()
   userId: string;
 
   @IsDateString()

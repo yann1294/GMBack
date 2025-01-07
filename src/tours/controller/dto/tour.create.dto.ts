@@ -16,9 +16,6 @@ import { ActivityDTO } from './tour.activity.dto';
 
 export class CreateTourDTO {
   @IsString()
-  public readonly id: string;
-
-  @IsString()
   public readonly name: string;
 
   @IsNumber()

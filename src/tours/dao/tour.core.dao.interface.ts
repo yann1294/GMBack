@@ -4,8 +4,8 @@ import { MultipartFile } from '@fastify/multipart';
 
 export interface CoreDAOInterface {
   findAll(): Promise<ResponseObject>;
-  findById(id: string): Promise<ResponseObject>;
+  findById(data: Tour): Promise<ResponseObject>;
   create(data: Tour): Promise<ResponseObject>;
-  update(id: string, data: Tour): Promise<ResponseObject>;
-  delete(id: string, data?: Tour): Promise<ResponseObject>;
+  update(data: Tour): Promise<ResponseObject>;
+  delete(data: Tour): Promise<ResponseObject>;
 }

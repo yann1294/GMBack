@@ -53,17 +53,17 @@ export class TouristDAO implements ITouristDAO {
 
         return await this.dataService.createDoc(tourist, this.collectionName, true);
     }
-    async delete(uid: string): Promise<ResponseObject> {
-        return await this.dataService.deleteDoc(this.collectionName, uid);
+    async delete(tourist: Tourist): Promise<ResponseObject> {
+        return await this.dataService.deleteDoc(this.collectionName, tourist.uid);
     }
-    async update(uid: string, tourist: Tourist): Promise<ResponseObject> {
+    async update(tourist: Tourist): Promise<ResponseObject> {
         // check if profile photo is available
         if (tourist.profilePhoto !== undefined) {
             // upload profile photo
             let profilePhotoResponse: FileServiceResponse = await this.fileService.uploadFile(
                 (tourist.profilePhoto as FileDTO).buffer,
                 (tourist.profilePhoto as FileDTO).mimeType,
-                `${this.profilePhotoStoragePath}/${uid}`,
+                `${this.profilePhotoStoragePath}/${tourist.uid}`,
             );
 
             // check whether profile photo was uploaded successfully
@@ -81,7 +81,7 @@ export class TouristDAO implements ITouristDAO {
             let identityPhotoResponse = await this.fileService.uploadFile(
                 (tourist.identification.file as FileDTO).buffer,
                 (tourist.identification.file as FileDTO).mimeType,
-                `${this.identificationPhotoStoragePath}/${uid}`,
+                `${this.identificationPhotoStoragePath}/${tourist.uid}`,
             );
 
             // check whether identity photo was uploaded successfully
@@ -92,10 +92,10 @@ export class TouristDAO implements ITouristDAO {
             tourist.identification.file = identityPhotoResponse.data as string;
         }
 
-        return await this.dataService.updateDoc(this.collectionName, uid, tourist.toUpdateObject());
+        return await this.dataService.updateDoc(this.collectionName, tourist.uid, tourist.toUpdateObject());
     }
-    async findById(uid: string): Promise<ResponseObject> {
-        return await this.dataService.readDoc(this.collectionName, uid);
+    async findById(tourist: Tourist): Promise<ResponseObject> {
+        return await this.dataService.readDoc(this.collectionName, tourist.uid);
     }
     async findAll(): Promise<ResponseObject> {
         return await this.dataService.readAllDocs(this.collectionName);

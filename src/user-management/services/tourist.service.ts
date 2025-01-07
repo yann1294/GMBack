@@ -1,16 +1,17 @@
-import { BookingVO } from 'src/booking/vo/booking.master.vo';
-import { ResponseObject } from 'src/shared/types';
-import { TouristVO } from '../vo/user.tourist.vo';
-import { ITouristService } from './tourist.service.interface';
-import { Inject, Injectable } from '@nestjs/common';
 import {
   TOUR_EXTERNAL_SERVICE_INTERFACE,
   TOURIST_DAO_TOKEN,
   BOOKING_EXTERNAL_SERVICE_INTERFACE,
 } from '../vo/token';
+
+import { BookingVO } from 'src/booking/vo/booking.master.vo';
+import { ResponseObject } from 'src/shared/types';
+import { TouristVO } from '../vo/user.tourist.vo';
+import { ITouristService } from './tourist.service.interface';
+import { Inject, Injectable } from '@nestjs/common';
 import { ITouristDAO } from '../dao/tourist.dao.interface';
+import { userRoles } from '../utils/roles.util';
 import { ITourExternalService } from 'src/tours/services/tour-external.service.interface';
-import { IBookingExternalService } from 'src/booking/services/booking-external.service.interface';
 
 @Injectable()
 export class TouristService implements ITouristService {
@@ -22,21 +23,22 @@ export class TouristService implements ITouristService {
     // private readonly bookingExternalService: IBookingExternalService,
   ) {}
 
-  async addTourist(touristVo: TouristVO): Promise<ResponseObject> {
-    return await this.touristDAO.create(touristVo.toEntity());
-  }
-  async deleteTourist(uid: string): Promise<ResponseObject> {
-    return await this.touristDAO.delete(uid);
-  }
-  async updateTourist(uid: string, data: TouristVO): Promise<ResponseObject> {
-    return await this.touristDAO.update(uid, data.toEntity());
-  }
-  async findTourist(uid: string): Promise<ResponseObject> {
-    return await this.touristDAO.findById(uid);
-  }
-
   async getAllTourists(): Promise<ResponseObject> {
     return await this.touristDAO.findAll();
+  }
+  async addTourist(touristVo: TouristVO): Promise<ResponseObject> {
+    // assign tourist role
+    touristVo.role = userRoles.tourist;
+    return await this.touristDAO.create(touristVo.toEntity());
+  }
+  async deleteTourist(tourist: TouristVO): Promise<ResponseObject> {
+    return await this.touristDAO.delete(tourist.toEntity());
+  }
+  async updateTourist(tourist: TouristVO): Promise<ResponseObject> {
+    return await this.touristDAO.update(tourist.toEntity());
+  }
+  async findTourist(tourist: TouristVO): Promise<ResponseObject> {
+    return await this.touristDAO.findById(tourist.toEntity());
   }
 
   // TODO: Implement using booking container

@@ -8,11 +8,13 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Request,
 } from '@nestjs/common';
 import IBookingService from '../services/booking.service.interface';
-import { BookingValidationPipe, HasAttribute } from './booking.validation.pipe';
+import { BookingValidationPipe } from './booking.validation.pipe';
 import { BookingVO } from '../vo/booking.master.vo';
+
 import {
   BOOKING_SERVICE_TOKEN,
   TOUR_EXTERNAL_SERVICE_INTERFACE,
@@ -21,6 +23,13 @@ import { ITourExternalService } from 'src/tours/services/tour-external.service.i
 import { IUserManagementExternalService } from 'src/user-management/services/user-management-external.service.interface';
 import { USER_MANAGEMENT_EXTERNAL_SERVICE_INTERFACE } from 'src/user-management/token';
 import CreateBookingDTO from './dto/booking.create.dto';
+import { ResponseObject } from 'src/shared/types';
+import { HasAttribute } from 'src/shared/pipes/has-attribute.pipe';
+import { FastifyRequest } from 'fastify';
+import { ConvertToVoPipe } from 'src/shared/pipes/convert-to-vo.pipe';
+import { CONTEXT } from 'src/shared/utils/context';
+import { GuideVO } from 'src/user-management/vo/user.guide.vo';
+import { TouristVO } from 'src/user-management/vo/user.tourist.vo';
 
 @Controller('bookings')
 export class BookingController {
@@ -36,50 +45,95 @@ export class BookingController {
     // private readonly externalUserManagementService: IUserManagementExternalService,
   ) {}
 
-  @Post('create')
-  async makeBooking(@Body(new BookingValidationPipe()) bookingVo: BookingVO) {
+  // create new booking
+  @Post()
+  async makeBooking(
+    @Body(new BookingValidationPipe()) bookingVo: BookingVO,
+  ): Promise<ResponseObject> {
     return await this.bookingService.makeBooking(bookingVo);
   }
 
-  @Patch('update/:id')
+  // update an existing booking
+  @Patch(':id')
   async modifyBooking(
-    @Param('id') bookingId: string,
     @Body(new BookingValidationPipe('update')) bookingVo: BookingVO,
   ) {
-    return await this.bookingService.modifyBooking(bookingId, bookingVo);
+    return await this.bookingService.modifyBooking(bookingVo);
   }
 
-  @Patch('cancel/:id')
-  async cancelBooking(
-    @Param('id') bookingId: string,
-    @Body(new HasAttribute(['touristId'])) body: { touristId: string },
-  ) {
-    return await this.bookingService.cancelBooking(bookingId, body.touristId);
+  // delete an existing booking
+  @Delete(':id')
+  async cancelBooking(@Req() req: FastifyRequest) {
+    const validationPipe = new ConvertToVoPipe('booking', true);
+    const bookingVo: BookingVO = (await validationPipe.transform(req, {
+      type: 'body',
+      metatype: BookingVO,
+    })) as BookingVO;
+    return await this.bookingService.cancelBooking(bookingVo);
   }
 
+  // get a booking by id
   @Get(':id')
-  async displayBooking(@Param('id') bookingId: string) {
-    return await this.bookingService.displayBooking(bookingId);
+  async displayBooking(@Req() req: FastifyRequest) {
+    const validationPipe = new ConvertToVoPipe('booking');
+    const bookingVo: BookingVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: BookingVO,
+    })) as BookingVO;
+    console.log(bookingVo);
+    return await this.bookingService.displayBooking(bookingVo);
   }
 
-  @Get('guide/:id/history')
-  async displayGuideBookingHistory(@Param('id') guideId: string) {
-    return await this.bookingService.displayGuideBookingHistory(guideId);
+  // get booking history for a specific guide
+  @Get('guide/:uid/history')
+  async displayGuideBookingHistory(@Req() req: FastifyRequest) {
+    const validationPipe = new ConvertToVoPipe('guide', false, 'uid');
+    const guideVo: GuideVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: GuideVO,
+    })) as GuideVO;
+    return await this.bookingService.displayGuideBookingHistory(guideVo);
   }
 
-  @Get('tourist/:id/history')
-  async displayTouristBookingHistory(@Param('id') touristId: string) {
-    return await this.bookingService.displayTouristBookingHistory(touristId);
+  // get booking history for a specific tourist
+  @Get('tourist/:uid/history')
+  async displayTouristBookingHistory(@Req() req: FastifyRequest) {
+    const validationPipe = new ConvertToVoPipe('tourist', false, 'uid');
+    const touristVo: TouristVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: TouristVO,
+    })) as TouristVO;
+    return await this.bookingService.displayTouristBookingHistory(touristVo);
   }
 
+  // get all bookings
   @Get()
-  async getAllBooking() {
+  async getAllBooking(@Req() req: FastifyRequest) {
     return await this.bookingService.getAllBookings();
   }
 
-  @Get('resource/:id')
-  async getBookingByResource(@Param('id') resourceId: string) {
-    return await this.bookingService.getBookingsForResource(resourceId);
+  // get bookings for a specific tour
+  @Get('tours/:tour')
+  async getBookingByTour(@Req() req: FastifyRequest) {
+    req.body = { id: 'none' };
+    const validationPipe = new ConvertToVoPipe('booking', true, 'tour');
+    const bookingVo: BookingVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: BookingVO,
+    })) as BookingVO;
+    return await this.bookingService.getBookingsForResource(bookingVo);
+  }
+
+  // get bookings for a specific package
+  @Get('packages/:tourPackage')
+  async getBookingByPackage(@Req() req: FastifyRequest) {
+    req.body = { id: 'none' };
+    const validationPipe = new ConvertToVoPipe('booking', true, 'tourPackage');
+    const bookingVo: BookingVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: BookingVO,
+    })) as BookingVO;
+    return await this.bookingService.getBookingsForResource(bookingVo);
   }
 
   // TOUR MANAGEMENT SERVICES START

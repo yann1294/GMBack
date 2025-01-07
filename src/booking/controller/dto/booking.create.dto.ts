@@ -1,12 +1,9 @@
 import { Type } from 'class-transformer';
 import { IsDateString, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsExclusiveFields } from 'src/booking/utils/exclusive-field-validator';
 import { Tourist } from 'src/booking/vo/helper.vo';
 
 export default class CreateBookingDTO {
-  @IsString()
-  @IsOptional()
-  public readonly id?: string;
-
   @IsString()
   public readonly status: string;
 
@@ -15,13 +12,15 @@ export default class CreateBookingDTO {
 
   @Type(() => Tourist)
   @ValidateNested()
-  public readonly tourist: Map<String, Tourist>;
+  public readonly tourist: Map<string, Tourist>;
 
   @IsString()
   @IsOptional()
+  @IsExclusiveFields()
   public readonly tour?: string;
 
   @IsString()
   @IsOptional()
+  @IsExclusiveFields()
   public readonly tourPackage?: string;
 }

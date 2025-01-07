@@ -7,6 +7,7 @@ import { TouristVO } from '../vo/user.tourist.vo';
 import { log } from 'console';
 import { FastifyRequest } from 'fastify';
 import { TouristValidationPipe } from './tourist.validation.pipe';
+import { ConvertToVoPipe } from 'src/shared/pipes/convert-to-vo.pipe';
 
 @Controller('tourists')
 export class TouristController {
@@ -23,7 +24,7 @@ export class TouristController {
     try {
       touristVo = await validationPipe.transform(req, { type: 'body', metatype: TouristVO });
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error.response);
     }
 
     // Perform the logic to add a tourist
@@ -31,13 +32,15 @@ export class TouristController {
   }
 
   @Delete(':uid')
-  async deleteTourist(@Param('uid') uid: string): Promise<ResponseObject> {
-    return await this.touristService.deleteTourist(uid);
+  async deleteTourist(@Req() req: FastifyRequest): Promise<ResponseObject> {
+
+    const validationPipe = new ConvertToVoPipe("tourist", false, "uid");
+    const touristVo: TouristVO = await validationPipe.transform(req, { type: 'param', metatype: TouristVO }) as TouristVO;
+    return await this.touristService.deleteTourist(touristVo);
   }
 
   @Put(':uid')
   async updateTourist(
-    @Param('uid') uid: string,
     @Req() req: FastifyRequest,
   ): Promise<ResponseObject> { 
     let touristVo: TouristVO;
@@ -48,18 +51,18 @@ export class TouristController {
     try {
       touristVo = await validationPipe.transform(req, { type: 'body', metatype: TouristVO });
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error.response);
     }
-
-    // return {} as ResponseObject;
-    console.log(touristVo);
     
-    return await this.touristService.updateTourist(uid, touristVo);
+    return await this.touristService.updateTourist(touristVo);
   }
 
   @Get(':uid')
-  async findTourist(@Param('uid') uid: string): Promise<ResponseObject> {
-    return await this.touristService.findTourist(uid);
+  async findTourist(@Req() req: FastifyRequest): Promise<ResponseObject> {
+
+  const validationPipe = new ConvertToVoPipe("tourist", false, "uid");
+  const touristVo: TouristVO = await validationPipe.transform(req, { type: 'param', metatype: TouristVO }) as TouristVO;
+    return await this.touristService.findTourist(touristVo);
   }
 
   @Get()

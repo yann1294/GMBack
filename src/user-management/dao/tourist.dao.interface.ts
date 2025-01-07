@@ -3,8 +3,8 @@ import { Tourist } from "./tourist.entity";
 
 export interface ITouristDAO {
     create(tourist: Tourist): Promise<ResponseObject>;
-    delete(uid: string): Promise<ResponseObject>;
-    update(uid: string, tourist: Tourist): Promise<ResponseObject>;
-    findById(uid: string): Promise<ResponseObject>;
+    delete(tourist: Tourist): Promise<ResponseObject>;
+    update(tourist: Tourist): Promise<ResponseObject>;
+    findById(tourist: Tourist): Promise<ResponseObject>;
     findAll(): Promise<ResponseObject>;
   }

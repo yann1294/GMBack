@@ -8,9 +8,11 @@ import IBookingService from './booking.service.interface';
 import { Booking } from '../dao/booking.entity';
 import { BookingVO } from '../vo/booking.master.vo';
 import { BOOKING_DAO_INTERFACE_TOKEN } from '../token';
-import IBookingServiceDAO from '../dao/booking.dao.interface';
+import IBookingDAO from '../dao/booking.dao.interface';
 import { Tourist } from '../vo/helper.vo';
 import { BookingMessageService } from './booking.message-broker.service';
+import { TouristVO } from 'src/user-management/vo/user.tourist.vo';
+import { GuideVO } from 'src/user-management/vo/user.guide.vo';
 
 @Injectable()
 export class BookingService implements IBookingService {
@@ -18,58 +20,41 @@ export class BookingService implements IBookingService {
 
   constructor(
     @Inject(BOOKING_DAO_INTERFACE_TOKEN)
-    private readonly bookingDAO: IBookingServiceDAO,
     private readonly bookingMessageBroker: BookingMessageService,
+    private readonly bookingDAO: IBookingDAO,
   ) {}
 
   async getAllBookings(): Promise<ResponseObject> {
     return await this.bookingDAO.findAll();
   }
-
-  async getBookingsForResource(resourceId: string): Promise<ResponseObject> {
-    return await this.bookingDAO.findByResourceId(resourceId);
+  async getBookingsForResource(bookingVo: BookingVO): Promise<ResponseObject> {
+    return await this.bookingDAO.findByResourceId(bookingVo.toEntity());
   }
 
   async displayTouristBookingHistory(
-    touristId: string,
+    touristVo: TouristVO,
   ): Promise<ResponseObject> {
-    return await this.bookingDAO.findAllByTourist(touristId);
+    return await this.bookingDAO.findAllByTourist(touristVo.toEntity());
   }
 
-  async displayGuideBookingHistory(guideId: string): Promise<ResponseObject> {
-    return await this.bookingDAO.findAllByGuide(guideId);
+  async displayGuideBookingHistory(guideVo: GuideVO): Promise<ResponseObject> {
+    return await this.bookingDAO.findAllByGuide(guideVo.toEntity());
   }
 
-  async makeBooking(data: BookingVO): Promise<ResponseObject> {
-    return await this.bookingDAO.create(data.toEntity());
+  async makeBooking(bookingVo: BookingVO): Promise<ResponseObject> {
+    return await this.bookingDAO.create(bookingVo.toEntity());
   }
 
-  async displayBooking(bookingId: string): Promise<ResponseObject> {
-    return await this.bookingDAO.findById(bookingId);
+  async displayBooking(bookingVo: BookingVO): Promise<ResponseObject> {
+    return await this.bookingDAO.findById(bookingVo.toEntity());
   }
 
-  async modifyBooking(
-    bookingId: string,
-    booking: BookingVO,
-  ): Promise<ResponseObject> {
-    return await this.bookingDAO.update(bookingId, booking.toEntity());
+  async modifyBooking(bookingVo: BookingVO): Promise<ResponseObject> {
+    return await this.bookingDAO.update(bookingVo.toEntity());
   }
 
-  async cancelBooking(bookingId: string, touristId: string) {
-    // Initialize the Map
-    let touristData: Map<string, Tourist> = new Map<string, Tourist>();
-    touristData.set(touristId, { bookingStatus: 'canceled' } as Tourist);
-
-    // Convert the Map to a plain object
-    let touristDataObject = Object.fromEntries(touristData);
-
-    // Convert the object to the instance of BookingVO
-    const bookingVOInstance = plainToInstance(BookingVO, touristDataObject);
-
+  async cancelBooking(bookingVo: BookingVO) {
     // Assuming `toEntity()` is a valid method that converts the instance to the desired entity
-    return await this.bookingDAO.delete(
-      bookingId,
-      bookingVOInstance.toEntity(),
-    );
+    return await this.bookingDAO.delete(bookingVo.toEntity());
   }
 }

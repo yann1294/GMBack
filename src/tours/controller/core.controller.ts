@@ -8,152 +8,156 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Request,
   UsePipes,
 } from '@nestjs/common';
-import { HasAttribute, TourValidationPipe } from './core.validation.pipe';
+import { TourValidationPipe } from './core.validation.pipe';
 import { TourVO } from '../vo/tour.master.vo';
-import { ICoreService } from '../services/tour.service.interface';
+import { ICoreService } from '../services/tour.core.service.interface';
 import { Tour } from '../dao/tour.entity';
 import { Activity } from '../vo/helper.vo';
 import { log } from 'console';
 import { CORE_SERVICE_TOKEN } from '../token';
 import { ResponseObject } from 'src/shared/types';
+import { HasAttribute } from 'src/shared/pipes/has-attribute.pipe';
+import { ConvertToVoPipe } from 'src/shared/pipes/convert-to-vo.pipe';
+import { FastifyRequest } from 'fastify';
 
 @Controller('tours')
 export class TourController {
   collectionName: string = 'tours';
 
-  // inject firebase repository
   constructor(
     @Inject(CORE_SERVICE_TOKEN) private readonly coreService: ICoreService,
   ) {}
 
-  // tour functions
-
-  // Create a new tour
-  @Post()
-  async createTour(
-    @Body(new TourValidationPipe('create')) tourVo: TourVO,
-  ): Promise<ResponseObject> {
-    // process data with service
+  @Post('create')
+  async createTour(@Body() tourVo: TourVO): Promise<ResponseObject> {
+    console.log('API Entry: POST /tours/create', { body: tourVo });
     return await this.coreService.createTour(tourVo);
   }
 
-  // Get a tour by ID
   @Get(':id')
-  async findById(@Param('id') id: string): Promise<ResponseObject> {
-    return await this.coreService.findTourById(id);
+  async findById(@Req() req: FastifyRequest): Promise<ResponseObject> {
+    console.log('API Entry: GET /tours/:id', { params: req.params });
+    const validationPipe = new ConvertToVoPipe('tour', false, 'id');
+    const tourVo: TourVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: TourVO,
+    })) as TourVO;
+    return await this.coreService.findTourById(tourVo);
   }
 
-  // Update an existing tour
-  @Patch(':id')
-  async update(
-    @Param('id') id: string,
-    @Body(new TourValidationPipe('update')) tourVO: TourVO,
-  ): Promise<ResponseObject> {
-    return await this.coreService.updateTour(id, tourVO);
+  @Patch('update')
+  async update(@Req() req: FastifyRequest): Promise<ResponseObject> {
+    console.log('API Entry: PATCH /tours/update', { params: req.params });
+    const validationPipe = new ConvertToVoPipe('tour', true, 'id');
+    const tourVo: TourVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: TourVO,
+    })) as TourVO;
+    return await this.coreService.updateTour(tourVo);
   }
 
-  // Get all tours
   @Get()
   async findAllTours(): Promise<ResponseObject> {
+    console.log('API Entry: GET /tours');
     return await this.coreService.findAllTours();
   }
 
-  // Delete a tour
-  @Delete(':id')
-  async deleteTour(@Param('id') id: string): Promise<ResponseObject> {
-    return await this.coreService.deleteTour(id);
+  @Delete('delete')
+  async Delete(@Req() req: FastifyRequest): Promise<ResponseObject> {
+    console.log('API Entry: DELETE /tours/delete', { params: req.params });
+    const validationPipe = new ConvertToVoPipe('tour', true, 'id');
+    const tourVo: TourVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: TourVO,
+    })) as TourVO;
+    return await this.coreService.deleteTour(tourVo);
   }
 
-  // Update tour availability
+  @Patch('assign-guide')
+  async assignGuideToTour(@Req() req: FastifyRequest): Promise<ResponseObject> {
+    console.log('API Entry: PATCH /tours/assign-guide', { params: req.params });
+    const validationPipe = new ConvertToVoPipe('package', true);
+    const tourVo: TourVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: TourVO,
+    })) as TourVO;
+    return this.coreService.assignGuideToTour(tourVo);
+  }
+
   @Patch('availability')
   async updateTourAvailability(
-    @Body(new HasAttribute(['isAvailable', 'tourId']))
-    body: {
-      tourId: string;
-      isAvailable: boolean;
-    },
+    @Req() req: FastifyRequest,
   ): Promise<ResponseObject> {
-    return await this.coreService.updateTourAvailability(
-      body.tourId,
-      body.isAvailable,
-    );
+    console.log('API Entry: PATCH /tours/availability', { params: req.params });
+    const validationPipe = new ConvertToVoPipe('package', true);
+    const tourVo: TourVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: TourVO,
+    })) as TourVO;
+    return this.coreService.updateTourAvailability(tourVo);
   }
 
-  // Assign a guide to a tour
-  @Patch('assign-guide')
-  async assignGuideToTour(
-    @Body(new HasAttribute(['tourId', 'guideId']))
-    body: {
-      tourId: string;
-      guideId: string;
-    },
-  ): Promise<ResponseObject> {
-    return await this.coreService.assignGuideToTour(body.tourId, body.guideId);
-  }
-
-  // activity functions
-
-  // Add an activity to a tour
   @Patch('add-activity')
   async addActivityToTour(
     @Body(new TourValidationPipe('update')) tourVo: TourVO,
   ): Promise<ResponseObject> {
+    console.log('API Entry: PATCH /tours/add-activity', { body: tourVo });
     return await this.coreService.addActivityToTour(tourVo);
   }
 
-  // Remove an activity from a tour
   @Patch('remove-activity')
   async removeActivityFromTour(
-    @Body(new HasAttribute(['tourId', 'activityId']))
-    body: {
-      tourId: string;
-      activityId: string;
-    },
+    @Req() req: FastifyRequest,
   ): Promise<ResponseObject> {
-    return await this.coreService.removeActivityFromTour(
-      body.tourId,
-      body.activityId,
-    );
+    console.log('API Entry: PATCH /tours/remove-activity', {
+      params: req.params,
+    });
+    const validationPipe = new ConvertToVoPipe('package', true);
+    const tourVo: TourVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: TourVO,
+    })) as TourVO;
+    return await this.coreService.removeActivityFromTour(tourVo);
   }
 
-  // List activities for a tour
-  @Get('activities/:tourId')
+  @Get('activities/:id')
   async listActivitiesForTour(
-    @Param('tourId') tourId: string,
+    @Req() req: FastifyRequest,
   ): Promise<ResponseObject> {
-    return await this.coreService.listActivitiesForTour(tourId);
+    console.log('API Entry: GET /tours/activities/:id', { params: req.params });
+    const validationPipe = new ConvertToVoPipe('package', false);
+    const tourVo: TourVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: TourVO,
+    })) as TourVO;
+    return await this.coreService.listActivitiesForTour(tourVo);
   }
 
-  // Get the current activity ID
-  // TODO: Will be implemented when booking container is implemented
-  // TODO: Implement booking session
   @Get('current-activity-id')
   async getCurrentActivityId(): Promise<string> {
-    // return await this.coreService.getCurrentActivityId();
+    console.log('API Entry: GET /tours/current-activity-id');
     return;
   }
 
-  // Set the current activity ID
   @Patch('set-current-activity/:id')
   async setCurrentActivityId(@Param('id') id: string): Promise<string> {
+    console.log('API Entry: PATCH /tours/set-current-activity/:id', { id });
     return;
-    //return await this.coreService.setCurrentActivityId(id);
   }
 
-  // Start the current activity
   @Patch('start-current-activity')
   async startCurrentActivity(): Promise<boolean> {
+    console.log('API Entry: PATCH /tours/start-current-activity');
     return;
-    //return await this.coreService.startCurrentActivity();
   }
 
-  // Stop the current activity
   @Patch('stop-current-activity')
   async stopCurrentActivity(): Promise<boolean> {
+    console.log('API Entry: PATCH /tours/stop-current-activity');
     return;
-    //return await this.coreService.stopCurrentActivity();
   }
 }

@@ -17,7 +17,7 @@ export class CoreDAO implements CoreDAOInterface {
   constructor(
     private readonly dataService: DataService,
     private readonly fileService: FileService,
-  ) { }
+  ) {}
 
   // FIRST USE CASE:  CREATE A TOUR
   async create(data: Tour): Promise<any> {
@@ -33,7 +33,7 @@ export class CoreDAO implements CoreDAOInterface {
   }
 
   async update(id: string, data: Tour): Promise<any> {
-    // Call the DataService's updateDoc method  
+    // Call the DataService's updateDoc method
     return await this.dataService.updateDoc(
       this.collectionName,
       id,

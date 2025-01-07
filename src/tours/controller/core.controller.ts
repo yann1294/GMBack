@@ -19,13 +19,16 @@ import { log } from 'console';
 import { CORE_SERVICE_TOKEN } from '../token';
 import { ResponseObject } from 'src/shared/types';
 
+import { CoreService } from '../services/tour.service';
+
 @Controller('tours')
 export class TourController {
   collectionName: string = 'tours';
 
   // inject firebase repository
   constructor(
-    @Inject(CORE_SERVICE_TOKEN) private readonly coreService: ICoreService,
+    @Inject(CORE_SERVICE_TOKEN)
+    private readonly coreService: ICoreService,
   ) {}
 
   // tour functions

@@ -1,7 +1,7 @@
 import {
   IsBoolean,
   IsNumber,
-  IsString,
+  IsString, IsNotEmpty, 
   Max,
   Min,
   ValidateNested,
@@ -11,12 +11,14 @@ import { Type } from 'class-transformer';
 
 export class CreatePackageDTO {
   @IsString()
+  @IsNotEmpty()
   public readonly name: string;
 
   @IsNumber()
   public readonly price: number;
 
   @IsString()
+  @IsNotEmpty()
   public readonly images?: string[];
 
   @IsNumber()
@@ -32,12 +34,14 @@ export class CreatePackageDTO {
   public readonly numberOfSeats: number;
 
   @IsString()
+  @IsNotEmpty()
   public readonly description: string;
 
   @IsBoolean()
   public readonly isAvailable: boolean;
 
   @IsString()
+  @IsNotEmpty()
   guide: string;
 
   @ValidateNested()

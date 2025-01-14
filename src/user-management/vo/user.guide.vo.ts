@@ -1,6 +1,6 @@
 import { User } from "../utils/user.abstract";
 import { Identification } from "./helper.vo";
-import { IsArray, IsBoolean, IsOptional, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsOptional, IsString, IsNotEmpty } from "class-validator";
 import { Guide } from "../dao/guide.entity";
 import { Expose, Type } from "class-transformer";
 

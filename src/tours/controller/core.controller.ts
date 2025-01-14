@@ -31,11 +31,11 @@ export class TourController {
     @Inject(CORE_SERVICE_TOKEN) private readonly coreService: ICoreService,
   ) {}
 
-  @Post("create")
+  @Post()
   async createTour(
     @Body(new TourValidationPipe()) tourVo: TourVO,
   ): Promise<ResponseObject> {
-    console.log("API Entry: POST /tours/create", { body: tourVo });
+    console.log("API Entry: POST /tours", { body: tourVo });
     return await this.coreService.createTour(tourVo);
   }
 
@@ -47,9 +47,9 @@ export class TourController {
     return await this.coreService.findTourById(tourVo);
   }
 
-  @Patch("update")
+  @Patch(":id")
   async update(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    console.log("API Entry: PATCH /tours/update", { params: req.params });
+    console.log("API Entry: PATCH /tours", { params: req.params });
     const validationPipe = new ConvertToVoPipe("tour", true, "id");
     const tourVo: TourVO = await validationPipe.transform(req, { type: 'param', metatype: TourVO }) as TourVO;
     return await this.coreService.updateTour(tourVo);

@@ -1,18 +1,21 @@
-import { IsString, IsNumber, IsIn, IsUUID, IsDateString, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty,  IsNumber, IsIn, IsUUID, IsDateString, IsOptional } from 'class-validator';
 import { Expose } from 'class-transformer';
 
 export class PaymentVO {
   @IsString()
+  @IsNotEmpty()
   @IsOptional()
   @Expose({ name: 'id' })
   private _id: string;
 
   @IsString()
+  @IsNotEmpty()
   @Expose({ name: 'gateway' })
   @IsIn(['stripe', 'paypal'])
   private _gateway: string;
 
   @IsString()
+  @IsNotEmpty()
   @Expose({ name: 'paymentId' })
   private _paymentId: string;
 
@@ -21,19 +24,23 @@ export class PaymentVO {
   private _amount: number;
 
   @IsString()
+  @IsNotEmpty()
   @Expose({ name: 'currency' })
   private _currency: string;
 
   @IsString()
+  @IsNotEmpty()
   @IsIn(['pending', 'completed', 'canceled', 'refunded', 'refund-in-progress', 'in-progress'])
   @Expose({ name: 'status' })
   private _status: string;
 
   @IsString()
+  @IsNotEmpty()
   @Expose({ name: 'bookingId' })
   private _bookingId: string;
 
   @IsString()
+  @IsNotEmpty()
   @Expose({ name: 'userId' })
   private _userId: string;
 

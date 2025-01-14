@@ -4,7 +4,7 @@ import {
   IsInt,
   IsNumber,
   IsObject,
-  IsString,
+  IsString, IsNotEmpty, 
   Min,
   ValidateNested,
 } from 'class-validator';
@@ -36,15 +36,19 @@ export class GMGeoPoint implements GeoPoint {
 
 export class ActivityLocation implements IActivityLocation {
   @IsString()
+  @IsNotEmpty()
   name: string;
 
   @IsString()
+  @IsNotEmpty()
   city: string;
 
   @IsString()
+  @IsNotEmpty()
   country: string;
 
   @IsString()
+  @IsNotEmpty()
   address: string;
 
   @IsObject()
@@ -55,12 +59,15 @@ export class ActivityLocation implements IActivityLocation {
 
 export class TourLocation implements ILocation {
   @IsString()
+  @IsNotEmpty()
   public name: string;
 
   @IsString()
+  @IsNotEmpty()
   public city: string;
 
   @IsString()
+  @IsNotEmpty()
   public country: string;
 }
 
@@ -72,14 +79,17 @@ export class Transportation {
   departureTime: string;
 
   @IsString()
+  @IsNotEmpty()
   type: string;
 }
 
 export class Accommodation implements IAccommodation {
   @IsString()
+  @IsNotEmpty()
   type: string;
 
   @IsString()
+  @IsNotEmpty()
   name: string;
 }
 
@@ -88,6 +98,7 @@ export class Activity implements IActivity {
   id: number;
 
   @IsString()
+  @IsNotEmpty()
   name: string;
 
   @IsInt()
@@ -112,5 +123,6 @@ export class Activity implements IActivity {
 
 export class User implements IUser {
   @IsString()
+  @IsNotEmpty()
   name: string;
 }

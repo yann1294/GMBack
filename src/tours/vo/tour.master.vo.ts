@@ -1,8 +1,9 @@
 import { Tour } from '../dao/tour.entity';
 import { Expose, instanceToPlain, Type } from 'class-transformer';
 import { Activity, TourLocation, User } from './helper.vo';
-import { IsArray, IsDateString, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsDateString, IsOptional, IsString, IsNotEmpty, ValidateNested } from 'class-validator';
 import { FieldValue } from 'firebase-admin/firestore';
+import { IsNotEmptyString } from 'src/user-management/utils/is-not-empty-string.decorator';
 
 export class TourVO {
   @Expose({ name: 'id' })
@@ -54,6 +55,7 @@ export class TourVO {
 
   @Expose({ name: 'guide' })
   @IsString()
+  @IsNotEmpty()
   @IsOptional()
   private _guide: string;
 

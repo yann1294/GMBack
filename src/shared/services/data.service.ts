@@ -19,6 +19,17 @@ import { Tourist } from 'src/user-management/dao/tourist.entity';
 import { Guide } from 'src/user-management/dao/guide.entity';
 import { Admin } from 'src/user-management/dao/admin.entity';
 
+export function errorHandler(e: unknown): ResponseObject {
+  const error = e as FirebaseFirestoreError;
+  log(`Error: ${error}`);
+  return {
+    status: 'failure',
+    code: error.code,
+    message: error.message,
+    data: null,
+  };
+}
+
 @Injectable()
 export class DataService {
   // holds firestore object from repository
@@ -35,16 +46,6 @@ export class DataService {
    * @param e - Error object.
    * @returns A promise that resolves to a ResponseObject containing the error message.
    */
-  private errorHandler(e: unknown): ResponseObject {
-    const error = e as FirebaseFirestoreError;
-    log(`Error: ${error.code}`);
-    return {
-      status: 'failure',
-      code: error.code,
-      message: error.message,
-      data: null,
-    };
-  }
 
   getDocId(collectionName: string): string { 
     return this.firestore.collection(collectionName).doc().id;
@@ -87,7 +88,7 @@ export class DataService {
       } as ResponseObject;
     } catch (e: unknown) {
       // return error
-      return this.errorHandler(e);
+      return errorHandler(e);
     }
   }
 
@@ -147,7 +148,7 @@ export class DataService {
       } as ResponseObject;
     } catch (e: unknown) {
       // return error
-      return this.errorHandler(e);
+      return errorHandler(e);
     }
   }
 
@@ -188,7 +189,7 @@ export class DataService {
       };
     } catch (e: unknown) {
       // return error
-      return this.errorHandler(e);
+      return errorHandler(e);
     }
   }
 
@@ -214,7 +215,7 @@ export class DataService {
       };
     } catch (e: unknown) {
       // return error
-      return this.errorHandler(e);
+      return errorHandler(e);
     }
   }
 
@@ -252,7 +253,7 @@ export class DataService {
       } as ResponseObject;
     } catch (e: unknown) {
       // Return error
-      return this.errorHandler(e);
+      return errorHandler(e);
     }
   }
 
@@ -275,7 +276,7 @@ export class DataService {
   //     } as ResponseObject;
   //   } catch (e: unknown) {
   //     // return error
-  //     return this.errorHandler(e);
+  //     return errorHandler(e);
   //   }
   // }
 
@@ -297,7 +298,7 @@ export class DataService {
         data: docId,
       } as ResponseObject;
     } catch (e) {
-      return this.errorHandler(e);
+      return errorHandler(e);
     }
   }
 
@@ -338,7 +339,7 @@ export class DataService {
         data: docId,
       } as ResponseObject;
     } catch (e) {
-      return this.errorHandler(e);
+      return errorHandler(e);
     }
   }
 }

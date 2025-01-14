@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsNumber,
-  IsString,
+  IsString, IsNotEmpty, 
   ValidateNested,
   Min,
   Max,
@@ -16,6 +16,7 @@ import { ActivityDTO } from './tour.activity.dto';
 
 export class CreateTourDTO {
   @IsString()
+  @IsNotEmpty()
   public readonly name: string;
 
   @IsNumber()
@@ -42,18 +43,15 @@ export class CreateTourDTO {
   public readonly numberOfSeats: number;
 
   @IsString()
+  @IsNotEmpty()
   public readonly description: string;
 
   @IsBoolean()
   public readonly isAvailable: boolean;
 
   @IsString()
+  @IsNotEmpty()
   public readonly guide: string;
-
-  @ValidateNested()
-  @Type(() => Object)
-  @IsObject()
-  toObject: { (): object };
 
   @ValidateNested()
   @Type(() => TourLocationDTO)

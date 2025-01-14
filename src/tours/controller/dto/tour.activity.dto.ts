@@ -1,5 +1,5 @@
 import {
-    IsString,
+    IsString, IsNotEmpty, 
     ValidateNested,
     Min,
     IsInt, IsObject,
@@ -16,28 +16,35 @@ class TransportationDTO {
     departureTime: Date;
   
     @IsString()
+  @IsNotEmpty()
     type: string;
   }
   
   class AccommodationDTO {
     @IsString()
+  @IsNotEmpty()
     type: string;
   
     @IsString()
+  @IsNotEmpty()
     name: string;
   }
 
   export class ActivityLocationDTO {
     @IsString()
+  @IsNotEmpty()
     name: string;
   
     @IsString()
+  @IsNotEmpty()
     city: string;
   
     @IsString()
+  @IsNotEmpty()
     country: string;
     
-    @IsString()    
+    @IsString()
+  @IsNotEmpty()    
     address: string;
 
     
@@ -52,6 +59,7 @@ export class ActivityDTO {
     id: number;
   
     @IsString()
+  @IsNotEmpty()
     name: string;
   
     @IsInt()

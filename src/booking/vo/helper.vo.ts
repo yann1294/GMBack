@@ -1,4 +1,4 @@
-import { IsString, IsDateString, IsIn, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty,  IsDateString, IsIn, IsOptional } from 'class-validator';
 import { Timestamp } from 'firebase-admin/firestore';
 
 export class Tourist {
@@ -7,11 +7,13 @@ export class Tourist {
   bookedOn: string;
 
   @IsString()
+  @IsNotEmpty()
   @IsIn(['completed', 'canceled'])
   @IsOptional()
   bookingStatus: string
 
   @IsString()
+  @IsNotEmpty()
   @IsIn(['pending', 'completed', 'canceled'])
   @IsOptional()
   paymentStatus: string;

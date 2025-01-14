@@ -1,23 +1,28 @@
 import { Type } from "class-transformer";
-import { IsString, IsEmail, IsDateString, ValidateNested, IsOptional } from "class-validator";
+import { IsString, IsNotEmpty, IsEmail, IsDateString, ValidateNested, IsOptional } from "class-validator";
 import { IsBuffer } from "src/user-management/utils/is-buffer.decorator";
 import { IsUrlOrFile } from "src/user-management/utils/is-url-or-filedto.decorator";
 import { Role } from "src/user-management/vo/helper.vo";
 
 export class FileDTO {    
     @IsString()
+  @IsNotEmpty()
     public fieldName: string;
 
     @IsString()
+  @IsNotEmpty()
     public encoding: string;
 
     @IsString()
+  @IsNotEmpty()
     public mimeType: string;
 
     @IsString()
+  @IsNotEmpty()
     public fileName: string;
 
     @IsString()
+  @IsNotEmpty()
     public size: string;
 
     @IsBuffer()
@@ -36,12 +41,15 @@ export class FileDTO {
 
 export abstract class UserDTO {
     @IsString()
+  @IsNotEmpty()
     public firstName: string;
 
     @IsString()
+  @IsNotEmpty()
     public lastName: string;
 
     @IsString()
+  @IsNotEmpty()
     public phoneNumber: string;
 
     @IsEmail()
@@ -57,6 +65,7 @@ export abstract class UserDTO {
     // public role: Role;
 
     @IsString()
+  @IsNotEmpty()
     public accountStatus: string;
 
     @IsDateString()

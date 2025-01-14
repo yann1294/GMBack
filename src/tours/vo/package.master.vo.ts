@@ -1,6 +1,6 @@
 import { Expose, instanceToPlain } from 'class-transformer';
 import { PackageLocation, User } from './helper.vo';
-import { IsArray, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsArray, IsOptional, IsString, IsNotEmpty,  Max, Min } from 'class-validator';
 import { Package } from '../dao/package.entity';
 import { TourVO } from './tour.master.vo';
 

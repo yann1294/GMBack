@@ -31,6 +31,7 @@ export class ConvertToVoPipe
     private readonly context: keyof typeof CONTEXT,
     private readonly hasBody: boolean = false,
     private readonly paramField: string = "id",
+    private readonly action: "update" | "others" = "others",
   ) { }
 
   async transform(req: FastifyRequest, metadata: ArgumentMetadata): Promise<BookingVO | PaymentVO | GuideVO | AdminVO | TouristVO | TourVO | PackageVO> {
@@ -43,6 +44,13 @@ export class ConvertToVoPipe
       let body = JSON.parse(req.body as string);
       data = { ...data, ...body }
     }
+
+    console.log("Data in convert", data)
+
+        // checking whether update has only id field
+        if (this.action === "update" && Object.keys(data).length === 1) {
+          throw new BadRequestException(errorHandler({code: 503, message: "Body must contain at least two attributes"}));
+        }
 
     const dto = await this.getDTO(data);
     await this.validateDTO(dto);

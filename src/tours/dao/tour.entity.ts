@@ -131,21 +131,26 @@ export class Tour {
                 activity.location.location.longitude,
               ),
             },
-            transportation: {
-              arrivalTime: activity.transportation.arrivalTime ? Timestamp.fromDate(
-                new Date(activity.transportation.arrivalTime),
-              ) : activity.transportation.arrivalTime,
-              departureTime: activity.transportation.departureTime ?  Timestamp.fromDate(
-                new Date(activity.transportation.departureTime),
-              ) : activity.transportation.departureTime,
-              type: activity.transportation.type,
-            },
-            accommodation: {
-              type: activity.accommodation.type,
-              name: activity.accommodation.name,
-            },
+            ...(activity.transportation && {
+              transportation: {
+                arrivalTime: activity.transportation.arrivalTime
+                  ? Timestamp.fromDate(new Date(activity.transportation.arrivalTime))
+                  : activity.transportation.arrivalTime,
+                departureTime: activity.transportation.departureTime
+                  ? Timestamp.fromDate(new Date(activity.transportation.departureTime))
+                  : activity.transportation.departureTime,
+                type: activity.transportation.type,
+              },
+            }),
+            ...(activity.accommodation && {
+              accommodation: {
+                type: activity.accommodation.type,
+                name: activity.accommodation.name,
+              },
+            }),
           },
-        ]),
+        ])
+        
       ),
     };
   }

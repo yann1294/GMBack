@@ -50,7 +50,7 @@ export class TourController {
   @Patch(":id")
   async update(@Req() req: FastifyRequest): Promise<ResponseObject> {
     console.log("API Entry: PATCH /tours", { params: req.params });
-    const validationPipe = new ConvertToVoPipe("tour", true, "id");
+    const validationPipe = new ConvertToVoPipe("tour", true, "id", "update");
     const tourVo: TourVO = await validationPipe.transform(req, { type: 'param', metatype: TourVO }) as TourVO;
     return await this.coreService.updateTour(tourVo);
   }

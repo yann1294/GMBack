@@ -26,6 +26,8 @@ export class TourValidationPipe implements PipeTransform<any, Promise<TourVO>> {
         throw errorHandler(new BadRequestException('Request body cannot be empty'));
       }
 
+      console.log("Validate", value)
+
       // validate input data against TourDTO
       const tourDto = this.origin == "update" ? plainToInstance(UpdateTourDTO, value) : plainToInstance(CreateTourDTO, value);
       const errors = await validate(tourDto);

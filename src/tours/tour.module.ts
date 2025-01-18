@@ -12,6 +12,7 @@ import { PackageController } from './controller/package.controller';
 import { PackageDAO } from './dao/package.dao';
 import { PackageService } from './services/package.service';
 import { FileService } from 'src/shared/services/file.service';
+import { ImageManager } from './utils/upload-images.util';
 
 
 /**
@@ -31,6 +32,7 @@ import { FileService } from 'src/shared/services/file.service';
   providers: [
     DataService,
     FileService,
+    ImageManager,
     {
       provide: CORE_DAO_INTERFACE_TOKEN,
       useClass: CoreDAO,

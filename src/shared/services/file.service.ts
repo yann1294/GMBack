@@ -99,6 +99,7 @@ export class FileService {
         // const filePath =
         //   destination +
         //   `/${Timestamp.now().toMillis()}.${file.filename.split('.').slice(-1)[0]}`;
+        console.log(file)
         const filePath = `${destination}/${Timestamp.now().toMillis()}`;
 
         // create file

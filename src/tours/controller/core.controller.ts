@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -22,6 +23,8 @@ import { ResponseObject } from 'src/shared/types';
 import { HasAttribute } from 'src/shared/pipes/has-attribute.pipe';
 import { ConvertToVoPipe } from 'src/shared/pipes/convert-to-vo.pipe';
 import { FastifyRequest } from 'fastify';
+import { ImageManager } from '../utils/upload-images.util';
+import { FileDTO } from 'src/user-management/controller/dto/helper.dto';
 
 @Controller('tours')
 export class TourController {
@@ -29,7 +32,61 @@ export class TourController {
 
   constructor(
     @Inject(CORE_SERVICE_TOKEN) private readonly coreService: ICoreService,
-  ) {}
+    private readonly imageManager: ImageManager
+  ) { }
+  @Post('images')
+  async uploadImage(@Req() req: FastifyRequest): Promise<ResponseObject> {
+    // Checking whether request is multipart
+    if (!req.isMultipart()) {
+      throw new BadRequestException('Request must be multipart');
+    }
+  
+    // Initialize variables
+    let id: string = null;
+    const uploadedFiles: FileDTO[] = [];
+  
+    // Iterate over the multipart parts
+    let hasFiles = false;
+  
+    for await (const part of req.parts()) {
+      if (part.type === 'file') {
+        hasFiles = true;
+        uploadedFiles.push(new FileDTO(
+          part.fieldname,
+          part.encoding,
+          part.mimetype,
+          part.filename,
+          part.file.bytesRead,
+          await part.toBuffer(),
+        ));
+      } else if (part.type === 'field' && part.fieldname === 'id') {
+        id = part.value.toString();
+      }
+    }
+  
+    // Check if files are found
+    if (!hasFiles) {
+      return {
+        status: "failure",
+        data: null,
+        message: "No files found in form body",
+        code: 404,
+      };
+    }
+  
+    // Check if ID is provided
+    if (!id) {
+      return {
+        status: "failure",
+        data: null,
+        message: "Id must be included in form body",
+        code: 404,
+      };
+    }
+  
+    // Uploading images
+    return await this.imageManager.uploadImages(id, uploadedFiles, "tours");
+  }
 
   @Post()
   async createTour(
@@ -61,10 +118,10 @@ export class TourController {
     return await this.coreService.findAllTours();
   }
 
-  @Delete('delete')
+  @Delete(':id')
   async Delete(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    console.log("API Entry: DELETE /tours/delete", { params: req.params });
-    const validationPipe = new ConvertToVoPipe("tour", true, "id");
+    console.log("API Entry: DELETE /tours", { params: req.params });
+    const validationPipe = new ConvertToVoPipe("tour", false, "id");
     const tourVo: TourVO = await validationPipe.transform(req, { type: 'param', metatype: TourVO }) as TourVO;
     return await this.coreService.deleteTour(tourVo);
   }

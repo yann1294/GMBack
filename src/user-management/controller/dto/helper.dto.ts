@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsString, IsNotEmpty, IsEmail, IsDateString, ValidateNested, IsOptional } from "class-validator";
+import { IsString, IsNotEmpty, IsEmail, IsDateString, ValidateNested, IsOptional, IsNumber } from "class-validator";
 import { IsBuffer } from "src/user-management/utils/is-buffer.decorator";
 import { IsUrlOrFile } from "src/user-management/utils/is-url-or-filedto.decorator";
 import { Role } from "src/user-management/vo/helper.vo";
@@ -21,14 +21,14 @@ export class FileDTO {
   @IsNotEmpty()
     public fileName: string;
 
-    @IsString()
+    @IsNumber()
   @IsNotEmpty()
-    public size: string;
+    public size: number;
 
     @IsBuffer()
     public buffer: Buffer;
 
-    constructor(fieldName: string, encoding: string, mimeType: string, fileName: string, size: string, buffer: Buffer) {
+    constructor(fieldName: string, encoding: string, mimeType: string, fileName: string, size: number, buffer: Buffer) {
         this.fieldName = fieldName;
         this.encoding = encoding;
         this.mimeType = mimeType;

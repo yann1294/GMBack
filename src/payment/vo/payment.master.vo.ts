@@ -10,6 +10,18 @@ export class PaymentVO {
 
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
+  @Expose({ name: 'resourceId' })
+  private _resourceId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  @Expose({ name: 'resourceType' })
+  private _resourceType: string;
+
+  @IsString()
+  @IsNotEmpty()
   @Expose({ name: 'gateway' })
   @IsIn(['stripe', 'paypal'])
   private _gateway: string;
@@ -58,6 +70,22 @@ export class PaymentVO {
 
   set id(value: string) {
     this._id = value;
+  }
+
+  get resourceId(): string {
+    return this._resourceId;
+  }
+
+  set resourceId(value: string) {
+    this.resourceId = value;
+  }
+
+  get resourceType(): string {
+    return this._resourceType;
+  }
+
+  set resourceType(value: string) {
+    this.resourceType = value;
   }
 
   get gateway(): string {

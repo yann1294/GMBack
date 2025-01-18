@@ -85,7 +85,7 @@ export class TourController {
     }
   
     // Uploading images
-    return await this.imageManager.uploadImages(id, uploadedFiles, "tours");
+    // return await this.imageManager.uploadImages(id, uploadedFiles, "tours");
   }
 
   @Post()

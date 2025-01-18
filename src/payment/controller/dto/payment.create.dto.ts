@@ -11,6 +11,16 @@ export class CreatePaymentDTO {
   @IsOptional()
   paymentId: string;
 
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  resourceId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  resourceType: string;
+
   @IsNumber()
   amount: number;
 

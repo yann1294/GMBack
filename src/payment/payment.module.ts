@@ -13,6 +13,7 @@ import { PayPalGateway } from './utils/paypal.gateway';
   providers: [
     StripeGateway,
     PayPalGateway,
+    DataService,
     {
       provide: PAYMENT_SERVICE_INTERFACE,
       useClass: PaymentService,

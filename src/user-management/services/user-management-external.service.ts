@@ -1,7 +1,7 @@
 import { Inject } from '@nestjs/common';
 
 import { IUserManagementExternalService } from './user-management-external.service.interface';
-import { GUIDE_DAO_TOKEN } from '../vo/token';
+import { GUIDE_DAO_TOKEN } from '../utils/token';
 import { IGuideDAO } from '../dao/guide.dao.interface';
 import { Guide } from '../dao/guide.entity';
 

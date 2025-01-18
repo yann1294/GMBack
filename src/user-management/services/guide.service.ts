@@ -2,14 +2,14 @@ import {
   GUIDE_DAO_TOKEN,
   BOOKING_EXTERNAL_SERVICE_INTERFACE,
   TOUR_EXTERNAL_SERVICE_INTERFACE,
-} from '../vo/token';
+} from '../utils/token';
 
 import { ITourExternalService } from 'src/tours/services/tour-external.service.interface';
 
 import { Inject, Injectable } from '@nestjs/common';
 import { IGuideService } from './guide.service.interface';
 import { ResponseObject } from 'src/shared/types';
-import { GuideVO } from '../vo/user.guide.vo';
+import { GuideVO } from '../vo/guide.vo';
 import { IGuideDAO } from '../dao/guide.dao.interface';
 import { userRoles } from '../utils/roles.util';
 import { BookingVO } from 'src/booking/vo/booking.master.vo';
@@ -23,7 +23,6 @@ export class GuideService implements IGuideService {
   ) {}
   async addGuide(guideVo: GuideVO): Promise<ResponseObject> {
     // assign guide role
-    guideVo.role = userRoles.guide;
     return await this.guideDAO.create(guideVo.toEntity());
     // TODO: the information of the guide should be sent to the admin via message-broker and that should be done here !!!
   }

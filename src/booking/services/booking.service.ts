@@ -11,8 +11,8 @@ import { BOOKING_DAO_INTERFACE_TOKEN } from '../token';
 import IBookingDAO from '../dao/booking.dao.interface';
 import { Tourist } from '../vo/helper.vo';
 import { BookingMessageService } from './booking.message-broker.service';
-import { TouristVO } from 'src/user-management/vo/user.tourist.vo';
-import { GuideVO } from 'src/user-management/vo/user.guide.vo';
+import { TouristVO } from 'src/user-management/vo/tourist.vo';
+import { GuideVO } from 'src/user-management/vo/guide.vo';
 
 @Injectable()
 export class BookingService implements IBookingService {

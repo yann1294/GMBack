@@ -2,11 +2,11 @@ import {
   TOUR_EXTERNAL_SERVICE_INTERFACE,
   TOURIST_DAO_TOKEN,
   BOOKING_EXTERNAL_SERVICE_INTERFACE,
-} from '../vo/token';
+} from '../utils/token';
 
 import { BookingVO } from 'src/booking/vo/booking.master.vo';
 import { ResponseObject } from 'src/shared/types';
-import { TouristVO } from '../vo/user.tourist.vo';
+import { TouristVO } from '../vo/tourist.vo';
 import { ITouristService } from './tourist.service.interface';
 import { Inject, Injectable } from '@nestjs/common';
 import { ITouristDAO } from '../dao/tourist.dao.interface';
@@ -28,7 +28,6 @@ export class TouristService implements ITouristService {
   }
   async addTourist(touristVo: TouristVO): Promise<ResponseObject> {
     // assign tourist role
-    touristVo.role = userRoles.tourist;
     return await this.touristDAO.create(touristVo.toEntity());
   }
   async deleteTourist(tourist: TouristVO): Promise<ResponseObject> {

@@ -15,7 +15,8 @@ import { errorHandler } from 'src/shared/services/data.service';
 
 @Injectable()
 export class TourValidationPipe implements PipeTransform<any, Promise<TourVO>> {
-  constructor(@Inject('TOUR_PIPE_ORIGIN') private readonly origin: string) {}
+  constructor(private readonly origin: string = 'create') {}
+  // constructor(@Inject('TOUR_PIPE_ORIGIN') private readonly origin: string) {}
   async transform(value: any, metadata: ArgumentMetadata): Promise<TourVO> {
     try {
       log(metadata);

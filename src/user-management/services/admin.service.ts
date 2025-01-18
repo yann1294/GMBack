@@ -55,12 +55,12 @@ export class AdminService implements IAdminService {
         // This is the last part of the guide creation process 
         throw new Error("Method not implemented.");
     }
-    assignGuideToTour(guideVO: GuideVO): Promise<ResponseObject> {
+    assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject> {
         // this is part of the tour creation process
         // however, this process requires an internal service communication between Tour and UM containers
         throw new Error("Method not implemented.");
     }
-    assignGuideToPackage(guideVO: GuideVO): Promise<ResponseObject> {
+    assignGuideToPackage(packageId: string, guideId: string): Promise<ResponseObject> {
         // this is part of the package creation process
         // however, this process requires an internal service communication between Tour and UM containers
         throw new Error("Method not implemented.");

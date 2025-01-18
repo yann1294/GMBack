@@ -9,7 +9,7 @@ import { validate } from 'class-validator';
 import { log } from 'console';
 import { UpdateGuideDTO } from './dto/guide.update.dto';
 import { CreateGuideDTO } from './dto/guide.create.dto';
-import { TouristVO } from '../vo/user.tourist.vo';
+import { TouristVO } from '../vo/tourist.vo';
 import { UpdateTouristDTO } from './dto/tourist.update.dto';
 import { CreateTouristDTO } from './dto/tourist.create.dto';
 

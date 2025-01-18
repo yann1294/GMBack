@@ -14,8 +14,8 @@ export interface IAdminService {
         updateGuide(uid: string, guideVO: GuideVO): Promise<ResponseObject>;
         findGuide(uid: string): Promise<ResponseObject>;
         getAllGuides(): Promise<ResponseObject>; // List<Guide>
-        assignGuideToTour(guideVO: GuideVO): Promise<ResponseObject>;
-        assignGuideToPackage(guideVO: GuideVO): Promise<ResponseObject>;
+        assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject>;
+        assignGuideToPackage(packageId: string, guideId: string): Promise<ResponseObject>;
         deactivateGuideAccount(guideVO: GuideVO): Promise<ResponseObject>;
         deactivateTouristAccount(guideVO: GuideVO): Promise<ResponseObject>;
 

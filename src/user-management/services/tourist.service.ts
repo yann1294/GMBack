@@ -1,6 +1,6 @@
 import { BookingVO } from "src/booking/vo/booking.master.vo";
 import { ResponseObject } from "src/shared/types";
-import { TouristVO } from "../vo/user.tourist.vo";
+import { TouristVO } from "../vo/tourist.vo";
 import { ITouristService } from "./tourist.service.interface";
 import { Inject, Injectable } from "@nestjs/common";
 import { TOURIST_DAO_TOKEN } from "../utils/token";

@@ -44,7 +44,7 @@ export class AdminVO implements IUser {
   }
 
   // Getters for immutable fields
-  getuid(): string {
+  get uid(): string {
     return this._uid;
   }
 

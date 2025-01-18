@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Delete, Param, Body, Inject } from '@nestjs
 import { TOURIST_SERVICE_TOKEN } from '../utils/token';
 import { ITouristService } from '../services/tourist.service.interface';
 import { ResponseObject } from 'src/shared/types';
-import { TouristVO } from '../vo/user.tourist.vo';
+import { TouristVO } from '../vo/tourist.vo';
 import { TouristValidationPipe } from './tourist.validation.pipe';
 import { log } from 'console';
 

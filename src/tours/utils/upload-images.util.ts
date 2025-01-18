@@ -29,18 +29,19 @@ export async function uploadImages(resourceId: string, images: AsyncIterableIter
 
 export async function deleteImage(resourceId: string, image: string, resource: 'packages' | 'tours'): Promise<ResponseObject> {
 
-    // delete image from storage
-    let response: FileServiceResponse = await fileService.deleteFile(image);
+    // // delete image from storage
+    // let response: FileServiceResponse = await fileService.deleteFile(image);
 
-    if (response.status !== 'success') {
-        return response;
-    }
+    // if (response.status !== 'success') {
+    //     return response;
+    // }
 
-    return await dataService.updateDoc(
-        resource,
-        resourceId,
-        plainToInstance(resource === 'packages' ? Package : Tour, {
-            images: FieldValue.arrayUnion(...response.data)
-        }).toUpdateObject()
-    );
+    // return await dataService.updateDoc(
+    //     resource,
+    //     resourceId,
+    //     plainToInstance(resource === 'packages' ? Package : Tour, {
+    //         images: FieldValue.arrayUnion(...response.data)
+    //     }).toUpdateObject()
+    // );
+    return {} as any;
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { DataService } from 'src/shared/services/data.service';
 import { FirebaseModule } from 'src/shared/firebase/firebase.module';
 //import { FileService } from 'src/shared/services/file.service';
@@ -6,14 +6,21 @@ import { FirebaseModule } from 'src/shared/firebase/firebase.module';
 import { CoreService } from './services/tour.core.service';
 //import { CoreDAOInterface } from './dao/tour.core.dao.interface';
 import { CoreDAO } from './dao/tour.core.dao';
-import { CORE_DAO_INTERFACE_TOKEN, CORE_SERVICE_TOKEN, PACKAGE_DAO_INTERFACE_TOKEN, PACKAGE_SERVICE_TOKEN } from './token';
+import {
+  CORE_DAO_INTERFACE_TOKEN,
+  CORE_SERVICE_TOKEN,
+  PACKAGE_DAO_INTERFACE_TOKEN,
+  PACKAGE_SERVICE_TOKEN,
+  TOUR_EXTERNAL_SERVICE_INTERFACE,
+} from './token';
 import { TourController } from './controller/core.controller';
 import { PackageController } from './controller/package.controller';
 import { PackageDAO } from './dao/package.dao';
 import { PackageService } from './services/package.service';
+import { TourExternalService } from './services/tour-external.service';
+import { UserModule } from 'src/user-management/user.module';
 import { FileService } from 'src/shared/services/file.service';
 import { ImageManager } from './utils/upload-images.util';
-
 
 /**
  * Reason for using the format below in the provider.
@@ -49,6 +56,12 @@ import { ImageManager } from './utils/upload-images.util';
       provide: PACKAGE_SERVICE_TOKEN,
       useClass: PackageService,
     },
+
+    {
+      provide: TOUR_EXTERNAL_SERVICE_INTERFACE,
+      useClass: TourExternalService,
+    },
   ],
+  exports: [TOUR_EXTERNAL_SERVICE_INTERFACE],
 })
 export class TourModule {}

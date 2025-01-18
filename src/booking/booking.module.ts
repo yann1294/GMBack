@@ -4,10 +4,19 @@ import { FirebaseModule } from 'src/shared/firebase/firebase.module';
 import { BookingController } from './controller/booking.controller';
 import { BookingService } from './services/booking.service';
 import { BookingDAO } from './dao/booking.dao';
-import { BOOKING_SERVICE_TOKEN, BOOKING_DAO_INTERFACE_TOKEN } from './token';
+import {
+  BOOKING_SERVICE_TOKEN,
+  BOOKING_DAO_INTERFACE_TOKEN,
+  BOOKING_EXTERNAL_SERVICE_INTERFACE,
+} from './token';
+import { TourModule } from 'src/tours/tour.module';
+import { UserModule } from 'src/user-management/user.module';
+import { BookingExternalService } from './services/booking-external.service';
+import { NatsModule } from 'src/shared/event-communication/nats.module';
+import { BookingMessageService } from './services/booking.message-broker.service';
 
 @Module({
-  imports: [FirebaseModule],
+  imports: [FirebaseModule, TourModule, NatsModule],
   controllers: [BookingController],
   providers: [
     {
@@ -18,7 +27,13 @@ import { BOOKING_SERVICE_TOKEN, BOOKING_DAO_INTERFACE_TOKEN } from './token';
       provide: BOOKING_SERVICE_TOKEN,
       useClass: BookingService,
     },
+    {
+      provide: BOOKING_EXTERNAL_SERVICE_INTERFACE,
+      useClass: BookingExternalService,
+    },
     DataService,
+    BookingMessageService,
   ],
+  exports: [BOOKING_EXTERNAL_SERVICE_INTERFACE],
 })
 export class BookingModule {}

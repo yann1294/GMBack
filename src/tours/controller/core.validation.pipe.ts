@@ -1,6 +1,7 @@
 import {
   ArgumentMetadata,
   BadRequestException,
+  Inject,
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
@@ -14,7 +15,7 @@ import { errorHandler } from 'src/shared/services/data.service';
 
 @Injectable()
 export class TourValidationPipe implements PipeTransform<any, Promise<TourVO>> {
-  constructor(private readonly origin: string = 'default') { }
+  constructor(@Inject('TOUR_PIPE_ORIGIN') private readonly origin: string) {}
   async transform(value: any, metadata: ArgumentMetadata): Promise<TourVO> {
     try {
       log(metadata);

@@ -10,8 +10,9 @@ import { BookingVO } from '../vo/booking.master.vo';
 import { BOOKING_DAO_INTERFACE_TOKEN } from '../token';
 import IBookingDAO from '../dao/booking.dao.interface';
 import { Tourist } from '../vo/helper.vo';
-import { TouristVO } from 'src/user-management/vo/tourist.vo';
-import { GuideVO } from 'src/user-management/vo/guide.vo';
+import { BookingMessageService } from './booking.message-broker.service';
+import { TouristVO } from 'src/user-management/vo/user.tourist.vo';
+import { GuideVO } from 'src/user-management/vo/user.guide.vo';
 
 @Injectable()
 export class BookingService implements IBookingService {
@@ -20,12 +21,12 @@ export class BookingService implements IBookingService {
   constructor(
     @Inject(BOOKING_DAO_INTERFACE_TOKEN)
     private readonly bookingDAO: IBookingDAO,
+    private readonly bookingMessageBroker: BookingMessageService,
   ) {}
 
   async getAllBookings(): Promise<ResponseObject> {
     return await this.bookingDAO.findAll();
   }
-
   async getBookingsForResource(bookingVo: BookingVO): Promise<ResponseObject> {
     return await this.bookingDAO.findByResourceId(bookingVo.toEntity());
   }
@@ -48,9 +49,7 @@ export class BookingService implements IBookingService {
     return await this.bookingDAO.findById(bookingVo.toEntity());
   }
 
-  async modifyBooking(
-    bookingVo: BookingVO,
-  ): Promise<ResponseObject> {
+  async modifyBooking(bookingVo: BookingVO): Promise<ResponseObject> {
     return await this.bookingDAO.update(bookingVo.toEntity());
   }
 

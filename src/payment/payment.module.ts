@@ -7,9 +7,11 @@ import { PaymentController } from './controller/payment.controller';
 import { PaymentDAO } from './dao/payment.dao';
 import { StripeGateway } from './utils/stripe.gateway';
 import { PayPalGateway } from './utils/paypal.gateway';
+import { PaymentFromNats } from './controller/payment.message-broker.controller';
+import { NatsModule } from 'src/shared/event-communication/nats.module';
 @Module({
   imports: [FirebaseModule],
-  controllers: [PaymentController],
+  controllers: [PaymentController, PaymentFromNats],
   providers: [
     StripeGateway,
     PayPalGateway,

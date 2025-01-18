@@ -91,6 +91,11 @@ Assumptions and Constraints for Beta version:
    After the guide accepts the request from the user, a signal is sent to the user space allowing him to pay for the tour.
 - Price could be static
 
+## Service Internal ( Service contract definition)
+Preconditions: What must be true before calling these methods (e.g., tourId must exist)?
+Postconditions: What guarantees are made after the methods complete (e.g., updated state)?
+Exceptions: The docstring mentions exceptions but doesn't define or handle them explicitly.
+
 
 src/
 ├── shared/

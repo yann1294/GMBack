@@ -46,7 +46,7 @@ export type ResponseObject = {
   status: string;
   code: string | number;
   message: string;
-  data: string[] | object[] | string | object | null;
+  data: string[] | object[] | string | object | {} | null;
 };
 
 /**

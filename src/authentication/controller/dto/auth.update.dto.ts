@@ -1,0 +1,27 @@
+import { IsDateString, IsEmail, IsInt, IsOptional, IsString, MinLength } from 'class-validator';
+import { AbstractAuthDTO } from './helper.dto';
+
+/**
+ * Used to update authentication details (e.g., password reset or email change). 
+ * All fields are optional to allow for partial updates.
+ */
+
+export class AuthUpdateDTO extends AbstractAuthDTO {
+    @IsOptional()
+    @IsEmail()
+    email?: string;
+  
+    @IsOptional()
+    @IsString()
+    @MinLength(6)
+    password?: string;
+  
+    @IsOptional()
+    @IsDateString()
+    lastLoginDate?: string;
+  
+    @IsOptional()
+    @IsInt()
+    failedLoginAttempts?: number;
+  }
+  

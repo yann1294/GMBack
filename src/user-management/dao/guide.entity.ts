@@ -10,7 +10,7 @@ export class Guide implements IUser {
         public lastName: string;
         public phoneNumber: string;
         public emailAddress: string;
-        public profilePhoto: string;
+        public profilePhoto: string | FileDTO;
         public role: Role;
         public accountStatus: "active" | "inactive";
         public createdAt: Date;
@@ -25,7 +25,7 @@ export class Guide implements IUser {
             lastName: string,
             phoneNumber: string,
             emailAddress: string,
-            profilePhoto: string,
+            profilePhoto: string | FileDTO,
             role: Role,
             createdAt: Date,
             updatedAt: Date,

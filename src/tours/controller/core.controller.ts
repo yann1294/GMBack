@@ -26,7 +26,6 @@ import { FastifyRequest } from 'fastify';
 import { ImageManager } from '../utils/upload-images.util';
 import { FileDTO } from 'src/user-management/controller/dto/helper.dto';
 
-import { CoreService } from '../services/tour.service';
 
 @Controller('tours')
 export class TourController {

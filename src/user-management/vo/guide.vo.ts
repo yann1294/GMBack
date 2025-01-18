@@ -1,6 +1,7 @@
 import { IUser } from "../utils/user.interface";
 import { Role, Identification } from "../utils/helper";
 import { Guide } from "../dao/guide.entity";
+import { FileDTO } from "../controller/dto/helper.dto";
 
 export class GuideVO implements IUser {
   // Critical fields are mandatory and immutable
@@ -16,7 +17,7 @@ export class GuideVO implements IUser {
   // Optional fields remain optional and mutable if necessary
   private _phoneNumber?: string;
   private _emailAddress?: string;
-  private _profilePhoto?: string;
+  private _profilePhoto?: string | FileDTO;
   private _accountStatus?: "active" | "inactive";
   private _spokenLanguages?: string[];
   private _availability?: boolean;
@@ -28,12 +29,12 @@ export class GuideVO implements IUser {
     role: Role,
     createdAt: Date | string,
     updatedAt: Date | string,
+    idFile: string | FileDTO,
     idType: string,
-    idValue: string,
     // Optional fields
     phoneNumber?: string,
     emailAddress?: string,
-    profilePhoto?: string,
+    profilePhoto?: string | FileDTO,
     accountStatus?: "active" | "inactive",
     spokenLanguages?: string[],
     availability?: boolean
@@ -47,7 +48,7 @@ export class GuideVO implements IUser {
     this._updatedAt = typeof updatedAt === "string" ? new Date(updatedAt) : updatedAt;
 
     // Composition: Identification is created and owned by this class
-    this._identification = new Identification(idType, idValue);
+    this._identification = new Identification(idFile, idType);
 
     // Optional fields
     this._phoneNumber = phoneNumber;
@@ -104,11 +105,11 @@ export class GuideVO implements IUser {
     this._emailAddress = value;
   }
 
-  get profilePhoto(): string | undefined {
+  get profilePhoto(): string | FileDTO | undefined {
     return this._profilePhoto;
   }
 
-  set profilePhoto(value: string | undefined) {
+  set profilePhoto(value: string | FileDTO | undefined) {
     this._profilePhoto = value;
   }
 
@@ -137,9 +138,9 @@ export class GuideVO implements IUser {
   }
 
   // Method to update identification details
-  setIdentificationDetails(idType: string, idValue: string): void {
-    this._identification.idType = idType;
-    this._identification.file = idValue;
+  setIdentificationDetails(idFile: string | FileDTO, idType: string): void {
+    this._identification.type = idType;
+    this._identification.file = idFile;
   }
 
   // Method to transform GuideVO into an entity
@@ -150,7 +151,7 @@ export class GuideVO implements IUser {
       this._lastName,
       this._phoneNumber,
       this._emailAddress,
-      this._profilePhoto,
+      this._profilePhoto as string,
       this._role,
       this._createdAt,
       this._updatedAt,

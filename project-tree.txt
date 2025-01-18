@@ -1,4 +1,11 @@
 Notes:
+
+Operations and their arguments
+- create: vo
+- read: id
+- delete: id
+- update: id, vo
+
 - The DTOs will be used only for reponse and request validation. They would not have constructors, only accessors.
  Help transfer only necessary data to avoid security leak,to prevent network overhead,
  avoid heavily loaded request where we transfer the unnecessary data around again and again.

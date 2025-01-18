@@ -12,7 +12,6 @@ export class GuideService implements IGuideService {
     constructor(@Inject(GUIDE_DAO_TOKEN) private readonly guideDAO: IGuideDAO) {}
     async addGuide(guideVo: GuideVO): Promise<ResponseObject> {
         // assign guide role
-        guideVo.role = userRoles.guide;
         return await this.guideDAO.create(guideVo.toEntity());
     }
     async deleteGuide(guideVo: GuideVO): Promise<ResponseObject> {

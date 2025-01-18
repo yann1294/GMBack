@@ -1,14 +1,27 @@
+import { IsIn, IsOptional, IsString, IsNotEmpty } from "class-validator";
+import { IsUrlOrFile } from "../utils/is-url-or-filedto.decorator";
+import { FileDTO } from "../controller/dto/helper.dto";
+
 export class Role {
-    public name: string;
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  @IsIn(['admin', 'guide', 'tourist'])
+  public name: string;
 }
 
 export class Identification {
-    public file: string;
-    public idType: string;
+  @IsOptional()
+  @IsUrlOrFile()
+  public file: string | FileDTO;
 
-    constructor(file: string, idType: string) {
-        // Initialize properties
-        this.file = file;
-        this.idType = idType;
-      }
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  public type: string;
+
+  constructor(file: string | FileDTO, type: string) {
+    this.file = file;
+    this.type = type;
+  }
 }

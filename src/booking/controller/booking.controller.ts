@@ -20,8 +20,8 @@ import { HasAttribute } from 'src/shared/pipes/has-attribute.pipe';
 import { FastifyRequest } from 'fastify';
 import { ConvertToVoPipe } from 'src/shared/pipes/convert-to-vo.pipe';
 import { CONTEXT } from 'src/shared/utils/context';
-import { GuideVO } from 'src/user-management/vo/user.guide.vo';
-import { TouristVO } from 'src/user-management/vo/user.tourist.vo';
+import { GuideVO } from 'src/user-management/vo/guide.vo';
+import { TouristVO } from 'src/user-management/vo/tourist.vo';
 
 @Controller('bookings')
 export class BookingController {

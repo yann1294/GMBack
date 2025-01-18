@@ -10,18 +10,18 @@ export interface IAdminService {
 
         // guide related
         approveGuide(guideVO: GuideVO): Promise<ResponseObject>;
-        deleteGuide(uid: string): Promise<ResponseObject>; 
-        updateGuide(uid: string, guideVO: GuideVO): Promise<ResponseObject>;
-        findGuide(uid: string): Promise<ResponseObject>;
+        // deleteGuide(uid: string): Promise<ResponseObject>; 
+        // updateGuide(uid: string, guideVO: GuideVO): Promise<ResponseObject>;
+        // findGuide(uid: string): Promise<ResponseObject>;
         getAllGuides(): Promise<ResponseObject>; // List<Guide>
-        assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject>;
-        assignGuideToPackage(packageId: string, guideId: string): Promise<ResponseObject>;
+        // assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject>;
+        // assignGuideToPackage(packageId: string, guideId: string): Promise<ResponseObject>;
         deactivateGuideAccount(guideVO: GuideVO): Promise<ResponseObject>;
         deactivateTouristAccount(guideVO: GuideVO): Promise<ResponseObject>;
 
         // tourist related
-        findTourist(uid: string): Promise<ResponseObject>;
-        deleteTourist(uid: string): Promise<ResponseObject>;
+        // findTourist(uid: string): Promise<ResponseObject>;
+        // deleteTourist(uid: string): Promise<ResponseObject>;
         getAllTourists(): Promise<ResponseObject>; // List<Tourist>
 
         // booking related

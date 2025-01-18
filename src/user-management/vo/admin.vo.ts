@@ -1,6 +1,7 @@
 import { IUser } from "../utils/user.interface";
 import { Role, Identification } from "../utils/helper";
 import { Admin } from "../dao/admin.entity";
+import { FileDTO } from "../controller/dto/helper.dto";
 
 export class AdminVO implements IUser {
   // Critical fields are mandatory and immutable
@@ -15,7 +16,7 @@ export class AdminVO implements IUser {
   // Optional fields remain optional and mutable if necessary
   private _phoneNumber?: string;
   private _emailAddress?: string;
-  private _profilePhoto?: string;
+  private _profilePhoto?: string | FileDTO;
 
   constructor(
     uid: string,
@@ -27,7 +28,7 @@ export class AdminVO implements IUser {
     // Optional fields
     phoneNumber?: string,
     emailAddress?: string,
-    profilePhoto?: string
+    profilePhoto?: string | FileDTO
   ) {
     // Mandatory fields are validated and set as readonly properties
     this._uid = uid;
@@ -85,7 +86,7 @@ export class AdminVO implements IUser {
     this._emailAddress = value;
   }
 
-  get profilePhoto(): string | undefined {
+  get profilePhoto(): string | FileDTO | undefined {
     return this._profilePhoto;
   }
 
@@ -101,7 +102,7 @@ export class AdminVO implements IUser {
       this._lastName,
       this._phoneNumber,
       this._emailAddress,
-      this._profilePhoto,
+      this._profilePhoto as string,
       this._role,
       this._createdAt,
       this._updatedAt

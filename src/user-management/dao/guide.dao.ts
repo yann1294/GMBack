@@ -1,15 +1,23 @@
-import { ResponseObject } from "src/shared/types";
+import { FileServiceResponse, ResponseObject } from "src/shared/types";
 import { IGuideDAO } from "./guide.dao.interface";
-import { Guide } from "./guide.entity";
-import { Inject, Injectable } from "@nestjs/common";
-import { GUIDE_DAO_TOKEN } from "../utils/token";
+import { Injectable } from "@nestjs/common";
 import { DataService } from "src/shared/services/data.service";
+import { FileDTO } from "../controller/dto/helper.dto";
+import { Timestamp } from "firebase-admin/firestore";
+import { FileService } from "src/shared/services/file.service";
+import { Guide } from "./guide.entity";
+import { Tourist } from "./tourist.entity";
 
 @Injectable()
 export class GuideDAO implements IGuideDAO {
-    collectionName: string = 'guides'; 
+    collectionName: string = 'guides';
+    profilePhotoStoragePath: string = 'profile_photos';
+    identificationPhotoStoragePath: string = 'identification_photos';
 
-    constructor(private readonly dataService: DataService) {}
+    constructor(
+        private readonly dataService: DataService,
+        private readonly fileService: FileService,
+    ) { }
 
     async create(guide: Guide): Promise<ResponseObject> {
         // generate uid
@@ -31,7 +39,7 @@ export class GuideDAO implements IGuideDAO {
         let identityPhotoResponse = await this.fileService.uploadFile(
             (guide.identification.file as FileDTO).buffer,
             (guide.identification.file as FileDTO).mimeType,
-            `${this.identificationPhotoStoragePath}/${guide.uid}`,
+            `${this.identificationPhotoStoragePath}/${Timestamp.now().toMillis()}`,
         );
 
         // check whether identity photo was uploaded successfully
@@ -56,7 +64,7 @@ export class GuideDAO implements IGuideDAO {
             let profilePhotoResponse: FileServiceResponse = await this.fileService.uploadFile(
                 (guide.profilePhoto as FileDTO).buffer,
                 (guide.profilePhoto as FileDTO).mimeType,
-                `${this.profilePhotoStoragePath}/${guide.uid}`,
+                `${this.profilePhotoStoragePath}/${Timestamp.now().toMillis()}`,
             );
 
             // check whether profile photo was uploaded successfully
@@ -74,7 +82,7 @@ export class GuideDAO implements IGuideDAO {
             let identityPhotoResponse = await this.fileService.uploadFile(
                 (guide.identification.file as FileDTO).buffer,
                 (guide.identification.file as FileDTO).mimeType,
-                `${this.identificationPhotoStoragePath}/${guide.uid}`,
+                `${this.identificationPhotoStoragePath}/${Timestamp.now().toMillis()}`,
             );
 
             // check whether identity photo was uploaded successfully
@@ -94,5 +102,4 @@ export class GuideDAO implements IGuideDAO {
     async findAll(): Promise<ResponseObject> {
         return await this.dataService.readAllDocs(this.collectionName);
     }
-    
 }

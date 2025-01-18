@@ -1,5 +1,5 @@
 
-import { Controller, Get, Post, Put, Delete, Param, Body, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Inject, Req, BadRequestException } from '@nestjs/common';
 import { IGuideService } from '../services/guide.service.interface';
 import { GUIDE_SERVICE_TOKEN } from '../utils/token';
 import { GuideVO } from '../vo/guide.vo';

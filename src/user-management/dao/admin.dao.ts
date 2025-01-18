@@ -12,6 +12,7 @@ export class AdminDAO implements IAdminDAO {
     constructor(private readonly dataService: DataService) {}
 
     async create(admin: Admin): Promise<ResponseObject> {
+        admin.uid = this.dataService.getDocId(this.collectionName);
         return await this.dataService.createDoc(admin, this.collectionName);
     }
     async delete(uid: string): Promise<ResponseObject> {

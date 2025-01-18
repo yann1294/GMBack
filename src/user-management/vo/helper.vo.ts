@@ -3,20 +3,20 @@ import { IsUrlOrFile } from "../utils/is-url-or-filedto.decorator";
 import { FileDTO } from "../controller/dto/helper.dto";
 
 export class Role {
-    @IsString()
+  @IsString()
   @IsNotEmpty()
-    @IsOptional()
-    @IsIn(['admin', 'guide', 'tourist'])
-    public name: string;
+  @IsOptional()
+  @IsIn(['admin', 'guide', 'tourist'])
+  public name: string;
 }
 
 export class Identification {
-    @IsOptional()
-    @IsUrlOrFile()
-    public file: string | FileDTO;
+  @IsOptional()
+  @IsUrlOrFile()
+  public file: string | FileDTO;
 
-    @IsString()
+  @IsString()
   @IsNotEmpty()
-    @IsOptional()
-    public type: string;
+  @IsOptional()
+  public type: string;
 }

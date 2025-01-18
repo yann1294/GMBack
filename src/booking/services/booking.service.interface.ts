@@ -1,7 +1,7 @@
 import { ResponseObject } from 'src/shared/types';
 import { BookingVO } from '../vo/booking.master.vo';
-import { GuideVO } from 'src/user-management/vo/user.guide.vo';
-import { TouristVO } from 'src/user-management/vo/user.tourist.vo';
+import { GuideVO } from 'src/user-management/vo/guide.vo';
+import { TouristVO } from 'src/user-management/vo/tourist.vo';
 
 export default interface IBookingService {
   // This will not be required because the tours have guide information in them

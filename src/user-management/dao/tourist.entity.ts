@@ -10,7 +10,7 @@ export class Tourist implements IUser {
         public lastName: string;
         public phoneNumber: string;
         public emailAddress: string;
-        public profilePhoto: string;
+        public profilePhoto: string | FileDTO;
         public role: Role;
         public accountStatus: "active" | "inactive" | undefined;
         public createdAt: Date;
@@ -24,7 +24,7 @@ export class Tourist implements IUser {
             lastName: string,
             phoneNumber: string,
             emailAddress: string,
-            profilePhoto: string,
+            profilePhoto: string | FileDTO,
             role: Role,
             createdAt: Date,
             updatedAt: Date,

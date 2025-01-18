@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IAdminService } from "./admin.service.interface";
-import { ADMIN_DAO_TOKEN, GUIDE_SERVICE_TOKEN } from "../utils/token";
+import { ADMIN_DAO_TOKEN, GUIDE_SERVICE_TOKEN, TOURIST_SERVICE_TOKEN } from "../utils/token";
 import { ResponseObject } from "src/shared/types";
 import { GuideVO } from "../vo/guide.vo";
 import { IAdminDAO } from "../dao/admin.dao.interface";
@@ -13,7 +13,7 @@ export class AdminService implements IAdminService {
     constructor(
         @Inject(ADMIN_DAO_TOKEN) private readonly adminDAO: IAdminDAO,
         @Inject(GUIDE_SERVICE_TOKEN) private readonly guideService: IGuideService,  // Inject GuideService
-        @Inject(GUIDE_SERVICE_TOKEN) private readonly touristService: ITouristService  // Inject TouristService
+        @Inject(TOURIST_SERVICE_TOKEN) private readonly touristService: ITouristService  // Inject TouristService
     ) {}
 
     // Admin related methods
@@ -34,18 +34,21 @@ export class AdminService implements IAdminService {
     }
 
     // Guide related methods
-    async deleteGuide(uid: string): Promise<ResponseObject> {
-        // takes the uid and passes it to the DAO
-        return await this.guideService.deleteGuide(uid);
-    }
-    updateGuide(uid: string, guideVO: GuideVO): Promise<ResponseObject> {
-        // takes the uid and guide entity and passes it to the DAO
-        return this.guideService.updateGuide(uid, guideVO);
-    }
-    findGuide(uid: string): Promise<ResponseObject> {
-        // takes the uid and passes it to the DAO
-        return this.guideService.findGuide(uid);
-    }
+    // async deleteGuide(uid: string): Promise<ResponseObject> {
+    //     // takes the uid and passes it to the DAO
+    //     return await this.guideService.deleteGuide(uid);
+    // }
+
+    // updateGuide(uid: string, guideVO: GuideVO): Promise<ResponseObject> {
+    //     // takes the uid and guide entity and passes it to the DAO
+    //     return this.guideService.updateGuide(uid, guideVO);
+    // }
+
+    // findGuide(uid: string): Promise<ResponseObject> {
+    //     // takes the uid and passes it to the DAO
+    //     return this.guideService.findGuide(uid);
+    // }
+    
     getAllGuides(): Promise<ResponseObject> {
         // calls the DAO to get all guides
         return this.guideService.getAllGuides();
@@ -72,15 +75,15 @@ export class AdminService implements IAdminService {
         throw new Error("Method not implemented.");
     }
 
-    // Tourist related methods
-    findTourist(uid: string): Promise<ResponseObject> {
-        // takes the uid and passes it to the DAO
-        return this.touristService.findTourist(uid);
-    }
-    deleteTourist(uid: string): Promise<ResponseObject> {
-        // takes the uid and passes it to the DAO
-        return this.touristService.deleteTourist(uid);
-    }
+    // // Tourist related methods
+    // findTourist(uid: string): Promise<ResponseObject> {
+    //     // takes the uid and passes it to the DAO
+    //     return this.touristService.findTourist(uid);
+    // }
+    // deleteTourist(uid: string): Promise<ResponseObject> {
+    //     // takes the uid and passes it to the DAO
+    //     return this.touristService.deleteTourist(uid);
+    // }
     getAllTourists(): Promise<ResponseObject> {
         // calls the DAO to get all tourists
         return this.touristService.getAllTourists();

@@ -1,6 +1,8 @@
 import { IUser } from "../utils/user.interface";
 import { Role, Identification } from "../utils/helper";
 import { Tourist } from "../dao/tourist.entity";
+import { FileDTO } from "../controller/dto/helper.dto";
+import { userRoles } from "../utils/roles.util";
 
 
 export class TouristVO implements IUser {
@@ -17,7 +19,7 @@ export class TouristVO implements IUser {
   // Optional fields remain optional and mutable if necessary
   private _phoneNumber?: string;
   private _emailAddress?: string;
-  private _profilePhoto?: string;
+  private _profilePhoto?: string | FileDTO;
   private _accountStatus?: "active" | "inactive";
   private _spokenLanguages?: string[];
 
@@ -85,9 +87,9 @@ export class TouristVO implements IUser {
     return this._identification;
   }
   // Method to update identification details
-  setIdentificationDetails(idType: string, idValue: string): void {
-    this._identification.idType = idType;
-    this._identification.file = idValue;
+  setIdentificationDetails(idFile: string | FileDTO, idType: string): void {
+    this._identification.type = idType;
+    this._identification.file = idFile;
   }
 
   // Optional fields have standard getters and setters
@@ -107,11 +109,11 @@ export class TouristVO implements IUser {
     this._emailAddress = value;
   }
 
-  get profilePhoto(): string | undefined {
+  get profilePhoto(): string | FileDTO | undefined {
     return this._profilePhoto;
   }
 
-  set profilePhoto(value: string | undefined) {
+  set profilePhoto(value: string | FileDTO | undefined) {
     this._profilePhoto = value;
   }
 
@@ -141,7 +143,7 @@ export class TouristVO implements IUser {
       this._lastName,
       this._phoneNumber,
       this._emailAddress,
-      this._profilePhoto,
+      this._profilePhoto as string,
       this._role,
       this._createdAt,
       this._updatedAt,

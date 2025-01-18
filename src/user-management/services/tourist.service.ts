@@ -10,11 +10,11 @@ import { userRoles } from "../utils/roles.util";
 @Injectable()
 export class TouristService implements ITouristService {
 
-    constructor(@Inject(TOURIST_DAO_TOKEN) private readonly touristService: ITouristDAO) {}
+    constructor(@Inject(TOURIST_DAO_TOKEN) private readonly touristDAO: ITouristDAO) {}
 
     async addTourist(touristVo: TouristVO): Promise<ResponseObject> {
         // assign tourist role
-        touristVo.role = userRoles.tourist;
+        // touristVo.role = userRoles.tourist;
         return await this.touristDAO.create(touristVo.toEntity());
     }
     async deleteTourist(tourist: TouristVO): Promise<ResponseObject> {
@@ -28,7 +28,7 @@ export class TouristService implements ITouristService {
     }
 
     async getAllTourists(): Promise<ResponseObject> {
-        return await this.touristService.findAll();
+        return await this.touristDAO.findAll();
     }
 
     // TODO: Implement using booking container

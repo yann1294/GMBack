@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, Inject, Req, BadRequestException } from '@nestjs/common';
 import { TOURIST_SERVICE_TOKEN } from '../utils/token';
 import { ITouristService } from '../services/tourist.service.interface';
 import { ResponseObject } from 'src/shared/types';
 import { TouristVO } from '../vo/tourist.vo';
 import { TouristValidationPipe } from './tourist.validation.pipe';
 import { ConvertToVoPipe } from 'src/shared/pipes/convert-to-vo.pipe';
+import { FastifyRequest } from 'fastify';
 
 @Controller('tourists')
 export class TouristController {

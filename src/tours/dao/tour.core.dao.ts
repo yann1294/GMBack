@@ -17,7 +17,7 @@ export class CoreDAO implements CoreDAOInterface {
   constructor(
     private readonly dataService: DataService,
     private readonly fileService: FileService,
-  ) { }
+  ) {}
 
   // FIRST USE CASE:  CREATE A TOUR
   async create(tour: Tour): Promise<any> {

@@ -1,0 +1,14 @@
+import { Role } from "../utils/helper";
+
+export interface IUser {
+  uid?: string;
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  emailAddress?: string;
+  profilePhoto?: string;
+  role?: Role;
+  accountStatus?: "active" | "inactive";
+  createdAt?: Date;
+  updatedAt?: Date;
+}

@@ -1,5 +1,5 @@
 import { ResponseObject } from "src/shared/types";
-import { TouristVO } from "../vo/user.tourist.vo";
+import { TouristVO } from "../vo/tourist.vo";
 import { BookingVO } from "src/booking/vo/booking.master.vo";
 
 export interface ITouristService {

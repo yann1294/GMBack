@@ -1,16 +1,16 @@
 import { BookingVO } from "src/booking/vo/booking.master.vo";
 import { ResponseObject } from "src/shared/types";
-import { TouristVO } from "../vo/user.tourist.vo";
+import { TouristVO } from "../vo/tourist.vo";
 import { ITouristService } from "./tourist.service.interface";
 import { Inject, Injectable } from "@nestjs/common";
-import { TOURIST_DAO_TOKEN } from "../vo/token";
+import { TOURIST_DAO_TOKEN } from "../utils/token";
 import { ITouristDAO } from "../dao/tourist.dao.interface";
 import { userRoles } from "../utils/roles.util";
 
 @Injectable()
 export class TouristService implements ITouristService {
 
-    constructor(@Inject(TOURIST_DAO_TOKEN) private readonly touristDAO: ITouristDAO) {}
+    constructor(@Inject(TOURIST_DAO_TOKEN) private readonly touristService: ITouristDAO) {}
 
     async addTourist(touristVo: TouristVO): Promise<ResponseObject> {
         // assign tourist role
@@ -28,7 +28,7 @@ export class TouristService implements ITouristService {
     }
 
     async getAllTourists(): Promise<ResponseObject> {
-        return await this.touristDAO.findAll();
+        return await this.touristService.findAll();
     }
 
     // TODO: Implement using booking container

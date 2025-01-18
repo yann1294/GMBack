@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { IGuideService } from "./guide.service.interface";
-import { GUIDE_DAO_TOKEN } from "../vo/token";
+import { GUIDE_DAO_TOKEN } from "../utils/token";
 import { ResponseObject } from "src/shared/types";
-import { GuideVO } from "../vo/user.guide.vo";
+import { GuideVO } from "../vo/guide.vo";
 import { IGuideDAO } from "../dao/guide.dao.interface";
 import { userRoles } from "../utils/roles.util";
 import { BookingVO } from "src/booking/vo/booking.master.vo";

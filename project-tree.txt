@@ -15,6 +15,53 @@ Notes:
 Has getters and setters:
 - All VOs will have getters and setters
 
+
+To ensures clear separation of concerns, simplifies maintenance, and avoids unnecessary complexity 
+   DTO: Fully leverage @Expose, @Exclude, and related decorators for serialization/deserialization 
+      to ensure data is correctly mapped to/from external APIs.
+   Entity: Use decorators sparingly, mainly focusing on persistence-related concerns 
+      (e.g., @Column, @PrimaryGeneratedColumn from ORM libraries). Use @Expose only for special cases like logging or diagnostics.
+   VO: Avoid @Expose and similar decorators here. Keep VOs focused on domain logic and ensure 
+      they act as simple, encapsulated objects for internal use.
+
+
+Keep input DTOs (CreateXDTO, UpdateXDTO) focused on validation and structure for input operations.
+Keep output DTOs (ResponseDTO) focused on presenting data to the client, which may involve transformations or derived fields.
+   ResponseDTO is meant to represent a broader concept that isn’t tied specifically to creation, extending the base UserDTO is better.
+   Especially useful if there are additional derived fields (e.g., fullName) or if the response format is significantly different.
+
+
+Composition vs Aggregation
+   To show tight coupling (Composition):
+   Create the associated object internally in the constructor or methods.
+   Prevent external reassignment of the associated object by making it private or readonly.
+   Automatically delete the associated object when the parent object is deleted.
+
+   To show loose coupling (Aggregation):
+   Pass the associated object as an external dependency.
+   Allow the associated object to be shared or replaced independently.
+   Ensure the associated object’s lifecycle is independent of the parent.
+
+REST or NOT
+   The public-facing API uses RESTful principles to expose CRUD endpoints. These endpoints delegate specific tasks to the GuideService.
+   The internal service (e.g., AdminService) receives encapsulated domain objects (GuideVO) for more complex operations, ensuring rich business logic 
+   without exposing internal workings to external users.
+
+   For simple, RESTful operations, stick with @Param('uid').
+   For complex scenarios or when additional context might be needed, use the body approach (adminVo.getuid()).
+   Validation can be applied to either @Param or @Body using pipes, ensuring robust data handling.
+
+Use async/await only where necessary.
+   Avoid wrapping synchronous logic in async unnecessarily.
+   Adding async unnecessarily makes the function always return a promise. Avoid using async for functions meant to return simple synchronous values.
+   Prefer concise direct returns for simple functions.
+   Understand the Flow:
+      Know whether tasks need to run sequentially (await) or can run concurrently (Promise.all).
+      Use async/await to enhance readability, especially when handling complex asynchronous workflows.
+   Performance Awareness:
+      For performance-critical tasks, ensure you aren't inadvertently slowing down operations by enforcing sequential execution when parallelism is acceptable.
+
+
 Processes (through containers):
 - guide creation
 - guide assignment
@@ -23,6 +70,7 @@ Processes (through containers):
 - authentication
 - logging
 - payment
+
 
 Assumptions and Constraints for Beta version:
 - This structure balances modularity with maintainability and follows a clean, scalable design.
@@ -66,11 +114,23 @@ src/
 │   │   ├── guide management
 │   │   ├── tourist management
 │   ├── controller/
-│   │   ├── user.validation.pipe.ts
+│   │   ├── Guide.validation.pipe.ts
+│   │   ├── Tourist.validation.pipe.ts
+│   │   ├── Admin.validation.pipe.ts
+│   │   ├── Guide.controller.pipe.ts
+│   │   ├── Tourist.controller.pipe.ts
+│   │   ├── Admin.controller.pipe.ts
 │   │   ├── dto/
-│   │   │   ├── user.update.dto.ts
-│   │   │   ├── user.create.dto.ts
-│   │   │   ├── user.dto.ts
+│   │   │   ├── helper.dto.ts
+│   │   │   ├── admin.create.dto.ts
+│   │   │   ├── admin.update.dto.ts
+│   │   │   ├── admin.response.dto.ts
+│   │   │   ├── guide.create.dto.ts
+│   │   │   ├── guide.update.dto.ts
+│   │   │   ├── guide.response.dto.ts
+│   │   │   ├── tourist.create.dto.ts
+│   │   │   ├── tourist.update.dto.ts
+│   │   │   ├── tourist.response.dto.ts
 │   ├── service/
 │   │   ├── user.service.ts
 │   │   ├── user.service.interface.ts
@@ -79,11 +139,11 @@ src/
 │   │   ├── user.dao.ts
 │   │   ├── user.entity.ts
 │   ├── vo/
-│   │   ├── helperUser.vo.ts
-│   │   ├── user.master.vo.ts
+│   │   ├── user.vo.ts
 │   ├── utils/
-│   │   ├── inventory.management.ts
-│   │   ├── price.engine.ts
+│   │   ├── helper.ts
+│   │   ├── token.ts
+│   │   ├── user.interface.ts
 │   ├── user.module.ts
 │   └── user.controller.spec.ts
 │
@@ -115,7 +175,7 @@ src/
 │   │   ├── tour.core.service.interface.ts
 │   │   ├── pathfinder.service.interface.ts
 │   │   ├── package.service.interface.ts
-│   ├── repository/
+│   ├── dao/
 │   │   ├── tour.core.dao.ts
 │   │   ├── pathfinder.dao.ts
 │   │   ├── package.dao.ts
@@ -127,7 +187,7 @@ src/
 │   │   ├── helper.vo.ts
 │   │   ├── tour.master.vo.ts
 │   │   ├── package.master.vo.ts
-│   ├── utils/
+│   ├── utilitary/
 │   │   ├── tour.X.ts (to define)
 │   ├── tour.module.ts
 │   └── tour.controller.spec.ts
@@ -153,36 +213,10 @@ src/
 │   ├── vo/
 │   │   ├── helper.vo.ts
 │   │   ├── booking.master.vo.ts
-│   ├── utils/
+│   ├── utilitary/
 │   │   ├── inventory.management.ts
 │   │   ├── price.engine.ts
 │   ├── tour.module.ts
 │   └── tour.controller.spec.ts
-│
-├── payment/
-│   ├── components/
-│   │   ├── payment component
-│   ├── controller/
-│   │   ├── payment.validation.pipe.ts
-│   │   ├── payment.controller.ts
-│   │   ├── dto/
-│   │   │   ├── payment.update.dto.ts
-│   │   │   ├── payment.create.dto.ts
-│   ├── service/
-│   │   ├── stripe.service.ts
-│   │   ├── stripe.service.interface.ts
-│   │   ├── momo.service.ts
-│   │   ├── momo.service.interface.ts
-│   │   ├── paypal.service.ts
-│   │   ├── paypal.service.interface.ts
-│   ├── dao/
-│   │   ├── payment.dao.interface.ts
-│   │   ├── payment.dao.ts
-│   │   ├── payment.entity.ts
-│   ├── vo/
-│   │   ├── helper.vo.ts
-│   │   ├── payment.master.vo.ts
-│   ├── utils/
-│   │   ├── payment.workflow.ts
 ├── app.module.ts
 └── main.ts

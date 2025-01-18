@@ -1,11 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, Inject, Req, UsePipes, BadRequestException } from '@nestjs/common';
-import { TOURIST_SERVICE_TOKEN } from '../vo/token';
+import { Controller, Get, Post, Put, Delete, Param, Body, Inject } from '@nestjs/common';
+import { TOURIST_SERVICE_TOKEN } from '../utils/token';
 import { ITouristService } from '../services/tourist.service.interface';
 import { ResponseObject } from 'src/shared/types';
-import { TouristVO } from '../vo/user.tourist.vo';
-// import { TouristValidationPipe } from './tourist.validation.pipe';
-import { log } from 'console';
-import { FastifyRequest } from 'fastify';
+import { TouristVO } from '../vo/tourist.vo';
 import { TouristValidationPipe } from './tourist.validation.pipe';
 import { ConvertToVoPipe } from 'src/shared/pipes/convert-to-vo.pipe';
 

@@ -14,4 +14,5 @@ export class CreateGuideDTO extends UserDTO {
 
     @IsBoolean()
     public availability: boolean;
+    
 }

@@ -1,23 +1,15 @@
 import { DataService } from "src/shared/services/data.service";
 import { ITouristDAO } from "./tourist.dao.interface";
 import { Tourist } from "./tourist.entity";
-import { FileServiceResponse, ResponseObject } from "src/shared/types";
+import { ResponseObject } from "src/shared/types";
 import { log } from "console";
 import { Injectable } from "@nestjs/common";
-import { FileService } from "src/shared/services/file.service";
-import { FileDTO } from "../controller/dto/helper.dto";
-import { Timestamp } from "firebase-admin/firestore";
 
 @Injectable()
 export class TouristDAO implements ITouristDAO {
     collectionName: string = 'tourists';
-    profilePhotoStoragePath: string = 'profile_photos';
-    identificationPhotoStoragePath: string = 'identification_photos';
 
-    constructor(
-        private readonly dataService: DataService,
-        private readonly fileService: FileService,
-    ) { }
+    constructor(private readonly dataService: DataService) { }
 
     async create(tourist: Tourist): Promise<ResponseObject> {
         // generate uid

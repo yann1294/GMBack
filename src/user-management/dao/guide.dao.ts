@@ -1,22 +1,15 @@
-import { FileServiceResponse, ResponseObject } from "src/shared/types";
+import { ResponseObject } from "src/shared/types";
 import { IGuideDAO } from "./guide.dao.interface";
-import { Injectable } from "@nestjs/common";
-import { DataService } from "src/shared/services/data.service";
-import { FileDTO } from "../controller/dto/helper.dto";
-import { Timestamp } from "firebase-admin/firestore";
-import { FileService } from "src/shared/services/file.service";
 import { Guide } from "./guide.entity";
+import { Inject, Injectable } from "@nestjs/common";
+import { GUIDE_DAO_TOKEN } from "../utils/token";
+import { DataService } from "src/shared/services/data.service";
 
 @Injectable()
 export class GuideDAO implements IGuideDAO {
-    collectionName: string = 'guides';
-    profilePhotoStoragePath: string = 'profile_photos';
-    identificationPhotoStoragePath: string = 'identification_photos';
+    collectionName: string = 'guides'; 
 
-    constructor(
-        private readonly dataService: DataService,
-        private readonly fileService: FileService,
-    ) { }
+    constructor(private readonly dataService: DataService) {}
 
     async create(guide: Guide): Promise<ResponseObject> {
         // generate uid
@@ -101,4 +94,5 @@ export class GuideDAO implements IGuideDAO {
     async findAll(): Promise<ResponseObject> {
         return await this.dataService.readAllDocs(this.collectionName);
     }
+    
 }

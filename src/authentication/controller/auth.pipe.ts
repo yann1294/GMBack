@@ -7,9 +7,9 @@ import {
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { log } from 'console';
-import { BookingVO } from '../vo/booking.master.vo';
-import UpdateBookingCreateDTO from './dto/booking.update.dto';
-import CreateBookingDTO from './dto/booking.create.dto';
+import { BookingVO } from '../../booking/vo/booking.master.vo';
+import UpdateBookingCreateDTO from '../../booking/controller/dto/booking.update.dto';
+import CreateBookingDTO from '../../booking/controller/dto/booking.create.dto';
 
 @Injectable()
 export class BookingValidationPipe

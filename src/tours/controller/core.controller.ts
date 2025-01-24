@@ -54,7 +54,7 @@ export class TourController {
     try {
 
       // Iterate over multipart parts
-      for await (const part of req.parts({ limits: { fileSize: 1 * 1024 * 1024 } })) {
+      for await (const part of req.parts({ limits: { fileSize: 2 * 1024 * 1024 } })) {
         if (part.type === 'file') {
           console.log("File", part.type, part.filename);
 

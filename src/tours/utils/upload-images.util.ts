@@ -50,7 +50,7 @@ export class ImageManager {
       
           // Return success response
           return {
-            status: 'ok',
+            status: 'success',
             code: 200,
             data: imageUrl,
             message: "Files uploaded successfully"

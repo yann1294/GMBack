@@ -54,9 +54,9 @@ export class AdminService implements IAdminService {
         return this.guideService.getAllGuides();
     }
     // TODO
-    approveGuide(guideVO: GuideVO): Promise<ResponseObject> {
+    async approveGuide(uid: string): Promise<ResponseObject> {
         // This is the last part of the guide creation process 
-        throw new Error("Method not implemented.");
+        return await this.guideService.approveGuide(uid);
     }
     assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject> {
         // this is part of the tour creation process
@@ -68,8 +68,8 @@ export class AdminService implements IAdminService {
         // however, this process requires an internal service communication between Tour and UM containers
         throw new Error("Method not implemented.");
     }
-    deactivateGuideAccount(guideVO: GuideVO): Promise<ResponseObject> {
-        throw new Error("Method not implemented.");
+    async deactivateGuideAccount(guideId: string): Promise<ResponseObject> {
+        return await this.guideService.deactivateGuide(guideId);
     }
     deactivateTouristAccount(guideVO: GuideVO): Promise<ResponseObject> {
         throw new Error("Method not implemented.");

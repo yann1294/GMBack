@@ -9,14 +9,14 @@ export interface IAdminService {
         updateAdmin(uid: string, data: AdminVO): Promise<ResponseObject>;
 
         // guide related
-        approveGuide(guideVO: GuideVO): Promise<ResponseObject>;
+        approveGuide(uid: string): Promise<ResponseObject>;
         // deleteGuide(uid: string): Promise<ResponseObject>; 
         // updateGuide(uid: string, guideVO: GuideVO): Promise<ResponseObject>;
         // findGuide(uid: string): Promise<ResponseObject>;
         getAllGuides(): Promise<ResponseObject>; // List<Guide>
         // assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject>;
         // assignGuideToPackage(packageId: string, guideId: string): Promise<ResponseObject>;
-        deactivateGuideAccount(guideVO: GuideVO): Promise<ResponseObject>;
+        deactivateGuideAccount(guideId: string): Promise<ResponseObject>;
         deactivateTouristAccount(guideVO: GuideVO): Promise<ResponseObject>;
 
         // tourist related

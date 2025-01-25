@@ -13,6 +13,8 @@ import { GuideVO } from '../vo/guide.vo';
 import { IGuideDAO } from '../dao/guide.dao.interface';
 import { userRoles } from '../utils/roles.util';
 import { BookingVO } from 'src/booking/vo/booking.master.vo';
+import { plainToInstance } from 'class-transformer';
+import { Guide } from '../dao/guide.entity';
 
 @Injectable()
 export class GuideService implements IGuideService {
@@ -45,6 +47,14 @@ export class GuideService implements IGuideService {
   }
   async getPackages(): Promise<ResponseObject> {
     return this.tourExternalService.getPackages();
+  }
+
+  async approveGuide(guideId: string): Promise<ResponseObject> {
+    return await this.guideDAO.update(plainToInstance(Guide, { uid: guideId, accountStatus: "active" }));
+  }
+
+  async deactivateGuide(guideId: string): Promise<ResponseObject> {
+    return await this.guideDAO.update(plainToInstance(Guide, { uid: guideId, accountStatus: "inactive" }));
   }
   // async readBookings(): Promise<ResponseObject> {
   //   return this.bookingExternalService.readBookings();

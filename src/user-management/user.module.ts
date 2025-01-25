@@ -18,10 +18,11 @@ import { ADMIN_DAO_TOKEN, ADMIN_SERVICE_TOKEN, GUIDE_DAO_TOKEN,
   USER_MANAGEMENT_EXTERNAL_SERVICE_INTERFACE, } from './utils/token';
 import { AdminDAO } from './dao/admin.dao';
 import { AdminService } from './services/admin.service';
+import { AdminController } from './controller/admin.controller';
 
 @Module({
   imports: [FirebaseModule, TourModule],
-  controllers: [GuideController, TouristController],
+  controllers: [GuideController, TouristController, AdminController],
   providers: [
     DataService,
     FileService,

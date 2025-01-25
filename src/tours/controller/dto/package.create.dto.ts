@@ -5,6 +5,7 @@ import {
   Max,
   Min,
   ValidateNested,
+  IsOptional,
 } from 'class-validator';
 import { PackageLocationDTO } from './package.location.dto';
 import { Type } from 'class-transformer';
@@ -17,8 +18,8 @@ export class CreatePackageDTO {
   @IsNumber()
   public readonly price: number;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ each: true })
+  @IsOptional()
   public readonly images?: string[];
 
   @IsNumber()

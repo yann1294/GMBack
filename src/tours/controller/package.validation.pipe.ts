@@ -18,8 +18,10 @@ export class PackageValidationPipe
   constructor(private readonly origin: string = 'default') {}
   async transform(value: any, metadata: ArgumentMetadata): Promise<PackageVO> {
     log(metadata);
-    // checking if value if empty
-    if (!value) {
+    value = JSON.parse(value);
+      // console.log("Parse", value);
+      // checking if value if empty
+      if (!value || Object.keys(value).length === 0) {
       throw new BadRequestException('Request body cannot be empty');
     }
 
@@ -28,6 +30,8 @@ export class PackageValidationPipe
       this.origin == 'update'
         ? plainToInstance(UpdatePackageDTO, value)
         : plainToInstance(CreatePackageDTO, value);
+
+    console.log('Package DTO', packageDto);
     const errors = await validate(packageDto);
 
     // checking if there are any errors

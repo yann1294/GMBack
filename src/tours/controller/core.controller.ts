@@ -38,79 +38,10 @@ export class TourController {
   ) { }
   @Post('images')
   async uploadImage(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    console.log("API Entry: POST /tours/images", { body: req.body });
-
-    // Checking whether request is multipart
-    if (!req.isMultipart()) {
-      throw new BadRequestException('Request must be multipart');
-    }
-
-    let id: string = null;
-    const uploadedFiles: FileDTO[] = [];
-
-    let hasFiles = false;
-
-    // checking whether file exceeds the limit
-    try {
-
-      // Iterate over multipart parts
-      for await (const part of req.parts({ limits: { fileSize: 2 * 1024 * 1024 } })) {
-        if (part.type === 'file') {
-          console.log("File", part.type, part.filename);
-
-          hasFiles = true;
-          let fileBuffer: Buffer = await part.toBuffer();
-
-          uploadedFiles.push(new FileDTO(
-            part.fieldname,
-            part.encoding,
-            part.mimetype,
-            part.filename,
-            fileBuffer.byteLength,
-            fileBuffer,
-          ));
-        } else if (part.type === 'field' && part.fieldname === 'id') {
-          id = part.value as string;
-        }
-      }
-    } catch (error) {
-      if (error.message === "request file too large"){
-      return {
-        status: "failure",
-        data: null,
-        message: `Each file must have a file size of 1MB or less`,
-        code: 400,
-      };} 
-
-      console.log("Error", error);
-    }
-
-    console.log("ID", id);
-    console.log("Uploaded Files", uploadedFiles);
-
-    if (!hasFiles) {
-      return {
-        status: "failure",
-        data: null,
-        message: "No files found in form body",
-        code: 400,
-      };
-    }
-
-    if (!id) {
-      return {
-        status: "failure",
-        data: null,
-        message: "Id must be included in form body",
-        code: 400,
-      };
-    }
-
+    
     // Uploading images
-    return await this.imageManager.uploadImages(id, uploadedFiles, "tours");
+    return await this.imageManager.uploadImages(req, "tours");
   }
-
-
 
   @Post()
   async createTour(

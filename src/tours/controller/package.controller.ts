@@ -21,14 +21,22 @@ import { IPackageService } from '../services/package.service.interface';
 import { HasAttribute } from 'src/shared/pipes/has-attribute.pipe';
 import { ConvertToVoPipe } from 'src/shared/pipes/convert-to-vo.pipe';
 import { FastifyRequest } from 'fastify';
+import { ImageManager } from '../utils/upload-images.util';
 
 @Controller('packages')
 export class PackageController {
   constructor(
     @Inject(PACKAGE_SERVICE_TOKEN)
     private readonly packageService: IPackageService,
-  ) {}
-
+  private readonly imageManager: ImageManager
+   ) { }
+   @Post('images')
+   async uploadImage(@Req() req: FastifyRequest): Promise<ResponseObject> {
+     
+     // Uploading images
+     return await this.imageManager.uploadImages(req, "packages");
+   }
+ 
   @Get()
   async findAll(): Promise<ResponseObject> {
     return await this.packageService.findAllPackages();

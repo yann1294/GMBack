@@ -1,14 +1,15 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { InventoryManagement } from "./inventory.management";
 import IBookingService from "../services/booking.service.interface";
 import { BookingVO } from "../vo/booking.master.vo";
 import { PaymentVO } from "src/payment/vo/payment.master.vo";
 import { PaymentWorkflow } from "src/payment/utils/payment.workflow";
+import { BOOKING_SERVICE_TOKEN } from "../token";
 
 @Injectable()
 export class BookingWorkflow {
   constructor(
-    private readonly bookingService: IBookingService,
+   @Inject(BOOKING_SERVICE_TOKEN) private readonly bookingService: IBookingService,
     private readonly inventoryManagement: InventoryManagement,
     private readonly payment: PaymentWorkflow,
 ) {}
@@ -29,7 +30,7 @@ export class BookingWorkflow {
 
     // Step 4: call payment workflow (should come from external container - payment)
     const payment = await this.payment.executePayment(new PaymentVO());
-    
+
     // Return booking details
     return {
       payment

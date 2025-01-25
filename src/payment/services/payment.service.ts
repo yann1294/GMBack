@@ -7,15 +7,13 @@ import { ResponseObject } from 'src/shared/types';
 
 @Injectable()
 export class PaymentService implements IPaymentService {
-  private gateway: { [key: string]: StripeGateway | PayPalGateway };
+  private gateway: { [key: string]: StripeGateway };
 
   constructor(
     private readonly stripeGateway: StripeGateway,
-    private readonly paypalGateway: PayPalGateway,
   ) {
     this.gateway = {
       stripe: this.stripeGateway,
-      paypal: this.paypalGateway,
     };
   }
 

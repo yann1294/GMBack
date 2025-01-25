@@ -14,6 +14,12 @@ import { UserModule } from 'src/user-management/user.module';
 import { BookingExternalService } from './services/booking-external.service';
 import { NatsModule } from 'src/shared/event-communication/nats.module';
 import { BookingMessageService } from './services/booking.message-broker.service';
+import { BookingWorkflow } from './utils/booking.workflow';
+import { PaymentWorkflow } from 'src/payment/utils/payment.workflow';
+import { InventoryManagement } from './utils/inventory.management';
+import { PaymentService } from 'src/payment/services/payment.service';
+import { PAYMENT_SERVICE_INTERFACE } from 'src/payment/token';
+import { StripeGateway } from 'src/payment/utils/stripe.gateway';
 
 @Module({
   imports: [FirebaseModule, TourModule, NatsModule],
@@ -31,8 +37,16 @@ import { BookingMessageService } from './services/booking.message-broker.service
       provide: BOOKING_EXTERNAL_SERVICE_INTERFACE,
       useClass: BookingExternalService,
     },
+    {
+      provide: PAYMENT_SERVICE_INTERFACE,
+      useClass: PaymentService,
+    },
     DataService,
     BookingMessageService,
+    BookingWorkflow,
+    PaymentWorkflow,
+    InventoryManagement,
+    StripeGateway
   ],
   exports: [BOOKING_EXTERNAL_SERVICE_INTERFACE],
 })

@@ -1,11 +1,12 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { IPaymentService } from "../services/payment.service.interface";
 import { PaymentVO } from "../vo/payment.master.vo";
+import { PAYMENT_SERVICE_INTERFACE } from "../token";
 
 @Injectable()
 export class PaymentWorkflow {
   constructor(
-    private readonly payment: IPaymentService,
+    @Inject(PAYMENT_SERVICE_INTERFACE) private readonly payment: IPaymentService,
   ) {}
 
   async executePayment(payment: PaymentVO) {

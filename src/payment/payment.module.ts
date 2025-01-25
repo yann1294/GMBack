@@ -9,6 +9,7 @@ import { StripeGateway } from './utils/stripe.gateway';
 import { PayPalGateway } from './utils/paypal.gateway';
 import { PaymentFromNats } from './controller/payment.message-broker.controller';
 import { NatsModule } from 'src/shared/event-communication/nats.module';
+import { PaymentWorkflow } from './utils/payment.workflow';
 @Module({
   imports: [FirebaseModule],
   controllers: [PaymentController, PaymentFromNats],
@@ -16,6 +17,7 @@ import { NatsModule } from 'src/shared/event-communication/nats.module';
     StripeGateway,
     PayPalGateway,
     DataService,
+    PaymentWorkflow,
     {
       provide: PAYMENT_SERVICE_INTERFACE,
       useClass: PaymentService,

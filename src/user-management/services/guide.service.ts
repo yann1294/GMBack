@@ -34,8 +34,8 @@ export class GuideService implements IGuideService {
   async updateGuide(guideVo: GuideVO): Promise<ResponseObject> {
     return await this.guideDAO.update(guideVo.toEntity());
   }
-  async findGuide(guideVo: GuideVO): Promise<ResponseObject> {
-    return await this.guideDAO.findById(guideVo.toEntity());
+  async findGuide(uid: string): Promise<ResponseObject> {
+    return await this.guideDAO.findById({ uid: uid } as Guide);
   }
 
   async getAllGuides(): Promise<ResponseObject> {

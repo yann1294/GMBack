@@ -35,36 +35,38 @@ export class ConvertToVoPipe
   ) { }
 
   async transform(req: FastifyRequest, metadata: ArgumentMetadata): Promise<BookingVO | PaymentVO | GuideVO | AdminVO | TouristVO | TourVO | PackageVO> {
-   try{ let data: object = {};
+    try {
+      let data: object = {};
 
-    data[this.paramField] = req.params[this.paramField];
+      data[this.paramField] = req.params[this.paramField];
 
-    if (this.hasBody) {
-      // parse json data
-      console.log("Body", req.body)
-      let body = JSON.parse(req.body as string);
-      data = { ...data, ...body }
-    }
+      if (this.hasBody) {
+        // parse json data
+        console.log("Body", req.body)
+        let body = JSON.parse(req.body as string);
+        data = { ...data, ...body }
+      }
 
-    console.log("Data in convert", data)
+      console.log("Data in convert", data)
 
-        // checking whether update has only id field
-        if (this.action === "update" && Object.keys(data).length === 1) {
-          throw new BadRequestException(errorHandler({code: 503, message: "Body must contain at least two attributes"}));
-        }
+      // checking whether update has only id field
+      if (this.action === "update" && Object.keys(data).length === 1) {
+        throw new BadRequestException(errorHandler({ code: 503, message: "Body must contain at least two attributes" }));
+      }
 
-    const dto = await this.getDTO(data);
-    await this.validateDTO(dto);
-    const vo = await this.getVO(dto);
-    await this.validateVO(vo);
+      const dto = await this.getDTO(data);
+      await this.validateDTO(dto);
+      const vo = await this.getVO(dto);
+      await this.validateVO(vo);
 
-    return vo;} catch (error) {
+      return vo;
+    } catch (error) {
       // console.error(error)
       throw new BadRequestException(errorHandler(error));
     }
   }
 
-   private async getDTO(data: object): Promise<any> {
+  private async getDTO(data: object): Promise<any> {
     switch (this.context) {
       case CONTEXT.booking:
         return plainToInstance(UpdateBookingDTO, data);

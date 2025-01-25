@@ -6,7 +6,7 @@ export interface IGuideService {
   addGuide(guideVo: GuideVO): Promise<ResponseObject>;
   deleteGuide(guideVo: GuideVO): Promise<ResponseObject>;
   updateGuide(guideVo: GuideVO): Promise<ResponseObject>;
-  findGuide(guideVo: GuideVO): Promise<ResponseObject>;
+  findGuide(uid: string): Promise<ResponseObject>;
   approveGuide(guideId: string): Promise<ResponseObject>;
   rejectGuide(guideId: string): Promise<ResponseObject>;
   deactivateGuide(guideId: string): Promise<ResponseObject>;

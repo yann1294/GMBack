@@ -58,10 +58,9 @@ export class GuideController {
   }
 
   @Get(':uid')
-  async findGuide(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    const validationPipe = new ConvertToVoPipe("guide", false, "uid");
-    const guideVo: GuideVO = await validationPipe.transform(req, { type: 'param', metatype: GuideVO }) as GuideVO;
-    return await this.guideService.findGuide(guideVo);
+  async findGuide(@Param('uid') uid: string): Promise<ResponseObject> {
+    console.log('API Entry: GET /guides/:uid', { uid });
+    return await this.guideService.findGuide(uid);
   }
 
   @Get()

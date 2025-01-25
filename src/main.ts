@@ -6,11 +6,18 @@ import {
 import { AppModule } from './app.module';
 import multipart from '@fastify/multipart';
 import { natsConfig } from './shared/event-communication/nats.config';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter(),
+  );
+
+  // Enable raw body middleware for specific routes
+  app.use(
+    '/webhook/stripe',
+    bodyParser.raw({ type: 'application/json' })
   );
 
   // registering multipart

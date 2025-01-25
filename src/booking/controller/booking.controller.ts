@@ -30,6 +30,7 @@ import { ConvertToVoPipe } from 'src/shared/pipes/convert-to-vo.pipe';
 import { CONTEXT } from 'src/shared/utils/context';
 import { GuideVO } from 'src/user-management/vo/guide.vo';
 import { TouristVO } from 'src/user-management/vo/tourist.vo';
+import { BookingWorkflow } from '../utils/booking.workflow';
 
 @Controller('bookings')
 export class BookingController {
@@ -43,6 +44,7 @@ export class BookingController {
     private readonly externalTourService: ITourExternalService,
     // @Inject(USER_MANAGEMENT_EXTERNAL_SERVICE_INTERFACE)
     // private readonly externalUserManagementService: IUserManagementExternalService,
+    private readonly bookingWorkflow: BookingWorkflow,
   ) {}
 
   // create new booking
@@ -52,7 +54,7 @@ export class BookingController {
   ): Promise<ResponseObject> {
     // TODO: code to send the data to the payment module should come after confirmation of successfull booking.
     // i.e here
-    return await this.bookingService.makeBooking(bookingVo);
+    return await this.bookingWorkflow.executeBooking(bookingVo);
   }
 
   // update an existing booking

@@ -50,7 +50,11 @@ export class GuideService implements IGuideService {
   }
 
   async approveGuide(guideId: string): Promise<ResponseObject> {
-    return await this.guideDAO.update(plainToInstance(Guide, { uid: guideId, accountStatus: "active" }));
+    return await this.guideDAO.update(plainToInstance(Guide, { uid: guideId, approvalStatus: "approved" }));
+  }
+
+  async rejectGuide(guideId: string): Promise<ResponseObject> {
+    return await this.guideDAO.update(plainToInstance(Guide, { uid: guideId, approvalStatus: "rejected" }));
   }
 
   async deactivateGuide(guideId: string): Promise<ResponseObject> {

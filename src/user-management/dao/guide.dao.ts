@@ -94,6 +94,8 @@ export class GuideDAO implements IGuideDAO {
             guide.identification.file = identityPhotoResponse.data as string;
         }
 
+        console.log("Guide", guide.toUpdateObject());
+
         return await this.dataService.updateDoc(this.collectionName, guide.uid, guide.toUpdateObject());
     }
     async findById(guide: Guide): Promise<ResponseObject> {

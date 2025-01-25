@@ -10,6 +10,7 @@ export class GuideVO implements IUser {
   private readonly _lastName: string;
   private readonly _createdAt: Date;
   private readonly _updatedAt: Date;
+  private readonly _approvalStatus: "approved" | "pending" | "rejected" = "pending";
 
   private readonly _role: Role; // Aggregation
   private readonly _identification: Identification; // Composition
@@ -37,7 +38,8 @@ export class GuideVO implements IUser {
     profilePhoto?: string | FileDTO,
     accountStatus?: "active" | "inactive",
     spokenLanguages?: string[],
-    availability?: boolean
+    availability?: boolean,
+    approvalStatus?: "approved" | "pending" | "rejected",
   ) {
     // Mandatory fields are validated and set as readonly properties
     this._uid = uid;
@@ -46,6 +48,7 @@ export class GuideVO implements IUser {
     this._role = role;
     this._createdAt = typeof createdAt === "string" ? new Date(createdAt) : createdAt;
     this._updatedAt = typeof updatedAt === "string" ? new Date(updatedAt) : updatedAt;
+    this._approvalStatus = approvalStatus;
 
     // Composition: Identification is created and owned by this class
     this._identification = new Identification(idFile, idType);

@@ -76,6 +76,8 @@ export class GuideValidationPipe
     guideDto.role = userRoles.guide;
     let guide: GuideVO = plainToInstance(GuideVO, guideDto);
 
+    // update approval status here
+
     // adding profilePhoto and identificationPhoto to guide if present
     if (files.has('profilePhoto')) {
       guide.profilePhoto = files.get('profilePhoto');

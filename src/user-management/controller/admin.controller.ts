@@ -37,6 +37,13 @@ constructor(@Inject(ADMIN_SERVICE_TOKEN) private readonly adminService: IAdminSe
         return this.adminService.approveGuide(uid);
     }
 
+    // Guide related methods
+    @Patch('guides/reject/:uid')
+    async rejectGuide(@Param('uid') uid: string): Promise<ResponseObject> {
+        console.log("API Entry: PATCH /admin/guides/reject/:uid", { uid });
+        return this.adminService.rejectGuide(uid);
+    }
+
     // @Delete('guides/:uid')
     // async deleteGuide(@Param('uid') uid: string): Promise<ResponseObject> {
     //     return this.adminService.deleteGuide(uid);

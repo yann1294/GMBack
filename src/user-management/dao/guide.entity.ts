@@ -18,6 +18,7 @@ export class Guide implements IUser {
         public identification: Identification;
         public spokenLanguages: string[];
         public availability: boolean;
+        public approvalStatus: "approved" | "pending" | "rejected";
     
         constructor(
             uid: string,
@@ -32,7 +33,8 @@ export class Guide implements IUser {
             identification: Identification,
             spokenLanguages: string[],
             availability: boolean,
-            accountStatus?: "active" | "inactive"
+            accountStatus?: "active" | "inactive",
+            approvalStatus?: "approved" | "pending" | "rejected",
         ) {
             this.uid = uid;
             this.firstName = firstName;
@@ -47,6 +49,7 @@ export class Guide implements IUser {
             this.spokenLanguages = spokenLanguages;
             this.availability = availability;
             this.accountStatus = accountStatus;
+            this.approvalStatus = approvalStatus;
         }
 
     toObject(): object {
@@ -62,7 +65,8 @@ export class Guide implements IUser {
             updatedAt: this.updatedAt ? Timestamp.fromDate(new Date(this.updatedAt)) : this.updatedAt,
             identification: Object.assign({}, this.identification),
             spokenLanguages: this.spokenLanguages,
-            availability: this.availability
+            availability: this.availability,
+            approvalStatus: this.approvalStatus,
         };
     }
 

@@ -58,6 +58,9 @@ export class AdminService implements IAdminService {
         // This is the last part of the guide creation process 
         return await this.guideService.approveGuide(uid);
     }
+    async rejectGuide(uid: string): Promise<ResponseObject> {
+        return await this.guideService.rejectGuide(uid);
+    }
     assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject> {
         // this is part of the tour creation process
         // however, this process requires an internal service communication between Tour and UM containers

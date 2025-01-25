@@ -8,6 +8,7 @@ export interface IGuideService {
   updateGuide(guideVo: GuideVO): Promise<ResponseObject>;
   findGuide(guideVo: GuideVO): Promise<ResponseObject>;
   approveGuide(guideId: string): Promise<ResponseObject>;
+  rejectGuide(guideId: string): Promise<ResponseObject>;
   deactivateGuide(guideId: string): Promise<ResponseObject>;
   approveBooking(bookingVo: BookingVO): Promise<ResponseObject>;
   declineBooking(bookingVo: BookingVO): Promise<ResponseObject>;

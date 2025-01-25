@@ -10,6 +10,7 @@ export interface IAdminService {
 
         // guide related
         approveGuide(uid: string): Promise<ResponseObject>;
+        rejectGuide(uid: string): Promise<ResponseObject>;
         // deleteGuide(uid: string): Promise<ResponseObject>; 
         // updateGuide(uid: string, guideVO: GuideVO): Promise<ResponseObject>;
         // findGuide(uid: string): Promise<ResponseObject>;

@@ -41,6 +41,7 @@ export class ConvertToVoPipe
 
     if (this.hasBody) {
       // parse json data
+      console.log("Body", req.body)
       let body = JSON.parse(req.body as string);
       data = { ...data, ...body }
     }

@@ -51,6 +51,7 @@ export class PackageDAO implements PackageDAOInterface {
 
   async update(packageEntity: Package): Promise<ResponseObject> {
     // Call the DataService's updateDoc method
+    console.log("Updating packageEntity", packageEntity);
     return await this.dataService.updateDoc(
       this.collectionName,
       packageEntity.id,

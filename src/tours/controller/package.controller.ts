@@ -85,9 +85,9 @@ export class PackageController {
     return this.packageService.readTours(packageVo);
   }
 
-  @Patch('tours')
+  @Patch(':id/tours')
   async addTourToPackage(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    const validationPipe = new ConvertToVoPipe('package', true);
+    const validationPipe = new ConvertToVoPipe('package', true, 'id');
     const packageVo: PackageVO = (await validationPipe.transform(req, {
       type: 'param',
       metatype: PackageVO,

@@ -48,7 +48,8 @@ export class PackageService implements IPackageService {
     // packages.tour = tourId;
     return await this.packageDAO.update(
       plainToInstance(Package, {
-        tours: FieldValue.arrayUnion(...packageVo.tours) 
+        id: packageVo.id,
+        tours: FieldValue.arrayUnion(...packageVo.tours),
       })
     );
   }

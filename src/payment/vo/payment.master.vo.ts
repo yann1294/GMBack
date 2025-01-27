@@ -1,5 +1,6 @@
 import { IsString, IsNotEmpty,  IsNumber, IsIn, IsUUID, IsDateString, IsOptional } from 'class-validator';
 import { Expose } from 'class-transformer';
+import { Payment } from '../dao/payment.entity';
 
 export class PaymentVO {
   @IsString()
@@ -158,5 +159,22 @@ export class PaymentVO {
 
   set updatedAt(value: string) {
     this._updatedAt = value;
+  }
+
+  toEntity(): Payment {
+    return new Payment(
+      this._id,
+      this._gateway,
+      this._paymentId,
+      this._resourceType,
+      this._resourceId,
+      this._amount,
+      this._currency,
+      this._status,
+      this._bookingId,
+      this._userId,
+      this._createdAt,
+      this._updatedAt
+    );
   }
 }

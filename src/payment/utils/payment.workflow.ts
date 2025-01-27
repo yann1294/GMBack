@@ -10,15 +10,24 @@ export class PaymentWorkflow {
   ) {}
 
   async executePayment(payment: PaymentVO) {
-    // Step 1: Process payment
+    // Step 1: Generates a stripe session containing payment details
     let paymentResponse = await this.payment.processPayment(payment);
 
+    // check whether there was an error
+    if (paymentResponse.status === "failure") return paymentResponse;
+
     // Step 2: Record transaction
-    let transaction = await this.payment.savePaymentDetails(payment);
+    let response = await this.payment.savePaymentDetails(paymentResponse['payment']);
+
+    // check whether there was an error
+    if (response.status === "failure") return response;
 
     // Step 3: Return payment details
     return {
-      transaction
+      status: "success",
+      code: 200,
+      message: "Payment successfully created.",
+      data: paymentResponse['session'],
     };
   }
 }

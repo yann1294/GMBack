@@ -22,7 +22,7 @@ export class StripeGateway {
     });
   }
 
-  async processPayment(payment: PaymentVO): Promise<ResponseObject> {
+  async processPayment(payment: PaymentVO): Promise<{session: Stripe.Response<Stripe.Checkout.Session>, payment: PaymentVO} | ResponseObject> {
     try {
       // Fetch product details
       const response: ResponseObject = await this.dataService.readDoc(payment.resourceType, payment.resourceId);
@@ -52,12 +52,14 @@ export class StripeGateway {
         cancel_url: `${process.env.FRONTEND_URL}/booking/cancel`,
       });
   
+      // update payment id
+      payment.paymentId = session.payment_intent as string;
+      console.log(session.payment_intent);
+      
       // Return successful response
       return {
-        status: "success",
-        code: 200,
-        message: "Session created successfully",
-        data: session,
+        session: session,
+        payment: payment 
       };
     } catch (error) {
       console.error("Error creating session:", error);

@@ -128,4 +128,12 @@ export class BookingDAO implements IBookingDAO {
     // Call the DataService's deleteDoc method
     return await this.dataService.deleteDoc(this.collectionName, booking.id);
   }
+
+  async findByCondition(condition: DataServiceCondition | DataServiceCondition[]): Promise<ResponseObject> {
+    return await this.dataService.readDocsWithConditions(this.collectionName, condition);
+  }
+
+  async findResource(resourceType: string, resourceId: string): Promise<ResponseObject> {
+    return await this.dataService.readDoc(resourceType, resourceId);
+  }
 }

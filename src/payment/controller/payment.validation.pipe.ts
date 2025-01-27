@@ -16,6 +16,9 @@ import { CreatePaymentDTO } from './dto/payment.create.dto';
     constructor(private readonly origin: string = 'default') { }
     async transform(value: any, metadata: ArgumentMetadata): Promise<PaymentVO> {
       log(metadata);
+      // convert value to object
+      value = JSON.parse(value);
+      
       // checking if value if empty
       if (!value) {
         throw new BadRequestException('Request body cannot be empty');

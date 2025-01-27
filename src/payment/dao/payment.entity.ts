@@ -34,4 +34,8 @@ export class Payment {
       updatedAt: this.updatedAt,
     };
   }
+
+  toUpdateObject(): object {
+    return { ...this };
+  }
 }

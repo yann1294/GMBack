@@ -12,7 +12,7 @@ export class PaymentDAO implements IPaymentDAO {
     private readonly dataService: DataService,
   ){}
   async update(payment: Payment): Promise<ResponseObject> {
-    throw new Error("Method not implemented.");
+    return await this.dataService.updateDoc(this.collectionName, payment.id, payment.toUpdateObject());
   }
   async findById(id: string): Promise<ResponseObject> {
     return await this.dataService.readDoc(this.collectionName, id);
@@ -26,7 +26,7 @@ export class PaymentDAO implements IPaymentDAO {
   async create(payment: Payment): Promise<ResponseObject> {
     return await this.dataService.createDoc(payment, this.collectionName);
   }
-  async findByCondition(condition: DataServiceCondition): Promise<ResponseObject> {
+  async findByCondition(condition: DataServiceCondition | DataServiceCondition[]): Promise<ResponseObject> {
     return await this.dataService.readDocsWithConditions(this.collectionName, condition);
   }
 }

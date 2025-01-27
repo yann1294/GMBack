@@ -8,5 +8,5 @@ export interface IPaymentDAO {
   findById(id: string): Promise<ResponseObject>;
   delete(id: string): Promise<ResponseObject>;
   findAll(): Promise<ResponseObject>;
-  findByCondition(condition: DataServiceCondition): Promise<ResponseObject>;
+  findByCondition(condition: DataServiceCondition | DataServiceCondition[]): Promise<ResponseObject>;
 }

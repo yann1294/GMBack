@@ -3,7 +3,7 @@ import { PaymentVO } from '../vo/payment.master.vo';
 import { IPaymentService } from './payment.service.interface';
 import { StripeGateway } from '../utils/stripe.gateway';
 import { PayPalGateway } from '../utils/paypal.gateway';
-import { ResponseObject } from 'src/shared/types';
+import { DataServiceCondition, ResponseObject } from 'src/shared/types';
 import { PAYMENT_DAO_INTERFACE } from '../token';
 import { IPaymentDAO } from '../dao/payment.dao.interface';
 
@@ -34,8 +34,16 @@ export class PaymentService implements IPaymentService {
     return await gateway.processPayment(payment);
   }
 
+  async updatePayment(payment: PaymentVO): Promise<ResponseObject> {
+    return await this.paymentDAO.update(payment.toEntity());
+  }
+
   async savePaymentDetails(payment: PaymentVO): Promise<ResponseObject> {
     return await this.paymentDAO.create(payment.toEntity());
+  }
+
+  async findByCondition(condition: DataServiceCondition | DataServiceCondition[]): Promise<ResponseObject> {
+    return await this.paymentDAO.findByCondition(condition);
   }
 
   async findByBooking(bookingId: string): Promise<ResponseObject> {

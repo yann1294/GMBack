@@ -55,8 +55,10 @@ export class StripeGateway {
         cancel_url: `${process.env.FRONTEND_URL}/booking/cancel`,
       });
   
-      // update payment id
-      payment.paymentId = session.id;
+      // update payment id and status
+      payment.sessionId = session.id;
+      payment.status = "in-progress";
+      console.log(payment)
 
       // Return successful response
       return {

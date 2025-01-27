@@ -43,7 +43,7 @@ export declare interface IActivity {
  * @param data - Document paths/data of created documents or `null` if there’s an error.
  */
 export type ResponseObject = {
-  status: string;
+  status: "failure" | "not-found" | "success" | "invalid-url";
   code: string | number;
   message: string;
   data: string[] | object[] | string | object | {} | null;
@@ -71,7 +71,7 @@ export type DataServiceCondition = {
  * @param data - Array of file paths or `null` if there’s an error.
  */
 export type FileServiceResponse = {
-  status: string;
+  status: "success" | "failure" | "not-found" | "invalid-url";
   code: string | number;
   message: string;
   data: string[] | null | string;

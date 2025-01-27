@@ -26,9 +26,12 @@ export class StripeGateway {
     try {
       // Fetch product details
       const response: ResponseObject = await this.dataService.readDoc(payment.resourceType, payment.resourceId);
-  
+      
+      // check whether tour is available
+      if (response.status !== "success") return response;
+
       // Ensure amount is rounded to two decimal places and converted to cents
-      const amountInCents = Math.round(parseFloat(payment.amount.toFixed(2)) * 100);
+      const amountInCents = parseFloat(payment.amount.toFixed(2)) * 100;
   
       // Create a checkout session
       const session = await this.stripe.checkout.sessions.create({
@@ -53,9 +56,8 @@ export class StripeGateway {
       });
   
       // update payment id
-      payment.paymentId = session.payment_intent as string;
-      console.log(session.payment_intent);
-      
+      payment.paymentId = session.id;
+
       // Return successful response
       return {
         session: session,

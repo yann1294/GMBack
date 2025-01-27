@@ -14,13 +14,13 @@ export class PaymentWorkflow {
     let paymentResponse = await this.payment.processPayment(payment);
 
     // check whether there was an error
-    if (paymentResponse.status === "failure") return paymentResponse;
+    if (paymentResponse.status !== undefined && paymentResponse.status !== "success") return paymentResponse;
 
     // Step 2: Record transaction
     let response = await this.payment.savePaymentDetails(paymentResponse['payment']);
 
     // check whether there was an error
-    if (response.status === "failure") return response;
+    if (response.status !== "success") return response;
 
     // Step 3: Return payment details
     return {

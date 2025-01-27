@@ -2,14 +2,14 @@ import { Booking } from '../dao/booking.entity';
 import { Expose, instanceToPlain, Type } from 'class-transformer';
 import { IsIn, IsOptional, ValidateNested } from 'class-validator';
 import { Tourist } from './helper.vo';
-import { BookingStatus } from '../utils/consts.utils';
+import { BookingStatus, status } from '../utils/consts.utils';
 
 export class BookingVO {
   @Expose({ name: 'id' })
   @IsOptional()
   private _id: string;
   @Expose({ name: 'status' })
-  @IsIn(BookingStatus)
+  @IsIn(status)
   @IsOptional()
   private _status: string;
   @Expose({ name: 'bookedOn' })

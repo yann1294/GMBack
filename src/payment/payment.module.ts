@@ -18,6 +18,7 @@ import { PaymentWorkflow } from './utils/payment.workflow';
     PayPalGateway,
     DataService,
     PaymentWorkflow,
+    PaymentService,
     {
       provide: PAYMENT_SERVICE_INTERFACE,
       useClass: PaymentService,

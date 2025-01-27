@@ -110,7 +110,7 @@ export class ImageManager {
         { images: FieldValue.arrayUnion(...imageUrl) }
       )
 
-      const responseObj: ResponseObject = await this.dataService.updateDoc(resource, id, updateData);
+      const responseObj: ResponseObject = await this.dataService.updateDoc(resource, id, updateData.toUpdateObject());
       // const responseObj: ResponseObject = await this.dataService.updateDoc(resource, id, updateData.toUpdateObject());
 
       if (responseObj.status !== 'success') {

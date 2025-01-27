@@ -18,8 +18,9 @@ import { BookingWorkflow } from './utils/booking.workflow';
 import { PaymentWorkflow } from 'src/payment/utils/payment.workflow';
 import { InventoryManagement } from './utils/inventory.management';
 import { PaymentService } from 'src/payment/services/payment.service';
-import { PAYMENT_SERVICE_INTERFACE } from 'src/payment/token';
+import { PAYMENT_DAO_INTERFACE, PAYMENT_SERVICE_INTERFACE } from 'src/payment/token';
 import { StripeGateway } from 'src/payment/utils/stripe.gateway';
+import { PaymentDAO } from 'src/payment/dao/payment.dao';
 
 @Module({
   imports: [FirebaseModule, TourModule, NatsModule],
@@ -40,6 +41,10 @@ import { StripeGateway } from 'src/payment/utils/stripe.gateway';
     {
       provide: PAYMENT_SERVICE_INTERFACE,
       useClass: PaymentService,
+    },
+    {
+      provide: PAYMENT_DAO_INTERFACE,
+      useClass: PaymentDAO,
     },
     DataService,
     BookingMessageService,

@@ -23,24 +23,16 @@ export class StripeGateway {
   }
 
   async processPayment(payment: PaymentVO): Promise<ResponseObject> {
-    // fetch product details
-    let response: ResponseObject = await this.dataService.readDoc(payment.resourceType, payment.resourceId);
-
     try {
-      
-      // Ensure amount is in cents
-      const amountInCents = parseFloat((payment.amount).toFixed(2)) * 100;
-
-      // Create a payment intent
-      const paymentIntent = await this.stripe.paymentIntents.create({
-        amount: amountInCents,
-        currency: payment.currency,
-        automatic_payment_methods: { enabled: true },
-      });
-
+      // Fetch product details
+      const response: ResponseObject = await this.dataService.readDoc(payment.resourceType, payment.resourceId);
+  
+      // Ensure amount is rounded to two decimal places and converted to cents
+      const amountInCents = Math.round(parseFloat(payment.amount.toFixed(2)) * 100);
+  
       // Create a checkout session
       const session = await this.stripe.checkout.sessions.create({
-        payment_method_types: paymentMethodTypes,
+        payment_method_types: ['card'], // Replace with actual types if needed
         line_items: [
           {
             price_data: {
@@ -49,9 +41,6 @@ export class StripeGateway {
                 name: response.data['name'],
                 description: response.data['description'],
                 images: (response.data['images'] as string[]).slice(0, 8),
-                metadata: {
-                  orderId: `Order #${paymentIntent.id}`
-                }
               },
               unit_amount: amountInCents,
             },
@@ -61,32 +50,28 @@ export class StripeGateway {
         mode: 'payment',
         success_url: `${process.env.FRONTEND_URL}/booking/success`,
         cancel_url: `${process.env.FRONTEND_URL}/booking/cancel`,
-        metadata: {
-          orderId: paymentIntent.id,
-          clientSecret: paymentIntent.client_secret,
-        },
       });
-
+  
       // Return successful response
       return {
         status: "success",
         code: 200,
-        message: "Payment processed successfully",
+        message: "Session created successfully",
         data: session,
       };
     } catch (error) {
-      console.error("Error processing payment:", error);
-
+      console.error("Error creating session:", error);
+  
       // Return error response
       return {
         status: "failure",
         code: error.statusCode || 500,
-        message: error.message || "An error occurred while processing the payment",
+        message: error.message || "An error occurred while creating the session",
         data: null,
       };
     }
   }
-
+  
   async refundPayment(paymentId: string): Promise<ResponseObject> {
     try {
       // Refund the payment

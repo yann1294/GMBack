@@ -1,10 +1,15 @@
-import { IsString, IsNotEmpty,  IsNumber, IsIn, IsUUID, IsDateString, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty,  IsNumber, IsIn, IsUUID, IsDateString, IsOptional, IsUrl } from 'class-validator';
 
 export class CreatePaymentDTO {
   @IsString()
   @IsNotEmpty()
   @IsIn(['stripe', 'paypal'])
   gateway: string;
+  
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  sessionId: string;
 
   @IsString()
   @IsNotEmpty()
@@ -13,12 +18,10 @@ export class CreatePaymentDTO {
 
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
   resourceId: string;
 
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
   resourceType: string;
 
   @IsNumber()
@@ -41,8 +44,12 @@ export class CreatePaymentDTO {
 
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
   userId: string;
+  
+  @IsUrl()
+  @IsNotEmpty()
+  @IsOptional()
+  receipt: string;
 
   @IsDateString()
   createdAt: string;

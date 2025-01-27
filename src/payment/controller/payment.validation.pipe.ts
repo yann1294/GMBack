@@ -17,7 +17,11 @@ import { CreatePaymentDTO } from './dto/payment.create.dto';
     async transform(value: any, metadata: ArgumentMetadata): Promise<PaymentVO> {
       log(metadata);
       // convert value to object
-      value = JSON.parse(value);
+      try {
+        value = JSON.parse(value);
+      } catch(error) {
+        throw new BadRequestException(error.message);
+      }
       
       // checking if value if empty
       if (!value) {

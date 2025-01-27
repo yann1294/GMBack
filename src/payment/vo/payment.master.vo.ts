@@ -35,6 +35,7 @@ export class PaymentVO {
   @IsNumber()
   @Expose({ name: 'amount' })
   private _amount: number;
+  private _sessionId: string;
 
   @IsString()
   @IsNotEmpty()
@@ -60,6 +61,7 @@ export class PaymentVO {
   @IsDateString()
   @Expose({ name: 'createdAt' })
   private _createdAt: string;
+  private _receipt: string;
 
   @IsDateString()
   @Expose({ name: 'updatedAt' })
@@ -145,6 +147,14 @@ export class PaymentVO {
     this._userId = value;
   }
 
+  get receipt(): string {
+    return this._receipt;
+  }
+
+  set receipt(value: string) {
+    this._receipt = value;
+  }
+
   get createdAt(): string {
     return this._createdAt;
   }
@@ -161,9 +171,18 @@ export class PaymentVO {
     this._updatedAt = value;
   }
 
+  get sessionId(): string {
+    return this._sessionId;
+  }
+
+  set sessionId(value: string) {
+    this._sessionId = value;
+  }
+
   toEntity(): Payment {
     return new Payment(
       this._id,
+      this._sessionId,
       this._gateway,
       this._paymentId,
       this._resourceType,
@@ -173,6 +192,7 @@ export class PaymentVO {
       this._status,
       this._bookingId,
       this._userId,
+      this._receipt,
       this._createdAt,
       this._updatedAt
     );

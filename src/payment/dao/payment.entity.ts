@@ -1,6 +1,7 @@
 export class Payment {
   constructor(
     public id: string,
+    public sessionId: string,
     public gateway: string,
     public paymentId: string,
     public resourceType: string,
@@ -10,6 +11,7 @@ export class Payment {
     public status: string,
     public bookingId: string,
     public userId: string,
+    public receipt: string,
     public createdAt: string,
     public updatedAt: string,
   ) {}
@@ -17,6 +19,7 @@ export class Payment {
   toObject(): object {
     return {
       id: this.id,
+      sessionId: this.sessionId,
       gateway: this.gateway,
       paymentId: this.paymentId,
       resourceId: this.resourceId,
@@ -26,6 +29,7 @@ export class Payment {
       status: this.status,
       bookingId: this.bookingId,
       userId: this.userId,
+      receipt: this.receipt,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     };

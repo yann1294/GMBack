@@ -105,10 +105,23 @@ export class ImageManager {
       }
 
       // Update the corresponding document with the uploaded image URLs
-      const updateData = plainToInstance(
-        resource === 'packages' ? Package : Tour,
-        { images: FieldValue.arrayUnion(...imageUrl) }
-      )
+      // const updateData = plainToInstance(
+      //   resource === 'packages' ? Package : Tour,
+      //   { images: FieldValue.arrayUnion(...imageUrl) }
+      // )
+      let updateData: Package | Tour;
+
+if (resource === 'packages') {
+  updateData = plainToInstance(
+    Package,
+    { images: FieldValue.arrayUnion(...imageUrl) }
+  );
+} else {
+  updateData = plainToInstance(
+    Tour,
+    { images: FieldValue.arrayUnion(...imageUrl) }
+  );
+}
 
       const responseObj: ResponseObject = await this.dataService.updateDoc(resource, id, updateData);
       // const responseObj: ResponseObject = await this.dataService.updateDoc(resource, id, updateData.toUpdateObject());

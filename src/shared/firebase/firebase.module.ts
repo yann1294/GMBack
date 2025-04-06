@@ -10,7 +10,7 @@ const firebaseProvider = {
   useFactory: () => {
     const firebaseConfig = path.resolve(
       __dirname,
-      '../../../gmback-service-account.json',
+      '../../../gmback-206ae-0db6e855cf1e.json',
     );
 
     return admin.initializeApp({

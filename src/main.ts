@@ -12,10 +12,10 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
     {
-      rawBody: true
-    }
+      rawBody: true,
+    },
   );
-  
+
   // registering multipart
   app.register(multipart as any);
 
@@ -25,6 +25,6 @@ async function bootstrap() {
   // Configures  the message broker in the application (This is how it is done in Nestjs, via the microservice package)
   const mService = app.connectMicroservice(natsConfig);
   await app.startAllMicroservices();
-  await app.listen(process.env.PORT ?? 3001);
+  await app.listen(process.env.PORT ?? 3102);
 }
 bootstrap();

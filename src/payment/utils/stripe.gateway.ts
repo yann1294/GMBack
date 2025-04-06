@@ -1,38 +1,46 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
-import Stripe from "stripe";
-import { PaymentVO } from "../vo/payment.master.vo";
-import { ResponseObject } from "src/shared/types";
-import { paymentMethodTypes } from "./stripe-methods.utils";
-import { DataService } from "src/shared/services/data.service";
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import Stripe from 'stripe';
+import { PaymentVO } from '../vo/payment.master.vo';
+import { ResponseObject } from 'src/shared/types';
+import { paymentMethodTypes } from './stripe-methods.utils';
+import { DataService } from 'src/shared/services/data.service';
 require('dotenv').config();
 
 @Injectable()
 export class StripeGateway {
   private readonly stripe: Stripe;
 
-  constructor(
-    private readonly dataService: DataService
-  ) {
+  constructor(private readonly dataService: DataService) {
     if (!process.env.STRIPE_SECRET_KEY) {
-      throw new InternalServerErrorException("Stripe secret key is not configured.");
+      throw new InternalServerErrorException(
+        'Stripe secret key is not configured.',
+      );
     }
 
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2025-02-24.acacia',
-    });
+    // this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    //   apiVersion: '2025-02-24.acacia',
+    // });
   }
 
-  async processPayment(payment: PaymentVO): Promise<{session: Stripe.Response<Stripe.Checkout.Session>, payment: PaymentVO} | ResponseObject> {
+  async processPayment(
+    payment: PaymentVO,
+  ): Promise<
+    | { session: Stripe.Response<Stripe.Checkout.Session>; payment: PaymentVO }
+    | ResponseObject
+  > {
     try {
       // Fetch product details
-      const response: ResponseObject = await this.dataService.readDoc(payment.resourceType, payment.resourceId);
-      
+      const response: ResponseObject = await this.dataService.readDoc(
+        payment.resourceType,
+        payment.resourceId,
+      );
+
       // check whether tour is available
-      if (response.status !== "success") return response;
+      if (response.status !== 'success') return response;
 
       // Ensure amount is rounded to two decimal places and converted to cents
       const amountInCents = parseFloat(payment.amount.toFixed(2)) * 100;
-  
+
       // Create a checkout session
       const session = await this.stripe.checkout.sessions.create({
         payment_method_types: ['card'], // Replace with actual types if needed
@@ -54,30 +62,31 @@ export class StripeGateway {
         success_url: `${process.env.FRONTEND_URL}/booking/success`,
         cancel_url: `${process.env.FRONTEND_URL}/booking/cancel`,
       });
-  
+
       // update payment id and status
       payment.sessionId = session.id;
-      payment.status = "in-progress";
-      console.log(payment)
+      payment.status = 'in-progress';
+      console.log(payment);
 
       // Return successful response
       return {
         session: session,
-        payment: payment 
+        payment: payment,
       };
     } catch (error) {
-      console.error("Error creating session:", error);
-  
+      console.error('Error creating session:', error);
+
       // Return error response
       return {
-        status: "failure",
+        status: 'failure',
         code: error.statusCode || 500,
-        message: error.message || "An error occurred while creating the session",
+        message:
+          error.message || 'An error occurred while creating the session',
         data: null,
       };
     }
   }
-  
+
   async refundPayment(paymentId: string): Promise<ResponseObject> {
     try {
       // Refund the payment
@@ -87,19 +96,20 @@ export class StripeGateway {
 
       // Return successful refund response
       return {
-        status: "success",
+        status: 'success',
         code: 200,
-        message: "Payment refunded successfully",
+        message: 'Payment refunded successfully',
         data: refund,
       };
     } catch (error) {
-      console.error("Error processing refund:", error);
+      console.error('Error processing refund:', error);
 
       // Return error response
       return {
-        status: "failure",
+        status: 'failure',
         code: error.statusCode || 500,
-        message: error.message || "An error occurred while processing the refund",
+        message:
+          error.message || 'An error occurred while processing the refund',
         data: null,
       };
     }

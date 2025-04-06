@@ -1,15 +1,12 @@
-version: '2'
-
-networks:
-  app-tier:
-    driver: bridge
-
+version: '3.9'
 services:
-  nats:
-    image: 'bitnami/nats:latest'
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
     ports:
-      - 4222:4222 # client port
-      - 6222:6222 # cluster port
-      - 8222:8222 # monitoring port
-    networks:
-      - app-tier
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+volumes:
+  rabbitmq_data:

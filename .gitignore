@@ -43,7 +43,7 @@ lerna-debug.log*
 .env.local
 
 # service account
-# gmback-service-account.json
+gmback-service-account.json
 
 # temp directory
 .temp

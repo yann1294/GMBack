@@ -21,6 +21,7 @@ import { OAuthSigninDTO } from './dto/oauth.signin.dto';
 import { AuthValidationPipe } from './auth.pipe';
 import { LocalAuthVO } from '../vo/auth.local.vo';
 import { Role } from 'src/user-management/utils/helper';
+import { ResponseObject } from 'src/shared/types';
 
 /**
  * Example Authentication Controller
@@ -56,14 +57,19 @@ export class AuthController {
    * Returns { user: LocalAuthEntity, token: string } from service.
    */
   @Post('local/:role/signin')
-  async localSignin(@Body(new AuthValidationPipe(AuthSignupDTO, 'local-signin')) body: LocalAuthVO) {
+  async localSignin(@Body(new AuthValidationPipe(AuthSignupDTO, 'local-signin')) body: LocalAuthVO): Promise<ResponseObject> {
     // The AuthSigninDTO ensures we have a valid email & password
-    return this.authService.loginLocalUser(
-      // If your service expects userName, adapt accordingly.
-      // Otherwise, if it expects email, pass 'body.email'
-      body.emailAddress,
-      body.password,
-    );
+    return {
+      status: 'success',
+      message: 'User logged in successfully',
+      code: 200,
+      data: await this.authService.loginLocalUser(
+        // If your service expects userName, adapt accordingly.
+        // Otherwise, if it expects email, pass 'body.email'
+        body.emailAddress,
+        body.password,
+      )
+    } as ResponseObject;
   }
 
   /**

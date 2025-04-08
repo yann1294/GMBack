@@ -68,6 +68,7 @@ export class AuthService implements IAuthService {
   ): Promise<{ user: LocalAuthEntity; token: string }> {
     // Find user by userName
     const user = await this.authDAO.findLocalAuthByEmail(email);
+
     if (!user) {
       throw new UnauthorizedException('User not found');
     }

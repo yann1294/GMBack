@@ -23,6 +23,8 @@ export class AuthDAO implements IAuthDAO {
    */
   async createLocalAuth(authEntity: LocalAuthEntity): Promise<ResponseObject> {
     // Use Firestore document ID = authEntity.uid
+
+    // firebaseAuth.signInWithEmailAndPassword()
     return this.dataService.createDoc(authEntity, this.collectionName, true);
   }
 
@@ -79,7 +81,7 @@ export class AuthDAO implements IAuthDAO {
     email: string,
   ): Promise<LocalAuthEntity | null> {
     const conditions: DataServiceCondition[] = [
-      { fieldPath: 'email', operationString: '==', value: email },
+      { fieldPath: 'emailAddress', operationString: '==', value: email },
       { fieldPath: 'authType', operationString: '==', value: 'local' },
     ];
 

@@ -11,12 +11,12 @@ import { PaymentModule } from './payment/payment.module';
   //  ConfigModule is a replacement of process.env which is slower
   imports: [
     ConfigModule.forRoot({ cache: true }),
-    TourModule, 
-    BookingModule, 
+    TourModule,
+    BookingModule,
     UserModule,
     PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

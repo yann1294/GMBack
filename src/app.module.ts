@@ -6,17 +6,19 @@ import { TourModule } from './tours/tour.module';
 import { BookingModule } from './booking/booking.module';
 import { UserModule } from './user-management/user.module';
 import { PaymentModule } from './payment/payment.module';
+import { AuthModule } from './authentication/auth.module';
 
 @Module({
   //  ConfigModule is a replacement of process.env which is slower
   imports: [
     ConfigModule.forRoot({ cache: true }),
-    TourModule, 
-    BookingModule, 
+    TourModule,
+    BookingModule,
     UserModule,
     PaymentModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

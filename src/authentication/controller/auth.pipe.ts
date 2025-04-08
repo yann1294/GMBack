@@ -1,41 +1,39 @@
+// auth.pipe.ts
 import {
+  PipeTransform,
+  Injectable,
   ArgumentMetadata,
   BadRequestException,
-  Injectable,
-  PipeTransform,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
-import { log } from 'console';
-import { BookingVO } from '../../booking/vo/booking.master.vo';
-import UpdateBookingCreateDTO from '../../booking/controller/dto/booking.update.dto';
-import CreateBookingDTO from '../../booking/controller/dto/booking.create.dto';
 
+/**
+ * A generic validation pipe that:
+ * 1) Converts plain JS objects into an instance of a given DTO class
+ * 2) Runs class-validator on that instance
+ * 3) Throws BadRequestException if validation fails
+ */
 @Injectable()
-export class BookingValidationPipe
-  implements PipeTransform<any, Promise<BookingVO>>
-{
-  constructor(private readonly origin: string = 'default') {}
-  async transform(value: any, metadata: ArgumentMetadata): Promise<BookingVO> {
-    log(metadata);
-    // checking if value if empty
-    if (!value) {
-      throw new BadRequestException('Request body cannot be empty');
-    }
+export class AuthValidationPipe implements PipeTransform {
+  constructor(private readonly dtoClass: any) {}
 
-    // validate input data against TourDTO
-    const tourDto =
-      this.origin == 'update'
-        ? plainToInstance(UpdateBookingCreateDTO, value)
-        : plainToInstance(CreateBookingDTO, value);
-    const errors = await validate(tourDto);
+  async transform(value: any, metadata: ArgumentMetadata) {
+    // Convert plain object to an instance of the specified DTO class
+    const dtoInstance = plainToInstance(this.dtoClass, value);
 
-    // checking if there are any errors
+    // Perform validation
+    const errors = await validate(dtoInstance, {
+      whitelist: true, // Strip unknown properties
+      forbidNonWhitelisted: true, // Throw error if unknown properties are present
+    });
+
     if (errors.length > 0) {
-      throw new BadRequestException(errors);
+      // You could customize error messages further if desired
+      throw new BadRequestException('Validation failed for request body');
     }
 
-    // transform data into BookingVO
-    return plainToInstance(BookingVO, value);
+    // Return the validated & transformed DTO
+    return dtoInstance;
   }
 }

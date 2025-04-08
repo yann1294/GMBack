@@ -17,4 +17,3 @@ export class Role {
       return this._name;
     }
   }
-  

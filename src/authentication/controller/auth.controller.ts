@@ -19,6 +19,8 @@ import { OAuthSigninDTO } from './dto/oauth.signin.dto';
 
 // Validation Pipe
 import { AuthValidationPipe } from './auth.pipe';
+import { LocalAuthVO } from '../vo/auth.local.vo';
+import { Role } from 'src/user-management/utils/helper';
 
 /**
  * Example Authentication Controller
@@ -34,20 +36,18 @@ export class AuthController {
    * LOCAL SIGNUP
    * Validates input using AuthSignupDTO (email + password).
    */
-  @Post('local/signup')
-  @UsePipes(new AuthValidationPipe(AuthSignupDTO))
-  async localSignup(@Body() body: AuthSignupDTO) {
+  @Post('local/:role/signup')
+  async localSignup(@Param('role') role: string, @Body(new AuthValidationPipe(AuthSignupDTO, 'local-signup')) body: LocalAuthVO) {
+    // Validate role
+    if (!['admin', 'tourist', 'guide'].includes(role)) {
+      throw new Error('Invalid endpoint');
+    }
+
+    // set role in the body
+    body.role = { name: role } as Role;
+
     // The AuthSignupDTO ensures we have a valid email & password
-    return this.authService.registerLocalUser(
-      // If your service also requires userName, adapt accordingly
-      // For example, if you want to treat 'email' as userName or pass an empty string
-      body.username,
-      body.email,
-      body.password,
-      body.role,
-      // Provide a default role or retrieve it from somewhere
-      // e.g. Role.USER, or body.role if you have that
-    );
+    return this.authService.registerLocalUser(body)
   }
 
   /**
@@ -56,13 +56,13 @@ export class AuthController {
    * Returns { user: LocalAuthEntity, token: string } from service.
    */
   @Post('local/signin')
-  @UsePipes(new AuthValidationPipe(AuthSigninDTO))
-  async localSignin(@Body() body: AuthSigninDTO) {
+  @UsePipes(new AuthValidationPipe(AuthSignupDTO, 'local-signin'))
+  async localSignin(@Body() body: LocalAuthVO) {
     // The AuthSigninDTO ensures we have a valid email & password
     return this.authService.loginLocalUser(
       // If your service expects userName, adapt accordingly.
       // Otherwise, if it expects email, pass 'body.email'
-      body.email,
+      body.emailAddress,
       body.password,
     );
   }
@@ -73,7 +73,7 @@ export class AuthController {
    * AuthUpdateDTO has optional fields, so partial updates are allowed.
    */
   @Patch('local/update/:uid')
-  @UsePipes(new AuthValidationPipe(AuthUpdateDTO))
+  // @UsePipes(new AuthValidationPipe(AuthUpdateDTO))
   async updateLocal(@Param('uid') uid: string, @Body() body: AuthUpdateDTO) {
     // You might call a service method like this:
     // return this.authService.updateLocalUser(uid, body);
@@ -86,7 +86,7 @@ export class AuthController {
    * Validates input using OAuthSignupDTO (provider, accessToken, userName optional).
    */
   @Post('oauth/signup')
-  @UsePipes(new AuthValidationPipe(OAuthSignupDTO))
+  // @UsePipes(new AuthValidationPipe(OAuthSignupDTO))
   async oauthSignup(@Body() body: OAuthSignupDTO) {
     return this.authService.registerOAuthUser(
       // If your service code always generates the UID internally, you can pass anything or empty:
@@ -102,7 +102,7 @@ export class AuthController {
    * Validates input using OAuthSigninDTO (provider, accessToken).
    */
   @Post('oauth/signin')
-  @UsePipes(new AuthValidationPipe(OAuthSigninDTO))
+  // @UsePipes(new AuthValidationPipe(OAuthSigninDTO))
   async oauthSignin(@Body() body: OAuthSigninDTO) {
     // For an OAuth login, you might do:
     return this.authService.loginOAuthUser(body.provider, body.accessToken);

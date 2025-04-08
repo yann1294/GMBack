@@ -1,34 +1,31 @@
 import { IAuth } from "../utils/auth.interface";
-import { Role } from "../utils/helper";
 import { LocalAuthEntity } from "../dao/localauth.entity";
+import { Role } from "src/user-management/utils/helper";
 
 export class LocalAuthVO implements IAuth {
   // Immutable mandatory fields
   private readonly _uid: string;
-  private readonly _userName: string;
   private readonly _password: string;
-  private readonly _role: Role;
-  private readonly _createdAt: Date;
-  private readonly _updatedAt: Date;
+  private readonly _createdAt?: Date;
+  private readonly _updatedAt?: Date;
 
   // Optional mutable fields
-  private _emailAddress?: string;
+  private _emailAddress: string;
   private _lastLoginDate?: Date;
   private _failedLoginAttempts: number;
+  private _role: Role;
 
   constructor(
     uid: string,
-    userName: string,
+    emailAddress: string,
     password: string,
     role: Role,
-    createdAt: Date | string,
-    updatedAt: Date | string,
-    emailAddress?: string,
+    createdAt?: Date | string,
+    updatedAt?: Date | string,
     lastLoginDate?: Date | string,
-    failedLoginAttempts: number = 0,
+    failedLoginAttempts?: number,
   ) {
     this._uid = uid;
-    this._userName = userName;
     this._password = password;
     this._role = role;
     this._createdAt = typeof createdAt === "string" ? new Date(createdAt) : createdAt;
@@ -47,16 +44,16 @@ export class LocalAuthVO implements IAuth {
     return this._uid;
   }
 
-  get userName(): string {
-    return this._userName;
-  }
-
   get password(): string {
     return this._password;
   }
 
   get role(): Role {
     return this._role;
+  }
+
+  set role(value: Role) {
+    this._role = value;
   }
 
   get createdAt(): Date {
@@ -96,7 +93,6 @@ export class LocalAuthVO implements IAuth {
   toEntity(): LocalAuthEntity {
     return new LocalAuthEntity(
       this._uid,
-      this._userName,
       this._emailAddress!,
       this._password,
       this._role,

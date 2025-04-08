@@ -1,6 +1,7 @@
 import { IAuth } from "../utils/auth.interface";
-import { Role } from "../utils/helper";
+// import { Role } from "../utils/helper";
 import { OAuthEntity } from "../dao/oauth.entity";
+import { Role } from "src/user-management/utils/helper";
 
 export class OAuthVO implements IAuth {
   // Immutable mandatory fields

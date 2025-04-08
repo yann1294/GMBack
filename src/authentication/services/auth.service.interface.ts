@@ -2,16 +2,14 @@ import { ResponseObject } from '../../shared/types';
 import { LocalAuthEntity } from '../dao/localauth.entity';
 import { OAuthEntity } from '../dao/oauth.entity';
 import { Role } from '../utils/helper';
+import { LocalAuthVO } from '../vo/auth.local.vo';
 
 export default interface IAuthService {
   /**
    * Registers a new local user (e.g., email/password).
    */
   registerLocalUser(
-    userName: string,
-    email: string,
-    password: string,
-    role: Role,
+    userVo: LocalAuthVO
   ): Promise<ResponseObject>;
 
   /**
@@ -20,7 +18,7 @@ export default interface IAuthService {
    * or throws an error if invalid credentials.
    */
   loginLocalUser(
-    userName: string,
+    email: string,
     password: string,
   ): Promise<{ user: LocalAuthEntity; token: string }>;
 

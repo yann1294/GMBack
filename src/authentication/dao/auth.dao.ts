@@ -13,7 +13,7 @@ export class AuthDAO implements IAuthDAO {
   constructor(private readonly dataService: DataService) {}
 
   // Expose a public method for doc ID generation
-  public generateNewAuthUID(): string {
+  async generateNewAuthUID(): Promise<string> {
     return this.dataService.getDocId(this.collectionName);
   }
 
@@ -22,14 +22,8 @@ export class AuthDAO implements IAuthDAO {
    * Stores a new LocalAuthEntity document in Firestore with authType = "local".
    */
   async createLocalAuth(authEntity: LocalAuthEntity): Promise<ResponseObject> {
-    // Convert entity to plain object
-    const docData = {
-      ...authEntity.toObject(),
-      authType: 'local', // differentiate in the same collection
-    } as any;
-
     // Use Firestore document ID = authEntity.uid
-    return this.dataService.createDoc(docData, this.collectionName, true);
+    return this.dataService.createDoc(authEntity, this.collectionName, true);
   }
 
   /**
@@ -37,13 +31,8 @@ export class AuthDAO implements IAuthDAO {
    * Stores a new OAuthEntity document in Firestore with authType = "oauth".
    */
   async createOAuthAuth(authEntity: OAuthEntity): Promise<ResponseObject> {
-    const docData = {
-      ...authEntity.toObject(),
-      authType: 'oauth',
-    } as any;
-
     // Use Firestore document ID = authEntity.uid
-    return this.dataService.createDoc(docData, this.collectionName, true);
+    return this.dataService.createDoc(authEntity, this.collectionName, true);
   }
 
   /**
@@ -72,7 +61,6 @@ export class AuthDAO implements IAuthDAO {
     const doc = result.data[0];
     return new LocalAuthEntity(
       doc.uid,
-      doc.userName,
       doc.emailAddress,
       doc.password,
       doc.role,
@@ -87,11 +75,11 @@ export class AuthDAO implements IAuthDAO {
    * FIND LOCAL by userName
    * Looks for a document with userName == {userName} AND authType == "local".
    */
-  async findLocalAuthByUserName(
-    userName: string,
+  async findLocalAuthByEmail(
+    email: string,
   ): Promise<LocalAuthEntity | null> {
     const conditions: DataServiceCondition[] = [
-      { fieldPath: 'userName', operationString: '==', value: userName },
+      { fieldPath: 'email', operationString: '==', value: email },
       { fieldPath: 'authType', operationString: '==', value: 'local' },
     ];
 
@@ -111,7 +99,6 @@ export class AuthDAO implements IAuthDAO {
     const doc = result.data[0];
     return new LocalAuthEntity(
       doc.uid,
-      doc.userName,
       doc.emailAddress,
       doc.password,
       doc.role,
@@ -268,7 +255,6 @@ export class AuthDAO implements IAuthDAO {
       if (doc.authType === 'local') {
         return new LocalAuthEntity(
           doc.uid,
-          doc.userName,
           doc.emailAddress,
           doc.password,
           doc.role,

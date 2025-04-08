@@ -4,13 +4,16 @@ import { OAuthEntity } from './oauth.entity';
 import { Role } from '../utils/helper';
 
 export default interface IAuthDAO {
+  // Generates a new UID for authentication entities
+  
+  generateNewAuthUID(): Promise<string>;
   // Create
   createLocalAuth(authEntity: LocalAuthEntity): Promise<ResponseObject>;
   createOAuthAuth(authEntity: OAuthEntity): Promise<ResponseObject>;
 
   // Read (Local)
   findLocalAuthByUID(uid: string): Promise<LocalAuthEntity | null>;
-  findLocalAuthByUserName(userName: string): Promise<LocalAuthEntity | null>;
+  findLocalAuthByEmail(email: string): Promise<LocalAuthEntity | null>;
 
   // Read (OAuth)
   findOAuthByUID(uid: string): Promise<OAuthEntity | null>;

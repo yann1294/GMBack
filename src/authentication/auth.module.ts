@@ -16,7 +16,17 @@ import { AuthController } from './controller/auth.controller';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthDAO, DataService, FileService],
+  providers: [
+    AuthService, AuthDAO, DataService, FileService,
+    {
+      provide: 'IAuthDAO',
+      useClass: AuthDAO,
+    },
+    {
+      provide: 'IAuthService',
+      useClass: AuthService,
+    }
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

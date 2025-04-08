@@ -1,6 +1,6 @@
-import { Role } from "../utils/helper";
 import { instanceToPlain } from "class-transformer";
 import { IAuth } from "../utils/auth.interface";
+import { Role } from "src/user-management/utils/helper";
 
 export class OAuthEntity implements IAuth {
   public uid: string;
@@ -12,6 +12,7 @@ export class OAuthEntity implements IAuth {
   public createdAt?: Date;
   public updatedAt?: Date;
   public lastLoginDate?: Date;
+  public authType: string = "oauth";
 
   constructor(
     uid: string,
@@ -46,6 +47,7 @@ export class OAuthEntity implements IAuth {
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       lastLoginDate: this.lastLoginDate,
+      authType: this.authType,
     };
   }
 

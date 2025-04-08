@@ -19,6 +19,8 @@ import { Tourist } from 'src/user-management/dao/tourist.entity';
 import { Guide } from 'src/user-management/dao/guide.entity';
 import { Admin } from 'src/user-management/dao/admin.entity';
 import { Payment } from 'src/payment/dao/payment.entity';
+import { LocalAuthEntity } from 'src/authentication/dao/localauth.entity';
+import { OAuthEntity } from 'src/authentication/dao/oauth.entity';
 
 export function errorHandler(e: unknown): ResponseObject {
   const error = e as FirebaseFirestoreError;
@@ -60,7 +62,7 @@ export class DataService {
    * @returns A promise that resolves to a ResponseObject containing the document ID or an error message.
    */
   async createDoc(
-    data: Tour | Package | Booking | Admin | Guide | Tourist | Payment,
+    data: Tour | Package | Booking | Admin | Guide | Tourist | Payment | LocalAuthEntity | OAuthEntity,
     collectionName: string,
     useUid: boolean = false,
   ): Promise<ResponseObject> {

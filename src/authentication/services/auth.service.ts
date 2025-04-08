@@ -1,21 +1,24 @@
-import { Injectable, Req, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, Req, UnauthorizedException } from '@nestjs/common';
 import { AuthDAO } from '../dao/auth.dao';
 import IAuthService from './auth.service.interface';
-import { Role } from '../utils/helper';
+// import { Role } from '../utils/helper';
 import { ResponseObject } from '../../shared/types';
 import { LocalAuthEntity } from '../dao/localauth.entity';
 import { OAuthEntity } from '../dao/oauth.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from 'src/user-management/utils/helper';
+import { LocalAuthVO } from '../vo/auth.local.vo';
+import IAuthDAO from '../dao/auth.dao.interface';
 
 @Injectable()
 export class AuthService implements IAuthService {
   // Adjust salt rounds or fetch them from config.
   private readonly saltRounds = 10;
   constructor(
-    private readonly authDAO: AuthDAO,
+    @Inject("IAuthDAO") private readonly authDAO: IAuthDAO,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   /**
    * Registers a new local user (email/password).
@@ -23,28 +26,28 @@ export class AuthService implements IAuthService {
    * - Calls DAO to store a LocalAuthEntity
    */
   async registerLocalUser(
-    userName: string,
-    email: string,
-    password: string,
-    role: Role,
+    userVo: LocalAuthVO
   ): Promise<ResponseObject> {
     // Example: hash the password before storing it
     // const hashedPassword = await bcrypt.hash(password, 10);
-    const hashedPassword = await bcrypt.hash(password, this.saltRounds);
+    const hashedPassword = await bcrypt.hash(userVo.password, this.saltRounds);
 
     // Generate a Firestore doc ID to use as our user UID
-    const generatedUid = this.authDAO.generateNewAuthUID();
+    const generatedUid = await this.authDAO.generateNewAuthUID();
 
     // Construct a LocalAuthEntity
     const localEntity = new LocalAuthEntity(
-      /* uid */ generatedUid, // e.g. from a UUID library or DataService
-      userName,
-      email,
-      /* password */ hashedPassword,
-      role,
-      /* createdAt */ new Date(),
-      /* updatedAt */ new Date(),
+      generatedUid, // e.g. from a UUID library or DataService
+      userVo.emailAddress,
+      hashedPassword,
+      userVo.role,
+      userVo.createdAt,
+      userVo.updatedAt,
+      userVo.lastLoginDate,
+      userVo.failedLoginAttempts,
     );
+
+    console.log('localEntity', localEntity);
 
     // Persist to Firestore
     const creationResult = await this.authDAO.createLocalAuth(localEntity);
@@ -60,11 +63,11 @@ export class AuthService implements IAuthService {
    * - Returns the user (or user + JWT) depending on your design
    */
   async loginLocalUser(
-    userName: string,
+    email: string,
     password: string,
   ): Promise<{ user: LocalAuthEntity; token: string }> {
     // Find user by userName
-    const user = await this.authDAO.findLocalAuthByUserName(userName);
+    const user = await this.authDAO.findLocalAuthByEmail(email);
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
@@ -79,7 +82,7 @@ export class AuthService implements IAuthService {
     const payload = {
       sub: user.uid,
       role: user.role,
-      userName: user.userName,
+      email: user.emailAddress,
     };
 
     // Sign token
@@ -101,7 +104,7 @@ export class AuthService implements IAuthService {
     accessToken: string,
     role?: Role,
   ): Promise<ResponseObject> {
-    const realUid = this.authDAO.generateNewAuthUID();
+    const realUid = await this.authDAO.generateNewAuthUID();
 
     const oauthEntity = new OAuthEntity(
       realUid,

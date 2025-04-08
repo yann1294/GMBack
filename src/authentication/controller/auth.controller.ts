@@ -55,9 +55,8 @@ export class AuthController {
    * Validates input using AuthSigninDTO (email + password).
    * Returns { user: LocalAuthEntity, token: string } from service.
    */
-  @Post('local/signin')
-  @UsePipes(new AuthValidationPipe(AuthSignupDTO, 'local-signin'))
-  async localSignin(@Body() body: LocalAuthVO) {
+  @Post('local/:role/signin')
+  async localSignin(@Body(new AuthValidationPipe(AuthSignupDTO, 'local-signin')) body: LocalAuthVO) {
     // The AuthSigninDTO ensures we have a valid email & password
     return this.authService.loginLocalUser(
       // If your service expects userName, adapt accordingly.

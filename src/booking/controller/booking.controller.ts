@@ -32,6 +32,8 @@ import { GuideVO } from 'src/user-management/vo/guide.vo';
 import { TouristVO } from 'src/user-management/vo/tourist.vo';
 import { BookingWorkflow } from '../utils/booking.workflow';
 
+import { BookingMessageService } from '../services/booking.message-broker.service';
+
 @Controller('bookings')
 export class BookingController {
   collectionName: string = 'bookings';
@@ -45,6 +47,7 @@ export class BookingController {
     // @Inject(USER_MANAGEMENT_EXTERNAL_SERVICE_INTERFACE)
     // private readonly externalUserManagementService: IUserManagementExternalService,
     private readonly bookingWorkflow: BookingWorkflow,
+    private readonly bookingMessageService: BookingMessageService,
   ) {}
 
   // create new booking
@@ -84,7 +87,13 @@ export class BookingController {
       type: 'param',
       metatype: BookingVO,
     })) as BookingVO;
-    console.log(bookingVo);
+    //console.log(bookingVo);
+    console.log('Rabbit mq data');
+    this.bookingMessageService.requestResponseFromPayment(
+      null,
+      'Nothing',
+      'anything',
+    );
     return await this.bookingService.displayBooking(bookingVo);
   }
 
@@ -113,6 +122,7 @@ export class BookingController {
   // get all bookings
   @Get()
   async getAllBooking(@Req() req: FastifyRequest) {
+    this.bookingMessageService.sendDataToPayment('Nothing', 'Nada');
     return await this.bookingService.getAllBookings();
   }
 

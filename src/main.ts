@@ -6,6 +6,7 @@ import {
 import { AppModule } from './app.module';
 import multipart from '@fastify/multipart';
 import { natsConfig } from './shared/event-communication/nats.config';
+import { rabbitMqConfig } from './shared/event-communication/rabbitmq.config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -23,7 +24,8 @@ async function bootstrap() {
   app.enableCors();
 
   // Configures  the message broker in the application (This is how it is done in Nestjs, via the microservice package)
-  const mService = app.connectMicroservice(natsConfig);
+  //const mService = app.connectMicroservice(natsConfig);
+  const mService = app.connectMicroservice(rabbitMqConfig);
   await app.startAllMicroservices();
   await app.listen(process.env.PORT ?? 3102);
 }

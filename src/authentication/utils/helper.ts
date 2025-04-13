@@ -1,19 +1,40 @@
+import { IRole } from '../types/role.types';
+
 export class Role {
-    constructor(private readonly _name: string, private readonly _permissions: string[] = []) {}
-  
-    get name(): string {
-      return this._name;
-    }
-  
-    get permissions(): string[] {
-      return this._permissions;
-    }
-  
-    hasPermission(permission: string): boolean {
-      return this._permissions.includes(permission);
-    }
-  
-    toString(): string {
-      return this._name;
-    }
+  constructor(
+    private readonly _name: string,
+    private readonly _permissions: string[] = [],
+  ) {}
+
+  get name(): string {
+    return this._name;
   }
+
+  get permissions(): string[] {
+    return this._permissions;
+  }
+
+  hasPermission(permission: string): boolean {
+    return this._permissions.includes(permission);
+  }
+
+  toString(): string {
+    return this._name;
+  }
+
+  static create(roleName: string): IRole {
+    return {
+      name: roleName as 'admin' | 'tourist' | 'guide',
+      permissions: this.getDefaultPermissions(roleName),
+    };
+  }
+
+  private static getDefaultPermissions(roleName: string): string[] {
+    const permissions: Record<string, string[]> = {
+      admin: ['manage:all'],
+      tourist: ['read:tours', 'book:tours'],
+      guide: ['manage:tours', 'update:profile'],
+    };
+    return permissions[roleName] || [];
+  }
+}

@@ -1,31 +1,32 @@
-import { instanceToPlain } from "class-transformer";
-import { IAuth } from "../utils/auth.interface";
-import { Role } from "src/user-management/utils/helper";
+import { instanceToPlain } from 'class-transformer';
+import { IAuth } from '../utils/auth.interface';
+import { Role } from '../utils/helper';
+import { IRole } from '../types/role.types';
 
 export class OAuthEntity implements IAuth {
-  public uid: string;
+  public uId: string;
   public emailAddress: string;
   public provider: string;
   public accessToken: string;
   public refreshToken?: string;
-  public role?: Role;
+  public role?: IRole;
   public createdAt?: Date;
   public updatedAt?: Date;
   public lastLoginDate?: Date;
-  public authType: string = "oauth";
+  public authType: string = 'oauth';
 
   constructor(
-    uid: string,
+    uId: string,
     emailAddress: string,
     provider: string,
     accessToken: string,
     refreshToken?: string,
-    role?: Role,
+    role?: IRole,
     createdAt?: Date,
     updatedAt?: Date,
     lastLoginDate?: Date,
   ) {
-    this.uid = uid;
+    this.uId = uId;
     this.emailAddress = emailAddress;
     this.provider = provider;
     this.accessToken = accessToken;
@@ -38,7 +39,7 @@ export class OAuthEntity implements IAuth {
 
   toObject(): object {
     return {
-      uid: this.uid,
+      uid: this.uId,
       emailAddress: this.emailAddress,
       provider: this.provider,
       accessToken: this.accessToken,

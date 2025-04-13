@@ -1,10 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import IAuthDAO from './auth.dao.interface';
 import { DataService } from 'src/shared/services/data.service';
 import { OAuthEntity } from './oauth.entity';
 import { LocalAuthEntity } from './localauth.entity';
 import { DataServiceCondition, ResponseObject } from '../../shared/types';
 import { Role } from '../utils/helper';
+import { auth } from 'firebase-admin';
 
 @Injectable()
 export class AuthDAO implements IAuthDAO {
@@ -19,22 +26,111 @@ export class AuthDAO implements IAuthDAO {
 
   /**
    * CREATE (Local)
-   * Stores a new LocalAuthEntity document in Firestore with authType = "local".
+   * Creates a Firebase Auth user and stores auth data in Firestore
    */
-  async createLocalAuth(authEntity: LocalAuthEntity): Promise<ResponseObject> {
-    // Use Firestore document ID = authEntity.uid
+  async createLocalAuth(
+    authEntity: LocalAuthEntity,
+    password: string,
+  ): Promise<ResponseObject> {
+    try {
+      // Validate password before creation
+      if (password.length < 6) {
+        throw new BadRequestException('Password must be at least 6 characters');
+      }
+      // 1. Create Firebase Auth user
+      const userRecord = await this.dataService.createUser({
+        uid: authEntity.uId,
+        email: authEntity.emailAddress,
+        password: password,
+        disabled: false,
+      });
+      console.log('Creating auth with UID:', authEntity.uId);
+      // 2. Store additional auth data in Firestore
+      const result = await this.dataService.createDoc(
+        authEntity,
+        this.collectionName,
+        true,
+      );
 
-    // firebaseAuth.signInWithEmailAndPassword()
-    return this.dataService.createDoc(authEntity, this.collectionName, true);
+      return {
+        status: 'success',
+        code: 201,
+        message: 'Local auth created successfully',
+        data: {
+          uid: userRecord.uid,
+          firestore: result.data,
+        },
+      };
+    } catch (error) {
+      // Comprehensive cleanup
+      await this.cleanupFailedCreation(authEntity.uId);
+
+      // Convert Firebase errors to proper HTTP exceptions
+      switch (error.code) {
+        case 'auth/email-already-exists':
+          throw new ConflictException('Email already in use');
+        case 'auth/invalid-email':
+          throw new BadRequestException('Invalid email format');
+        case 'auth/weak-password':
+          throw new BadRequestException('Password too weak');
+        default:
+          throw new InternalServerErrorException('User creation failed');
+      }
+    }
+  }
+  private async cleanupFailedCreation(uid: string) {
+    try {
+      // Delete from Firebase Auth if exists
+      await this.dataService.deleteUser(uid).catch(() => {});
+
+      // Delete from Firestore if exists
+      await this.dataService
+        .deleteDoc(this.collectionName, uid)
+        .catch(() => {});
+    } catch (cleanupError) {
+      Logger.error('Cleanup failed for uid ' + uid, cleanupError);
+    }
   }
 
   /**
    * CREATE (OAuth)
-   * Stores a new OAuthEntity document in Firestore with authType = "oauth".
+   * For Google Sign-In, we'll typically verify the ID token first
    */
-  async createOAuthAuth(authEntity: OAuthEntity): Promise<ResponseObject> {
-    // Use Firestore document ID = authEntity.uid
-    return this.dataService.createDoc(authEntity, this.collectionName, true);
+  async createOAuthAuth(
+    authEntity: OAuthEntity,
+    idToken?: string,
+  ): Promise<ResponseObject> {
+    try {
+      if (idToken) {
+        // Verify the ID token first
+        const decodedToken = await this.verifyIdToken(idToken);
+
+        // Update the authEntity with verified info
+        authEntity.uId = decodedToken.uId;
+        authEntity.emailAddress = decodedToken.email || authEntity.emailAddress;
+      }
+
+      // Create the Firestore record
+      const result = await this.dataService.createDoc(
+        authEntity,
+        this.collectionName,
+        true,
+      );
+
+      return {
+        status: 'success',
+        code: 201,
+        message: 'OAuth auth created successfully',
+        data: result.data,
+      };
+    } catch (error) {
+      return {
+        status: 'failure',
+        code: error.code,
+        message: error.message,
+        data: null,
+      };
+    }
   }
 
   /**
@@ -77,9 +173,7 @@ export class AuthDAO implements IAuthDAO {
    * FIND LOCAL by userName
    * Looks for a document with userName == {userName} AND authType == "local".
    */
-  async findLocalAuthByEmail(
-    email: string,
-  ): Promise<LocalAuthEntity | null> {
+  async findLocalAuthByEmail(email: string): Promise<LocalAuthEntity | null> {
     const conditions: DataServiceCondition[] = [
       { fieldPath: 'emailAddress', operationString: '==', value: email },
       { fieldPath: 'authType', operationString: '==', value: 'local' },
@@ -187,42 +281,93 @@ export class AuthDAO implements IAuthDAO {
 
   /**
    * UPDATE (Local)
-   * Uses uid as document ID. Merges or overwrites data in Firestore.
+   * Updates both Firebase Auth and Firestore data
    */
-  async updateLocalAuth(authEntity: LocalAuthEntity): Promise<ResponseObject> {
-    const updatedData = {
-      ...authEntity.toObject(),
-      authType: 'local',
-    };
-    return this.dataService.updateDoc(
-      this.collectionName,
-      authEntity.uid,
-      updatedData,
-    );
+  async updateLocalAuth(
+    authEntity: LocalAuthEntity,
+    password?: string,
+  ): Promise<ResponseObject> {
+    try {
+      // Update Firebase Auth user
+      const updateRequest: auth.UpdateRequest = {
+        email: authEntity.emailAddress,
+        ...(password && { password }), // Only update password if provided
+      };
+
+      // Explicitly specify we're updating by UID
+      await this.dataService.updateUser(authEntity.uId, updateRequest);
+
+      // Update Firestore data
+      const updatedData = {
+        ...authEntity.toObject(),
+        authType: 'local',
+      };
+      const result = await this.dataService.updateDoc(
+        this.collectionName,
+        authEntity.uId,
+        updatedData,
+      );
+
+      return result;
+    } catch (error) {
+      return {
+        status: 'failure',
+        code: error.code,
+        message: error.message,
+        data: null,
+      };
+    }
   }
 
   /**
    * UPDATE (OAuth)
-   * Uses uid as document ID. Merges or overwrites data in Firestore.
+   * Updates OAuth auth data in Firestore
    */
   async updateOAuthAuth(authEntity: OAuthEntity): Promise<ResponseObject> {
-    const updatedData = {
-      ...authEntity.toObject(),
-      authType: 'oauth',
-    };
-    return this.dataService.updateDoc(
-      this.collectionName,
-      authEntity.uid,
-      updatedData,
-    );
+    try {
+      const updatedData = {
+        ...authEntity.toObject(),
+        authType: 'oauth',
+      };
+
+      const result = await this.dataService.updateDoc(
+        this.collectionName,
+        authEntity.uId,
+        updatedData,
+      );
+
+      return result;
+    } catch (error) {
+      return {
+        status: 'failure',
+        code: error.code,
+        message: error.message,
+        data: null,
+      };
+    }
   }
 
   /**
    * DELETE
-   * Removes a document by UID (local or oauth).
+   * Removes both Firebase Auth user and Firestore document
    */
   async deleteAuth(uid: string): Promise<ResponseObject> {
-    return this.dataService.deleteDoc(this.collectionName, uid);
+    try {
+      // Delete Firebase Auth user
+      await this.dataService.deleteUser(uid);
+
+      // Delete Firestore document
+      const result = await this.dataService.deleteDoc(this.collectionName, uid);
+
+      return result;
+    } catch (error) {
+      return {
+        status: 'failure',
+        code: error.code,
+        message: error.message,
+        data: null,
+      };
+    }
   }
 
   /**
@@ -280,5 +425,45 @@ export class AuthDAO implements IAuthDAO {
         );
       }
     });
+  }
+  /**
+   * Firebase Auth specific methods
+   */
+
+  async verifyIdToken(idToken: string): Promise<auth.DecodedIdToken> {
+    return this.dataService.verifyIdToken(idToken);
+  }
+
+  async setCustomUserClaims(
+    uid: string,
+    claims: Record<string, any>,
+  ): Promise<void> {
+    return this.dataService.setCustomUserClaims(uid, claims);
+  }
+
+  async getUserByEmail(email: string): Promise<auth.UserRecord | null> {
+    try {
+      return await this.dataService.getUserByEmail(email);
+    } catch (error) {
+      if (error.code === 'auth/user-not-found') {
+        return null;
+      }
+      throw error;
+    }
+  }
+
+  async createCustomToken(
+    uid: string,
+    developerClaims?: Record<string, any>,
+  ): Promise<string> {
+    try {
+      const customToken = await this.dataService.createCustomToken(
+        uid,
+        developerClaims,
+      );
+      return customToken;
+    } catch (error) {
+      throw new Error(`Error creating custom token: ${error}`);
+    }
   }
 }

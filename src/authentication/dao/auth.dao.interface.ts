@@ -2,14 +2,21 @@ import { LocalAuthEntity } from './localauth.entity';
 import { ResponseObject } from '../../shared/types';
 import { OAuthEntity } from './oauth.entity';
 import { Role } from '../utils/helper';
+import { auth } from 'firebase-admin';
 
 export default interface IAuthDAO {
   // Generates a new UID for authentication entities
-  
+
   generateNewAuthUID(): Promise<string>;
   // Create
-  createLocalAuth(authEntity: LocalAuthEntity): Promise<ResponseObject>;
-  createOAuthAuth(authEntity: OAuthEntity): Promise<ResponseObject>;
+  createLocalAuth(
+    authEntity: LocalAuthEntity,
+    password: string,
+  ): Promise<ResponseObject>;
+  createOAuthAuth(
+    authEntity: OAuthEntity,
+    idToken?: string,
+  ): Promise<ResponseObject>;
 
   // Read (Local)
   findLocalAuthByUID(uid: string): Promise<LocalAuthEntity | null>;
@@ -20,7 +27,10 @@ export default interface IAuthDAO {
   findOAuthByEmail(emailAddress: string): Promise<OAuthEntity | null>;
 
   // Update
-  updateLocalAuth(authEntity: LocalAuthEntity): Promise<ResponseObject>;
+  updateLocalAuth(
+    authEntity: LocalAuthEntity,
+    password?: string,
+  ): Promise<ResponseObject>;
   updateOAuthAuth(authEntity: OAuthEntity): Promise<ResponseObject>;
 
   // Delete (shared, by UID)
@@ -28,4 +38,13 @@ export default interface IAuthDAO {
 
   // Find any auth doc (local or oauth) with a given role
   findAuthByRole(role: Role): Promise<Array<LocalAuthEntity | OAuthEntity>>;
+
+  // Firebase Auth specific methods
+  verifyIdToken(idToken: string): Promise<auth.DecodedIdToken>;
+  setCustomUserClaims(uid: string, claims: Record<string, any>): Promise<void>;
+  getUserByEmail(email: string): Promise<auth.UserRecord | null>;
+  createCustomToken(
+    uid: string,
+    developerClaims?: Record<string, any>,
+  ): Promise<string>;
 }

@@ -1,59 +1,60 @@
-import { IAuth } from "../utils/auth.interface";
+import { IAuth } from '../utils/auth.interface';
 // import { Role } from "../utils/helper";
-import { OAuthEntity } from "../dao/oauth.entity";
-import { Role } from "src/user-management/utils/helper";
+import { OAuthEntity } from '../dao/oauth.entity';
+import { Role } from '../utils/helper';
+import { IRole } from '../types/role.types';
 
 export class OAuthVO implements IAuth {
   // Immutable mandatory fields
-  private readonly _uid: string;
+  private readonly _uId: string;
   private readonly _provider: string;
   private readonly _accessToken: string;
 
   // Optional mutable fields
   private _emailAddress?: string;
   private _refreshToken?: string;
-  private _role?: Role;
+  private _role?: IRole;
   private _createdAt?: Date;
   private _updatedAt?: Date;
   private _lastLoginDate?: Date;
 
   constructor(
-    uid: string,
+    uId: string,
     provider: string,
     accessToken: string,
     emailAddress?: string,
     refreshToken?: string,
-    role?: Role,
+    role?: IRole,
     createdAt?: Date | string,
     updatedAt?: Date | string,
     lastLoginDate?: Date | string,
   ) {
-    this._uid = uid;
+    this._uId = uId;
     this._provider = provider;
     this._accessToken = accessToken;
     this._emailAddress = emailAddress;
     this._refreshToken = refreshToken;
     this._role = role;
     this._createdAt = createdAt
-      ? typeof createdAt === "string"
+      ? typeof createdAt === 'string'
         ? new Date(createdAt)
         : createdAt
       : undefined;
     this._updatedAt = updatedAt
-      ? typeof updatedAt === "string"
+      ? typeof updatedAt === 'string'
         ? new Date(updatedAt)
         : updatedAt
       : undefined;
     this._lastLoginDate = lastLoginDate
-      ? typeof lastLoginDate === "string"
+      ? typeof lastLoginDate === 'string'
         ? new Date(lastLoginDate)
         : lastLoginDate
       : undefined;
   }
 
   // Getters for mandatory fields
-  get uid(): string {
-    return this._uid;
+  get uId(): string {
+    return this._uId;
   }
 
   get provider(): string {
@@ -81,11 +82,11 @@ export class OAuthVO implements IAuth {
     this._refreshToken = value;
   }
 
-  get role(): Role | undefined {
+  get role(): IRole | undefined {
     return this._role;
   }
 
-  set role(value: Role | undefined) {
+  set role(value: IRole | undefined) {
     this._role = value;
   }
 
@@ -116,7 +117,7 @@ export class OAuthVO implements IAuth {
   // Convert VO to entity
   toEntity(): OAuthEntity {
     return new OAuthEntity(
-      this._uid,
+      this._uId,
       this._emailAddress!,
       this._provider,
       this._accessToken,

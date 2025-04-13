@@ -3,7 +3,7 @@ import { AbstractAuthDTO } from './helper.dto';
 
 export class AuthSigninDTO extends AbstractAuthDTO {
   @IsEmail()
-  email!: string; // Required for signin.
+  emailAddress!: string; // Required for signin.
 
   @IsString()
   @MinLength(6)

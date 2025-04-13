@@ -1,38 +1,42 @@
-import { IAuth } from "../utils/auth.interface";
-import { LocalAuthEntity } from "../dao/localauth.entity";
-import { Role } from "src/user-management/utils/helper";
+import { IAuth } from '../utils/auth.interface';
+import { LocalAuthEntity } from '../dao/localauth.entity';
+import { Role } from '../utils/helper';
+import { IRole } from '../types/role.types';
 
 export class LocalAuthVO implements IAuth {
   // Immutable mandatory fields
-  private readonly _uid: string;
+  private readonly _uId: string;
+  private _emailAddress: string;
   private readonly _password: string;
   private readonly _createdAt?: Date;
   private readonly _updatedAt?: Date;
 
   // Optional mutable fields
-  private _emailAddress: string;
+
   private _lastLoginDate?: Date;
   private _failedLoginAttempts: number;
-  private _role: Role;
+  private _role?: IRole;
 
   constructor(
-    uid: string,
+    uId: string,
     emailAddress: string,
     password: string,
-    role: Role,
+    role?: IRole,
     createdAt?: Date | string,
     updatedAt?: Date | string,
     lastLoginDate?: Date | string,
     failedLoginAttempts?: number,
   ) {
-    this._uid = uid;
-    this._password = password;
-    this._role = role;
-    this._createdAt = typeof createdAt === "string" ? new Date(createdAt) : createdAt;
-    this._updatedAt = typeof updatedAt === "string" ? new Date(updatedAt) : updatedAt;
+    this._uId = uId;
     this._emailAddress = emailAddress;
+    this._password = password;
+    this._role = role ? role : { name: 'tourist' };
+    this._createdAt =
+      typeof createdAt === 'string' ? new Date(createdAt) : createdAt;
+    this._updatedAt =
+      typeof updatedAt === 'string' ? new Date(updatedAt) : updatedAt;
     this._lastLoginDate = lastLoginDate
-      ? typeof lastLoginDate === "string"
+      ? typeof lastLoginDate === 'string'
         ? new Date(lastLoginDate)
         : lastLoginDate
       : undefined;
@@ -40,19 +44,19 @@ export class LocalAuthVO implements IAuth {
   }
 
   // Getters for mandatory fields
-  get uid(): string {
-    return this._uid;
+  get uId(): string {
+    return this._uId;
   }
 
   get password(): string {
     return this._password;
   }
 
-  get role(): Role {
+  get role(): IRole {
     return this._role;
   }
 
-  set role(value: Role) {
+  set role(value: IRole) {
     this._role = value;
   }
 
@@ -92,7 +96,7 @@ export class LocalAuthVO implements IAuth {
   // Convert VO to entity
   toEntity(): LocalAuthEntity {
     return new LocalAuthEntity(
-      this._uid,
+      this._uId,
       this._emailAddress!,
       this._password,
       this._role,

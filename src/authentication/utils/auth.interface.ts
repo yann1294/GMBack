@@ -1,9 +1,11 @@
-import { Role } from "src/user-management/utils/helper";
+import { Role } from 'src/user-management/utils/helper';
+import { IRole } from '../types/role.types';
 
 export interface IAuth {
   // Shared Fields
+  uId: string;
   emailAddress?: string;
-  role?: Role;
+  role?: IRole;
   createdAt?: Date;
   updatedAt?: Date;
   lastLoginDate?: Date;

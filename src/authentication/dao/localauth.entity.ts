@@ -1,29 +1,30 @@
-import { instanceToPlain } from "class-transformer";
-import { IAuth } from "../utils/auth.interface";
-import { Role } from "src/user-management/utils/helper";
+import { instanceToPlain } from 'class-transformer';
+import { IAuth } from '../utils/auth.interface';
+import { Role } from 'src/user-management/utils/helper';
+import { IRole } from '../types/role.types';
 
 export class LocalAuthEntity implements IAuth {
-  public uid: string;
+  public uId: string;
   public emailAddress: string;
   public password: string;
-  public role: Role;
+  public role: IRole;
   public createdAt: Date;
   public updatedAt: Date;
   public lastLoginDate?: Date;
   public failedLoginAttempts: number;
-  public authType: string = "local";
+  public authType: string = 'local';
 
   constructor(
-    uid: string,
+    uId: string,
     emailAddress: string,
     password: string,
-    role: Role,
+    role: IRole,
     createdAt: Date,
     updatedAt: Date,
     lastLoginDate?: Date,
     failedLoginAttempts?: number,
   ) {
-    this.uid = uid;
+    this.uId = uId;
     this.emailAddress = emailAddress;
     this.password = password;
     this.role = role;
@@ -35,9 +36,9 @@ export class LocalAuthEntity implements IAuth {
 
   toObject(): object {
     return {
-      uid: this.uid,
+      uid: this.uId,
       emailAddress: this.emailAddress,
-      role: this.role ? Object.assign({}, this.role) : undefined,
+      role: this.role ? { ...this.role } : { name: 'tourist', permissions: [] },
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       lastLoginDate: this.lastLoginDate,

@@ -21,6 +21,7 @@ import { Admin } from 'src/user-management/dao/admin.entity';
 import { Payment } from 'src/payment/dao/payment.entity';
 import { LocalAuthEntity } from 'src/authentication/dao/localauth.entity';
 import { OAuthEntity } from 'src/authentication/dao/oauth.entity';
+import { auth } from 'firebase-admin';
 
 export function errorHandler(e: unknown): ResponseObject {
   const error = e as FirebaseFirestoreError;
@@ -38,9 +39,14 @@ export class DataService {
   // holds firestore object from repository
   firestore: Firestore;
 
+  //holds firebase auth object
+  auth: auth.Auth;
+
   constructor(firebaseRepository: FirebaseRepository) {
     // assigning firestore reference from firebase repository
     this.firestore = firebaseRepository.guideMeDb;
+    // assigning auth reference from firebase repository
+    this.auth = firebaseRepository.auth;
   }
 
   /**
@@ -50,7 +56,7 @@ export class DataService {
    * @returns A promise that resolves to a ResponseObject containing the error message.
    */
 
-  getDocId(collectionName: string): string { 
+  getDocId(collectionName: string): string {
     return this.firestore.collection(collectionName).doc().id;
   }
 
@@ -62,32 +68,47 @@ export class DataService {
    * @returns A promise that resolves to a ResponseObject containing the document ID or an error message.
    */
   async createDoc(
-    data: Tour | Package | Booking | Admin | Guide | Tourist | Payment | LocalAuthEntity | OAuthEntity,
+    data:
+      | Tour
+      | Package
+      | Booking
+      | Admin
+      | Guide
+      | Tourist
+      | Payment
+      | LocalAuthEntity
+      | OAuthEntity,
     collectionName: string,
     useUid: boolean = false,
   ): Promise<ResponseObject> {
     try {
+      // Convert data to a plain object
+      const plainData = data.toObject();
+      console.log(
+        'Creating auth with UID:',
+        plainData['uid'],
+        typeof plainData['uid'],
+      );
+
       // create doc to auto generate doc id
-      const doc: DocumentReference = useUid ? this.firestore
-        .collection(collectionName)
-        .doc(data['uid']) :  this.firestore
-        .collection(collectionName)
-        .doc();
+      const doc: DocumentReference = useUid
+        ? this.firestore.collection(collectionName).doc(plainData['uid'])
+        : this.firestore.collection(collectionName).doc();
 
       // update data with doc id/uid
       if (!useUid) {
-        data['id'] = doc.id;
+        plainData['id'] = doc.id;
       }
 
       // adding data to doc
-      await doc.set(data.toObject());
+      await doc.set(plainData);
 
       // return success status
       // .path -> A string representing the path of the referenced document (relative to the root of the database).
       return {
         status: 'success',
         message: 'Document successfully created.',
-        data: doc.path,
+        data: plainData,
       } as ResponseObject;
     } catch (e: unknown) {
       // return error
@@ -129,7 +150,6 @@ export class DataService {
         } else {
           docData['id'] = docRef.id;
         }
-
 
         // add document and data to batch
         batch.set(docRef, docData);
@@ -235,14 +255,21 @@ export class DataService {
   ): Promise<ResponseObject> {
     try {
       // Initialize query with collection reference
-      let query: FirebaseFirestore.Query = this.firestore.collection(collectionName);
+      let query: FirebaseFirestore.Query =
+        this.firestore.collection(collectionName);
 
       // If conditions is a single object, make it an array
-      const conditionsArray = Array.isArray(conditions) ? conditions : [conditions];
+      const conditionsArray = Array.isArray(conditions)
+        ? conditions
+        : [conditions];
 
       // Loop through each condition and apply it to the query
       conditionsArray.forEach((condition) => {
-        query = query.where(condition.fieldPath, condition.operationString, condition.value);
+        query = query.where(
+          condition.fieldPath,
+          condition.operationString,
+          condition.value,
+        );
       });
 
       // Execute the query
@@ -344,5 +371,96 @@ export class DataService {
     } catch (e) {
       return errorHandler(e);
     }
+  }
+
+  /**
+   * Firebase Auth methods
+   */
+
+  /**
+   * Creates a new Firebase user
+   * @param userProperties User properties to create
+   * @returns Promise with user record
+   */
+  async createUser(
+    userProperties: auth.CreateRequest,
+  ): Promise<auth.UserRecord> {
+    return this.auth.createUser(userProperties);
+  }
+
+  /**
+   * Gets a Firebase user by UID
+   * @param uid User ID
+   * @returns Promise with user record
+   */
+  async getUser(uid: string): Promise<auth.UserRecord> {
+    return this.auth.getUser(uid);
+  }
+
+  /**
+   * Gets a Firebase user by email
+   * @param email Email
+   * @returns Promise with user record
+   */
+
+  async getUserByEmail(email: string): Promise<auth.UserRecord> {
+    return this.auth.getUserByEmail(email);
+  }
+
+  /**
+   * Updates a Firebase user
+   * @param uid User ID
+   * @param properties Properties to update
+   * @returns Promise with updated user record
+   */
+  async updateUser(
+    uid: string,
+    properties: auth.UpdateRequest,
+  ): Promise<auth.UserRecord> {
+    return this.auth.updateUser(uid, properties);
+  }
+
+  /**
+   * Deletes a Firebase user
+   * @param uid User ID
+   * @returns Promise that resolves when user is deleted
+   */
+  async deleteUser(uid: string): Promise<void> {
+    return this.auth.deleteUser(uid);
+  }
+
+  /**
+   * Sets custom claims on a user
+   * @param uid User ID
+   * @param customClaims Custom claims object
+   * @returns Promise that resolves when claims are set
+   */
+  async setCustomUserClaims(
+    uid: string,
+    customClaims: Record<string, any>,
+  ): Promise<void> {
+    return this.auth.setCustomUserClaims(uid, customClaims);
+  }
+
+  /**
+   * Verifies a Firebase ID token
+   * @param idToken The Firebase ID token
+   * @returns Promise with decoded token
+   */
+  async verifyIdToken(idToken: string): Promise<auth.DecodedIdToken> {
+    return this.auth.verifyIdToken(idToken);
+  }
+
+  /**
+   * Creates a custom token for a user
+   * @param uid User ID
+   * @param additionalClaims Optional additional claims
+   * @returns Promise with custom token
+   */
+  async createCustomToken(
+    uid: string,
+    additionalClaims?: object,
+  ): Promise<string> {
+    return this.auth.createCustomToken(uid, additionalClaims);
   }
 }

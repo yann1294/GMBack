@@ -493,4 +493,8 @@ export class DataService {
     // 2. Exchange for ID token
     return this.signInWithCustomToken(customToken);
   }
+
+  async revokeRefreshTokens(uid: string): Promise<void> {
+    await this.auth.revokeRefreshTokens(uid);
+  }
 }

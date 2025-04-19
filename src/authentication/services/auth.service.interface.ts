@@ -22,7 +22,12 @@ export default interface IAuthService {
   loginLocalUser(
     email: string,
     password: string,
-  ): Promise<{ user: LocalAuthEntity; token: string; firebaseToken?: string }>;
+  ): Promise<{
+    user: LocalAuthEntity;
+    accesstoken: string;
+    refreshToken: string;
+    firebaseToken?: string;
+  }>;
 
   /**
    * Registers a new OAuth user (e.g., social login).
@@ -86,4 +91,6 @@ export default interface IAuthService {
   getUser(uid: string);
 
   createUser(properties: auth.CreateRequest): Promise<auth.UserRecord>;
+
+  signOut(uid: string): Promise<void>;
 }

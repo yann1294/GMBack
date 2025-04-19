@@ -12,6 +12,7 @@ import {
   UnprocessableEntityException,
   NotFoundException,
   ForbiddenException,
+  Req,
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { AuthValidationPipe } from './auth.pipe';
@@ -179,8 +180,12 @@ export class AuthController {
   async getCurrentUser(
     @CurrentUser() user: DecodedIdToken,
   ): Promise<AuthResponseDTO> {
+    console.log('Current user UID:', user.uid);
+
     const userData = await this.authService.findUserByUID(user.uid);
+    console.log('Found user data:', userData);
     if (!userData) {
+      console.error(`User ${user.uid} not found in database`);
       throw new NotFoundException('User not found');
     }
     return AuthMapper.toResponse(userData);
@@ -229,6 +234,26 @@ export class AuthController {
         disabled: false,
       });
     }
+  }
+
+  @Post('local/signout')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: 'Sign out user' })
+  @ApiResponse({ status: 200, description: 'Successfully signed out' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async localSignout(
+    @Req() req: { user: { uid: string }; authType: string },
+  ): Promise<{ message: string }> {
+    // Revoke Firebase tokens regardless of auth type
+    await this.authService.signOut(req.user.uid);
+
+    // Additional JWT invalidation if needed
+    if (req.authType === 'jwt') {
+      // Add JWT blacklist logic here if required
+    }
+
+    return { message: 'Successfully signed out' };
   }
 
   private mapToAuthResponse(result: any): AuthResponseDTO {

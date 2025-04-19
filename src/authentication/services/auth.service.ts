@@ -90,7 +90,12 @@ export class AuthService implements IAuthService {
   async loginLocalUser(
     email: string,
     password: string,
-  ): Promise<{ user: LocalAuthEntity; token: string; firebaseToken?: string }> {
+  ): Promise<{
+    user: LocalAuthEntity;
+    accesstoken: string;
+    refreshToken: string;
+    firebaseToken?: string;
+  }> {
     const user = await this.authDAO.findLocalAuthByEmail(email);
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
@@ -103,12 +108,20 @@ export class AuthService implements IAuthService {
       role: user.role,
       email: user.emailAddress,
     };
-    const token = this.jwtService.sign(payload);
+    const accesstoken = this.jwtService.sign(payload);
+
+    const refreshToken = this.jwtService.sign(
+      { sub: user.uId },
+      { expiresIn: '7d' },
+    );
+
+    // Store refresh token in DB
+    await this.authDAO.storeRefreshToken(user.uId, refreshToken);
 
     // Create Firebase custom token for client-side auth
     const firebaseToken = await this.authDAO.createCustomToken(user.uId);
 
-    return { user, token, firebaseToken };
+    return { user, accesstoken, refreshToken, firebaseToken };
   }
 
   /**
@@ -341,5 +354,11 @@ export class AuthService implements IAuthService {
 
   async createUser(properties: auth.CreateRequest): Promise<auth.UserRecord> {
     return this.authDAO.createUser(properties);
+  }
+
+  // Add this method to the AuthService class
+  async signOut(uid: string): Promise<void> {
+    await this.authDAO.revokeRefreshTokens(uid);
+    // Add any additional cleanup logic here if needed
   }
 }

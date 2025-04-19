@@ -57,4 +57,8 @@ export default interface IAuthDAO {
   getUser(uid: string): Promise<auth.UserRecord>;
 
   createUser(userProperties: auth.CreateRequest): Promise<auth.UserRecord>;
+
+  revokeRefreshTokens(uid: string): Promise<void>;
+
+  storeRefreshToken(uid: string, token: string): Promise<void>;
 }

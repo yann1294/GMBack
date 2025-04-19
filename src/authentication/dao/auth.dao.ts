@@ -13,6 +13,7 @@ import { LocalAuthEntity } from './localauth.entity';
 import { DataServiceCondition, ResponseObject } from '../../shared/types';
 import { Role } from '../utils/helper';
 import { auth } from 'firebase-admin';
+import * as admin from 'firebase-admin';
 
 @Injectable()
 export class AuthDAO implements IAuthDAO {
@@ -148,6 +149,7 @@ export class AuthDAO implements IAuthDAO {
       this.collectionName,
       conditions,
     );
+    console.log('Firestore query result:', result);
 
     if (
       result.status !== 'success' ||
@@ -518,5 +520,16 @@ export class AuthDAO implements IAuthDAO {
       }
       throw new InternalServerErrorException('Failed to create user');
     }
+  }
+
+  // Add this method to the AuthDAO class
+  async revokeRefreshTokens(uid: string): Promise<void> {
+    return this.dataService.revokeRefreshTokens(uid);
+  }
+
+  async storeRefreshToken(uid: string, token: string): Promise<void> {
+    await this.dataService.updateDoc(this.collectionName, uid, {
+      refreshTokens: admin.firestore.FieldValue.arrayUnion(token),
+    });
   }
 }

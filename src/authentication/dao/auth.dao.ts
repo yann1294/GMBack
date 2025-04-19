@@ -4,6 +4,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import IAuthDAO from './auth.dao.interface';
 import { DataService } from 'src/shared/services/data.service';
@@ -464,6 +465,58 @@ export class AuthDAO implements IAuthDAO {
       return customToken;
     } catch (error) {
       throw new Error(`Error creating custom token: ${error}`);
+    }
+  }
+
+  // auth.dao.ts
+
+  async signInWithCustomToken(customToken: string): Promise<string> {
+    return this.dataService.signInWithCustomToken(customToken);
+  }
+
+  async generateIdToken(
+    uid: string,
+    claims?: Record<string, any>,
+  ): Promise<string> {
+    return this.dataService.generateIdToken(uid, claims);
+  }
+
+  // auth.dao.ts
+
+  /**
+   * Gets a Firebase user by UID
+   * @param uid User ID
+   * @returns Promise with user record
+   */
+  async getUser(uid: string): Promise<auth.UserRecord> {
+    try {
+      return await this.dataService.getUser(uid);
+    } catch (error) {
+      if (error.code === 'auth/user-not-found') {
+        throw new NotFoundException(`User with uid ${uid} not found`);
+      }
+      throw new InternalServerErrorException('Failed to get user');
+    }
+  }
+
+  /**
+   * Creates a new Firebase user
+   * @param userProperties User properties to create
+   * @returns Promise with user record
+   */
+  async createUser(
+    userProperties: auth.CreateRequest,
+  ): Promise<auth.UserRecord> {
+    try {
+      return await this.dataService.createUser(userProperties);
+    } catch (error) {
+      if (error.code === 'auth/email-already-exists') {
+        throw new ConflictException('Email already in use');
+      }
+      if (error.code === 'auth/invalid-email') {
+        throw new BadRequestException('Invalid email format');
+      }
+      throw new InternalServerErrorException('Failed to create user');
     }
   }
 }

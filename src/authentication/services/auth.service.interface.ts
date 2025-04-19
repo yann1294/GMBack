@@ -77,4 +77,13 @@ export default interface IAuthService {
    * Refreshes token
    */
   refreshToken(refreshToken: string): Promise<{ token: string }>;
+
+  /**
+   * Generates an ID token for a user
+   */
+  generateIdToken(uid: string, claims?: Record<string, any>): Promise<string>;
+
+  getUser(uid: string);
+
+  createUser(properties: auth.CreateRequest): Promise<auth.UserRecord>;
 }

@@ -11,6 +11,7 @@ import {
   UseGuards,
   UnprocessableEntityException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { AuthValidationPipe } from './auth.pipe';
@@ -42,6 +43,11 @@ import { IsUUID } from 'class-validator';
 import { AuthMapper } from './auth.mapper';
 import { IRole } from '../types/role.types';
 import { DataService } from 'src/shared/services/data.service';
+import {
+  TestTokenRequestDTO,
+  TestTokenResponseDTO,
+} from './dto/test-token.dto';
+import { auth } from 'firebase-admin';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -94,34 +100,23 @@ export class AuthController {
     return AuthMapper.toResponse(result);
   }
 
-  @Post('local/:role/signin')
+  @Post('local/signin')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Authenticate local user' })
-  @ApiParam({ name: 'role', enum: ['admin', 'tourist', 'guide'] })
   @ApiResponse({
     status: 200,
     description: 'Login successful',
     type: AuthResponseDTO,
   })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  @ApiResponse({ status: 422, description: 'Role mismatch' })
   async localSignin(
-    @Param('role') role: IRole,
     @Body(new AuthValidationPipe(AuthSigninDTO, 'local-signin'))
     body: LocalAuthVO,
   ): Promise<AuthResponseDTO> {
-    this.validateRole(role);
-
     const authResult = await this.authService.loginLocalUser(
       body.emailAddress,
       body.password,
     );
-
-    if (authResult.user.role !== role) {
-      throw new UnprocessableEntityException(
-        `User is not registered as ${role}`,
-      );
-    }
 
     return this.mapToAuthResponse(authResult);
   }
@@ -189,6 +184,51 @@ export class AuthController {
       throw new NotFoundException('User not found');
     }
     return AuthMapper.toResponse(userData);
+  }
+
+  @Post('generate-test-token')
+  @ApiOperation({ summary: 'Generate test ID token (DEV ONLY)' })
+  @ApiResponse({
+    status: 201,
+    description: 'Test ID token generated',
+    type: TestTokenResponseDTO,
+  })
+  async generateTestToken(
+    @Body() body: TestTokenRequestDTO,
+  ): Promise<TestTokenResponseDTO> {
+    if (process.env.NODE_ENV === 'production') {
+      throw new ForbiddenException(
+        'This endpoint is only available in development',
+      );
+    }
+
+    // 1. Create or get test user
+    const user = await this.ensureTestUserExists(body.uid, body.email);
+
+    // 2. Generate ID token
+    const idToken = await this.authService.generateIdToken(
+      user.uid,
+      body.claims,
+    );
+
+    return { token: idToken };
+  }
+
+  private async ensureTestUserExists(
+    uid: string,
+    email?: string,
+  ): Promise<auth.UserRecord> {
+    try {
+      return await this.authService.getUser(uid);
+    } catch (error) {
+      // User doesn't exist, create it
+      return this.authService.createUser({
+        uid,
+        email: email || `${uid}@test.example.com`,
+        password: 'test-password', // Required but won't be used
+        disabled: false,
+      });
+    }
   }
 
   private mapToAuthResponse(result: any): AuthResponseDTO {

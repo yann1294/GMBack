@@ -47,4 +47,14 @@ export default interface IAuthDAO {
     uid: string,
     developerClaims?: Record<string, any>,
   ): Promise<string>;
+
+  // Sign in with custom token
+  signInWithCustomToken(customToken: string): Promise<string>;
+
+  // Generate ID token for testing
+  generateIdToken(uid: string, claims?: Record<string, any>): Promise<string>;
+
+  getUser(uid: string): Promise<auth.UserRecord>;
+
+  createUser(userProperties: auth.CreateRequest): Promise<auth.UserRecord>;
 }

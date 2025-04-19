@@ -138,7 +138,7 @@ export class AuthService implements IAuthService {
 
     const oauthEntity = new OAuthEntity(
       decodedToken.uId,
-      decodedToken.email,
+      decodedToken.emailAddress,
       provider,
       idToken,
       undefined, // refreshToken
@@ -324,5 +324,22 @@ export class AuthService implements IAuthService {
       return expiresIn < 3600; // Refresh if expires in less than 1 hour
     }
     return false;
+  }
+
+  // auth.service.ts
+
+  async generateIdToken(
+    uid: string,
+    claims?: Record<string, any>,
+  ): Promise<string> {
+    return this.authDAO.generateIdToken(uid, claims);
+  }
+
+  async getUser(uid: string): Promise<auth.UserRecord> {
+    return this.authDAO.getUser(uid);
+  }
+
+  async createUser(properties: auth.CreateRequest): Promise<auth.UserRecord> {
+    return this.authDAO.createUser(properties);
   }
 }

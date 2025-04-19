@@ -91,7 +91,7 @@ export class AuthValidationPipe<T> implements PipeTransform {
       'local-signin': () =>
         new LocalAuthVO(
           undefined,
-          (dto as AuthSigninDTO).email,
+          (dto as AuthSigninDTO).emailAddress,
           (dto as AuthSigninDTO).password,
         ),
       update: () =>

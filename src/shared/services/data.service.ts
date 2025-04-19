@@ -463,4 +463,34 @@ export class DataService {
   ): Promise<string> {
     return this.auth.createCustomToken(uid, additionalClaims);
   }
+
+  // data.service.ts
+
+  /**
+   * Signs in with custom token to get ID token
+   * @param customToken The custom token to exchange
+   * @returns Promise with ID token
+   */
+  async signInWithCustomToken(customToken: string): Promise<string> {
+    const { uid, claims } = await this.auth.verifyIdToken(customToken);
+    const idToken = await this.auth.createCustomToken(uid, claims);
+    return idToken;
+  }
+
+  /**
+   * Generates ID token for testing
+   * @param uid User ID
+   * @param claims Optional claims
+   * @returns Promise with ID token
+   */
+  async generateIdToken(
+    uid: string,
+    claims?: Record<string, any>,
+  ): Promise<string> {
+    // 1. Create custom token
+    const customToken = await this.createCustomToken(uid, claims);
+
+    // 2. Exchange for ID token
+    return this.signInWithCustomToken(customToken);
+  }
 }

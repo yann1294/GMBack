@@ -76,7 +76,7 @@ export class AuthController {
     // Create a proper LocalAuthVO instance
     const localAuthVO = new LocalAuthVO(
       uid,
-      body.email,
+      body.emailAddress,
       body.password,
       body.role ? body.role : { name: 'tourist' }, // Default role if not provided
       new Date(), // createdAt

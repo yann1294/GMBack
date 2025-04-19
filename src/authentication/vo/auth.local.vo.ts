@@ -69,11 +69,11 @@ export class LocalAuthVO implements IAuth {
   }
 
   // Getters and setters for optional fields
-  get emailAddress(): string | undefined {
+  get emailAddress(): string {
     return this._emailAddress;
   }
 
-  set emailAddress(value: string | undefined) {
+  set emailAddress(value: string) {
     this._emailAddress = value;
   }
 

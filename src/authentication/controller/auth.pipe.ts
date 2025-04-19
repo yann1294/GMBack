@@ -40,6 +40,7 @@ export class AuthValidationPipe<T> implements PipeTransform {
     }
 
     const dtoInstance = plainToInstance(this.dtoClass, value);
+    console.log('Transformed DTO:', dtoInstance);
     const errors = await validate(dtoInstance as object, {
       whitelist: true,
       forbidNonWhitelisted: true,
@@ -79,7 +80,7 @@ export class AuthValidationPipe<T> implements PipeTransform {
       'local-signup': () =>
         new LocalAuthVO(
           undefined, // Will be generated later
-          (dto as AuthSignupDTO).email,
+          (dto as AuthSignupDTO).emailAddress,
           (dto as AuthSignupDTO).password,
           (dto as AuthSignupDTO).role || { name: 'tourist' },
           now,
@@ -96,7 +97,7 @@ export class AuthValidationPipe<T> implements PipeTransform {
       update: () =>
         new LocalAuthVO(
           undefined, // Will be populated from auth context
-          (dto as AuthUpdateDTO).email,
+          (dto as AuthUpdateDTO).emailAddress,
           (dto as AuthUpdateDTO).password,
           undefined,
           undefined,

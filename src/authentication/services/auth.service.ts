@@ -55,6 +55,7 @@ export class AuthService implements IAuthService {
       userVo.failedLoginAttempts,
     );
     console.log('Registering with UID:', userVo.uId);
+    console.log('Registering user with email:', userVo.emailAddress);
     // Create Firebase Auth user first
     try {
       await this.authDAO.createLocalAuth(localEntity, userVo.password);

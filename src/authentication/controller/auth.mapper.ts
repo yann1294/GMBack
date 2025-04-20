@@ -5,22 +5,14 @@ import { IRole } from '../types/role.types';
 import { AuthResponseDTO } from './dto/auth.response.dto';
 
 export class AuthMapper {
-  static toResponse(
-    authData: LocalAuthEntity | OAuthEntity | any,
-  ): AuthResponseDTO {
-    const isLocalAuth =
-      authData instanceof LocalAuthEntity || 'emailAddress' in authData;
-    const isOAuth = authData instanceof OAuthEntity || 'provider' in authData;
-
-    // Get normalized role object
-    const role = this.normalizeRole(authData.role);
-
-    return {
-      uid: authData.uid || authData.uId,
-      emailAddress: isLocalAuth ? authData.emailAddress : authData.email,
-      password: isLocalAuth ? authData.password : undefined,
-      role: role,
-      provider: isOAuth ? authData.provider : undefined,
+  static toResponse(authData: LocalAuthEntity | OAuthEntity): AuthResponseDTO {
+    const isLocalAuth = authData instanceof LocalAuthEntity;
+    const baseResponse = {
+      uid: authData.uId,
+      emailAddress: isLocalAuth
+        ? authData.emailAddress
+        : (authData as OAuthEntity).emailAddress,
+      role: this.normalizeRole(authData.role),
       authType: isLocalAuth ? 'local' : 'oauth',
       metadata: {
         createdAt: authData.createdAt,
@@ -31,7 +23,15 @@ export class AuthMapper {
             refreshToken: authData.tokens.refreshToken,
           }
         : undefined,
+      provider: !isLocalAuth ? (authData as OAuthEntity).provider : undefined,
     };
+
+    // Add provider only for OAuth
+    if (!isLocalAuth) {
+      (baseResponse as any).provider = (authData as OAuthEntity).provider;
+    }
+
+    return baseResponse as AuthResponseDTO;
   }
 
   private static normalizeRole(roleInput: string | IRole | undefined): IRole {
@@ -53,11 +53,5 @@ export class AuthMapper {
       name: roleInput.name,
       permissions: roleInput.permissions || [],
     };
-  }
-
-  private static mapRole(role: any): string {
-    if (typeof role === 'string') return role;
-    if (role?.name) return role.name;
-    return 'tourist'; // default role
   }
 }

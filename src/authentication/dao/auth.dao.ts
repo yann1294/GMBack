@@ -236,8 +236,7 @@ export class AuthDAO implements IAuthDAO {
       doc.uid,
       doc.emailAddress,
       doc.provider,
-      doc.accessToken,
-      doc.refreshToken,
+      doc.token,
       doc.role,
       doc.createdAt ? new Date(doc.createdAt) : undefined,
       doc.updatedAt ? new Date(doc.updatedAt) : undefined,
@@ -273,8 +272,7 @@ export class AuthDAO implements IAuthDAO {
       doc.uid,
       doc.emailAddress,
       doc.provider,
-      doc.accessToken,
-      doc.refreshToken,
+      doc.token,
       doc.role,
       doc.createdAt ? new Date(doc.createdAt) : undefined,
       doc.updatedAt ? new Date(doc.updatedAt) : undefined,
@@ -419,8 +417,7 @@ export class AuthDAO implements IAuthDAO {
           doc.uid,
           doc.emailAddress,
           doc.provider,
-          doc.accessToken,
-          doc.refreshToken,
+          doc.token,
           doc.role,
           doc.createdAt ? new Date(doc.createdAt) : undefined,
           doc.updatedAt ? new Date(doc.updatedAt) : undefined,
@@ -531,5 +528,16 @@ export class AuthDAO implements IAuthDAO {
     await this.dataService.updateDoc(this.collectionName, uid, {
       refreshTokens: admin.firestore.FieldValue.arrayUnion(token),
     });
+  }
+
+  async validateRefreshToken(uid: string, token: string): Promise<boolean> {
+    const result = await this.dataService.readDoc(this.collectionName, uid);
+
+    if (result.status !== 'success' || !result.data) {
+      return false;
+    }
+
+    const userData = result.data as any;
+    return userData.refreshTokens?.includes?.(token) ?? false;
   }
 }

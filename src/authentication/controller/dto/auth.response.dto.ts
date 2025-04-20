@@ -14,7 +14,10 @@ import { IRole } from 'src/authentication/types/role.types';
 // send authentication details as a response
 
 class AuthMetadataDTO {
-  @ApiProperty({ description: 'Account creation date' })
+  @ApiProperty({
+    description: 'Account creation date',
+    example: '2023-01-01T00:00:00.000Z',
+  })
   @IsDateString()
   createdAt: Date;
 
@@ -59,7 +62,8 @@ export class AuthResponseDTO extends AbstractAuthDTO {
 
   @ApiProperty({ description: 'User provider' })
   @IsString()
-  provider: string;
+  @IsOptional()
+  provider?: string;
 
   @ApiProperty({ description: 'User tokens' })
   @IsObject()
@@ -78,11 +82,21 @@ export class AuthResponseDTO extends AbstractAuthDTO {
   @IsString()
   authType: string;
 
-  @IsOptional()
+  @ApiProperty({
+    required: false,
+    description: 'Last login date',
+    example: '2023-01-01T00:00:00.000Z',
+  })
   @IsDateString()
+  @IsOptional()
   lastLoginDate?: string;
 
-  @IsOptional()
+  @ApiProperty({
+    required: false,
+    description: 'Failed login attempts count',
+    example: 0,
+  })
   @IsInt()
+  @IsOptional()
   failedLoginAttempts?: number;
 }

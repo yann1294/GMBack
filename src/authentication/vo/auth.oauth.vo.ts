@@ -115,13 +115,15 @@ export class OAuthVO implements IAuth {
   }
 
   // Convert VO to entity
-  toEntity(): OAuthEntity {
+  toEntity(tokens?: {
+    accessToken: string;
+    refreshToken: string;
+  }): OAuthEntity {
     return new OAuthEntity(
       this._uId,
       this._emailAddress!,
       this._provider,
-      this._accessToken,
-      this._refreshToken,
+      tokens,
       this._role,
       this._createdAt,
       this._updatedAt,

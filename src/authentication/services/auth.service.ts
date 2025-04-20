@@ -38,7 +38,7 @@ export class AuthService implements IAuthService {
    * - Could hash the password
    * - Calls DAO to store a LocalAuthEntity
    */
-  async registerLocalUser(userVo: LocalAuthVO): Promise<ResponseObject> {
+  async registerLocalUser(userVo: LocalAuthVO): Promise<LocalAuthEntity> {
     // Ensure role exists
     const role = userVo.role || { name: 'tourist' };
     const hashedPassword = await bcrypt.hash(userVo.password, this.saltRounds);
@@ -60,6 +60,26 @@ export class AuthService implements IAuthService {
     try {
       await this.authDAO.createLocalAuth(localEntity, userVo.password);
 
+      // // Generate tokens
+      // const accessToken = this.jwtService.sign({
+      //   sub: userVo.uId,
+      //   role: localEntity.role,
+      //   email: localEntity.emailAddress,
+      // });
+
+      // const refreshToken = this.jwtService.sign(
+      //   { sub: userVo.uId },
+      //   { expiresIn: '7d' },
+      // );
+
+      // // Store refresh token
+      // await this.authDAO.storeRefreshToken(userVo.uId, refreshToken);
+
+      // // Add tokens to the entity
+      // localEntity.tokens = {
+      //   accessToken,
+      //   refreshToken,
+      // };
       // Optionally set custom claims
       if (userVo.role) {
         await this.authDAO.setCustomUserClaims(userVo.uId, {
@@ -67,12 +87,13 @@ export class AuthService implements IAuthService {
         });
       }
 
-      return {
-        status: 'success',
-        code: 201,
-        message: 'User registered successfully',
-        data: { uid: userVo.uId },
-      };
+      // return {
+      //   status: 'success',
+      //   code: 201,
+      //   message: 'User registered successfully',
+      //   data: { uid: userVo.uId },
+      // };
+      return localEntity;
     } catch (error) {
       // Clean up if Firebase Auth fails
       await this.authDAO.deleteAuth(userVo.uId);
@@ -90,12 +111,7 @@ export class AuthService implements IAuthService {
   async loginLocalUser(
     email: string,
     password: string,
-  ): Promise<{
-    user: LocalAuthEntity;
-    accesstoken: string;
-    refreshToken: string;
-    firebaseToken?: string;
-  }> {
+  ): Promise<LocalAuthEntity> {
     const user = await this.authDAO.findLocalAuthByEmail(email);
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
@@ -116,12 +132,18 @@ export class AuthService implements IAuthService {
     );
 
     // Store refresh token in DB
-    await this.authDAO.storeRefreshToken(user.uId, refreshToken);
+    await this.authDAO.storeRefreshToken(user.uId, accesstoken);
 
     // Create Firebase custom token for client-side auth
     const firebaseToken = await this.authDAO.createCustomToken(user.uId);
 
-    return { user, accesstoken, refreshToken, firebaseToken };
+    user.tokens = {
+      accessToken: accesstoken,
+      refreshToken,
+      firebaseToken,
+    };
+
+    return user;
   }
 
   /**
@@ -130,7 +152,7 @@ export class AuthService implements IAuthService {
    * - Then store OAuthEntity
    */
   async registerOAuthUser(
-    idToken: string,
+    idToken: any,
     provider: string,
     role?: IRole,
   ): Promise<ResponseObject> {
@@ -154,8 +176,8 @@ export class AuthService implements IAuthService {
       decodedToken.emailAddress,
       provider,
       idToken,
-      undefined, // refreshToken
       role,
+      new Date(),
       new Date(),
       new Date(),
     );
@@ -220,6 +242,11 @@ export class AuthService implements IAuthService {
     }
 
     return null;
+  }
+
+  // Add this method to the AuthService class
+  async signOut(uid: string): Promise<void> {
+    await this.authDAO.revokeRefreshTokens(uid);
   }
 
   /**
@@ -354,11 +381,5 @@ export class AuthService implements IAuthService {
 
   async createUser(properties: auth.CreateRequest): Promise<auth.UserRecord> {
     return this.authDAO.createUser(properties);
-  }
-
-  // Add this method to the AuthService class
-  async signOut(uid: string): Promise<void> {
-    await this.authDAO.revokeRefreshTokens(uid);
-    // Add any additional cleanup logic here if needed
   }
 }

@@ -1,3 +1,4 @@
+import { Locals } from 'express';
 import { ResponseObject } from '../../shared/types';
 import { AuthResponseDTO } from '../controller/dto/auth.response.dto';
 import { AuthUpdateDTO } from '../controller/dto/auth.update.dto';
@@ -12,22 +13,14 @@ export default interface IAuthService {
   /**
    * Registers a new local user (e.g., email/password).
    */
-  registerLocalUser(userVo: LocalAuthVO): Promise<ResponseObject>;
+  registerLocalUser(userVo: LocalAuthVO): Promise<LocalAuthEntity>;
 
   /**
    * Logs in a local user by verifying their credentials.
    * Returns either some success structure (could be a JWT token),
    * or throws an error if invalid credentials.
    */
-  loginLocalUser(
-    email: string,
-    password: string,
-  ): Promise<{
-    user: LocalAuthEntity;
-    accesstoken: string;
-    refreshToken: string;
-    firebaseToken?: string;
-  }>;
+  loginLocalUser(email: string, password: string): Promise<LocalAuthEntity>;
 
   /**
    * Registers a new OAuth user (e.g., social login).

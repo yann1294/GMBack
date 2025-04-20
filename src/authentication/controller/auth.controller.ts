@@ -36,7 +36,7 @@ import { OAuthSigninDTO } from './dto/oauth.signin.dto';
 
 // Types
 
-import { DecodedIdToken } from 'firebase-admin/auth';
+import { Auth, DecodedIdToken } from 'firebase-admin/auth';
 import { LocalAuthVO } from '../vo/auth.local.vo';
 import { CurrentUser } from "../utils/ current-user.decorator.ts\nimport { createParamDecorator, ExecutionContext } from '@nestjs/common';\n\nexport const CurrentUser = createParamDecorator(\n  (data: unknown, ctx: ExecutionContext) => {\n    const request = ctx.switchToHttp().getRequest();\n    return request.user;\n  }\n/ current-user.decorator.ts\nimport { createParamDecorator, ExecutionContext } from '@nestjs/current-user.decorator";
 import { Role } from '../utils/helper';
@@ -119,7 +119,7 @@ export class AuthController {
       body.password,
     );
 
-    return this.mapToAuthResponse(authResult);
+    return AuthMapper.toResponse(authResult);
   }
 
   // @Patch('me')
@@ -247,11 +247,6 @@ export class AuthController {
   ): Promise<{ message: string }> {
     // Revoke Firebase tokens regardless of auth type
     await this.authService.signOut(req.user.uid);
-
-    // Additional JWT invalidation if needed
-    if (req.authType === 'jwt') {
-      // Add JWT blacklist logic here if required
-    }
 
     return { message: 'Successfully signed out' };
   }

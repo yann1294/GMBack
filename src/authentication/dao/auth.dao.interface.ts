@@ -61,4 +61,6 @@ export default interface IAuthDAO {
   revokeRefreshTokens(uid: string): Promise<void>;
 
   storeRefreshToken(uid: string, token: string): Promise<void>;
+
+  validateRefreshToken(uid: string, token: string): Promise<boolean>;
 }

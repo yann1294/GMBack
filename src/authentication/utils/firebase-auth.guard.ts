@@ -1,63 +1,79 @@
-// firebase-auth.guard.ts
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { DataService } from 'src/shared/services/data.service';
-import { JwtService } from '@nestjs/jwt'; // Add JWT service
 
 @Injectable()
 export class FirebaseAuthGuard implements CanActivate {
   constructor(
     private readonly dataService: DataService,
-    private readonly jwtService: JwtService, // Inject JWT service
+    private readonly jwtService: JwtService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractToken(request);
 
-    console.log('Extracted token:', token);
-
     if (!token) {
-      console.error('No token found');
-      return false;
+      throw new UnauthorizedException('Authorization token required');
     }
 
-    // Try both verification methods
-    return (
-      (await this.verifyFirebaseToken(token, request)) ||
-      (await this.verifyJwtToken(token, request))
-    );
-  }
-
-  private extractToken(request: Request): string | null {
-    const [type, token] = request.headers['authorization']?.split(' ') ?? [];
-    return type === 'Bearer' ? token : null;
-  }
-
-  private async verifyFirebaseToken(
-    token: string,
-    request: any,
-  ): Promise<boolean> {
     try {
-      request.user = await this.dataService.verifyIdToken(token);
-      console.log('Firebase token verified', request.user);
+      return await this.verifyToken(token, request);
+    } catch (error) {
+      this.logError(error, token);
+      throw new UnauthorizedException('Invalid authentication token');
+    }
+  }
+
+  private async verifyToken(token: string, request: any): Promise<boolean> {
+    // Try Firebase verification first
+    try {
+      const decoded = await this.dataService.verifyIdToken(token);
+      request.user = { uid: decoded.uid, ...decoded };
       request.authType = 'firebase';
       return true;
-    } catch (e) {
-      return false;
+    } catch (firebaseError) {
+      // Fallback to JWT verification
+      try {
+        const payload = this.jwtService.verify(token);
+        this.validateJwtPayload(payload);
+        request.user = { uid: payload.sub, ...payload };
+        request.authType = 'jwt';
+        return true;
+      } catch (jwtError) {
+        throw new AggregateError([firebaseError, jwtError]);
+      }
     }
   }
 
-  private async verifyJwtToken(token: string, request: any): Promise<boolean> {
-    try {
-      const payload = this.jwtService.verify(token);
-      request.user = {
-        ...payload,
-        uid: payload.sub, // Map JWT sub to uid
-      };
-      request.authType = 'jwt';
-      return true;
-    } catch (e) {
-      return false;
+  private validateJwtPayload(payload: any): void {
+    if (!payload.sub) {
+      throw new Error('JWT missing subject (sub) claim');
     }
+  }
+
+  private extractToken(request: Request): string {
+    const [type, token] = request.headers['authorization']?.split(' ') ?? [];
+    if (type !== 'Bearer' || !token) {
+      throw new UnauthorizedException('Invalid authorization header format');
+    }
+    return token;
+  }
+
+  private logError(error: Error, token: string): void {
+    const tokenPreview =
+      token.length > 10 ? `${token.slice(0, 5)}...${token.slice(-5)}` : token;
+
+    Logger.error(
+      `Authentication failed for token: ${tokenPreview}`,
+      error.stack,
+      'FirebaseAuthGuard',
+    );
   }
 }

@@ -2,6 +2,7 @@ import { instanceToPlain } from 'class-transformer';
 import { IAuth } from '../utils/auth.interface';
 import { Role } from 'src/user-management/utils/helper';
 import { IRole } from '../types/role.types';
+import { TD } from 'nats/lib/nats-base-client/encoders';
 
 export class LocalAuthEntity implements IAuth {
   public uId: string;
@@ -13,7 +14,11 @@ export class LocalAuthEntity implements IAuth {
   public lastLoginDate?: Date;
   public failedLoginAttempts: number;
   public authType: string = 'local';
-
+  public tokens?: {
+    accessToken: string;
+    refreshToken: string;
+    firebaseToken?: string;
+  };
   constructor(
     uId: string,
     emailAddress: string,
@@ -23,6 +28,11 @@ export class LocalAuthEntity implements IAuth {
     updatedAt: Date,
     lastLoginDate?: Date,
     failedLoginAttempts?: number,
+    tokens?: {
+      accessToken: string;
+      refreshToken: string;
+      firebaseToken?: string;
+    },
   ) {
     this.uId = uId;
     this.emailAddress = emailAddress;
@@ -32,6 +42,7 @@ export class LocalAuthEntity implements IAuth {
     this.updatedAt = updatedAt;
     this.lastLoginDate = lastLoginDate;
     this.failedLoginAttempts = failedLoginAttempts || 0;
+    this.tokens = tokens;
   }
 
   toObject(): object {
@@ -45,6 +56,13 @@ export class LocalAuthEntity implements IAuth {
       failedLoginAttempts: this.failedLoginAttempts,
       authType: this.authType,
       password: this.password,
+      tokens: this.tokens
+        ? {
+            accessToken: this.tokens.accessToken,
+            refreshToken: this.tokens.refreshToken,
+            firebaseToken: this.tokens.firebaseToken,
+          }
+        : undefined,
     };
   }
 

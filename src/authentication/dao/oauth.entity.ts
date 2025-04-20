@@ -7,8 +7,10 @@ export class OAuthEntity implements IAuth {
   public uId: string;
   public emailAddress: string;
   public provider: string;
-  public accessToken: string;
-  public refreshToken?: string;
+  public tokens?: {
+    accessToken: string;
+    refreshToken: string;
+  };
   public role?: IRole;
   public createdAt?: Date;
   public updatedAt?: Date;
@@ -19,8 +21,10 @@ export class OAuthEntity implements IAuth {
     uId: string,
     emailAddress: string,
     provider: string,
-    accessToken: string,
-    refreshToken?: string,
+    tokens?: {
+      accessToken: string;
+      refreshToken: string;
+    },
     role?: IRole,
     createdAt?: Date,
     updatedAt?: Date,
@@ -29,8 +33,7 @@ export class OAuthEntity implements IAuth {
     this.uId = uId;
     this.emailAddress = emailAddress;
     this.provider = provider;
-    this.accessToken = accessToken;
-    this.refreshToken = refreshToken;
+    this.tokens = tokens;
     this.role = role;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
@@ -42,8 +45,7 @@ export class OAuthEntity implements IAuth {
       uid: this.uId,
       emailAddress: this.emailAddress,
       provider: this.provider,
-      accessToken: this.accessToken,
-      refreshToken: this.refreshToken,
+      tokens: this.tokens,
       role: this.role ? Object.assign({}, this.role) : undefined,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,

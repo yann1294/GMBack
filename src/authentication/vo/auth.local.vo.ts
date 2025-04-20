@@ -1,6 +1,5 @@
 import { IAuth } from '../utils/auth.interface';
 import { LocalAuthEntity } from '../dao/localauth.entity';
-import { Role } from '../utils/helper';
 import { IRole } from '../types/role.types';
 
 export class LocalAuthVO implements IAuth {
@@ -26,6 +25,7 @@ export class LocalAuthVO implements IAuth {
     updatedAt?: Date | string,
     lastLoginDate?: Date | string,
     failedLoginAttempts?: number,
+    authType?: string,
   ) {
     this._uId = uId;
     this._emailAddress = emailAddress;
@@ -94,7 +94,11 @@ export class LocalAuthVO implements IAuth {
   }
 
   // Convert VO to entity
-  toEntity(): LocalAuthEntity {
+  toEntity(tokens?: {
+    accessToken: string;
+    refreshToken: string;
+    firebaseToken?: string;
+  }): LocalAuthEntity {
     return new LocalAuthEntity(
       this._uId,
       this._emailAddress!,
@@ -102,8 +106,9 @@ export class LocalAuthVO implements IAuth {
       this._role,
       this._createdAt,
       this._updatedAt,
-      this._lastLoginDate,
+      this._lastLoginDate!,
       this._failedLoginAttempts,
+      tokens,
     );
   }
 }

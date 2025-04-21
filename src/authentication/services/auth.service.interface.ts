@@ -8,6 +8,7 @@ import { IRole } from '../types/role.types';
 import { Role } from '../utils/helper';
 import { LocalAuthVO } from '../vo/auth.local.vo';
 import { auth } from 'firebase-admin';
+import { OAuthVO } from '../vo/auth.oauth.vo';
 
 export default interface IAuthService {
   /**
@@ -30,23 +31,18 @@ export default interface IAuthService {
     provider: string,
     accessToken: string,
     role?: IRole,
-  ): Promise<ResponseObject>;
+  ): Promise<OAuthEntity>;
 
   /**
    * Logs in an OAuth user.
    * In a real app, you'd verify the access token with the provider or
    * check validity in some manner.
    */
-  loginOAuthUser(
-    provider: string,
-    accessToken: string,
-  ): Promise<{ user: OAuthEntity; token: string }>;
+  loginOAuthUser(provider: string, idToken: string): Promise<OAuthEntity>;
 
-  // updateLocalAuth(
-  //   uid: string,
-  //   updateData: AuthUpdateDTO,
-  //   currentPassword?: string,
-  // ): Promise<ResponseObject>;
+  /**
+   * Updates a local user's email or password.
+   */
   updateLocalAuth(uid: string, updateVO: LocalAuthVO): Promise<LocalAuthEntity>;
 
   /**

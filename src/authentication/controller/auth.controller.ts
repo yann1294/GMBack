@@ -187,102 +187,49 @@ export class AuthController {
   }
 
   @Post('oauth/signup')
-  @UsePipes(new AuthValidationPipe(OAuthSignupDTO, 'oauth-signup'))
   @ApiOperation({ summary: 'Register new OAuth user' })
   @ApiResponse({
     status: 201,
     description: 'Registration successful',
     type: AuthResponseDTO,
   })
-  async oauthSignup(@Body() body: OAuthSignupDTO): Promise<AuthResponseDTO> {
+  async oauthSignup(@Body() dto: OAuthSignupDTO): Promise<AuthResponseDTO> {
     const result = await this.authService.registerOAuthUser(
-      body.accessToken,
-      body.provider,
+      dto.accessToken,
+      dto.provider,
     );
-    return this.mapToAuthResponse(result);
+    return AuthMapper.toResponse(result);
   }
 
   @Post('oauth/signin')
-  @UsePipes(new AuthValidationPipe(OAuthSigninDTO, 'oauth-signin'))
   @ApiOperation({ summary: 'Authenticate OAuth user' })
   @ApiResponse({
     status: 200,
     description: 'Login successful',
     type: AuthResponseDTO,
   })
-  async oauthSignin(@Body() body: OAuthSigninDTO): Promise<AuthResponseDTO> {
+  async oauthSignin(@Body() dto: OAuthSigninDTO): Promise<AuthResponseDTO> {
     const authResult = await this.authService.loginOAuthUser(
-      body.provider,
-      body.accessToken,
+      dto.accessToken,
+      dto.provider,
     );
-    return this.mapToAuthResponse(authResult);
+    return AuthMapper.toResponse(authResult);
   }
 
-  @Post('generate-test-token')
-  @ApiOperation({ summary: 'Generate test ID token (DEV ONLY)' })
-  @ApiResponse({
-    status: 201,
-    description: 'Test ID token generated',
-    type: TestTokenResponseDTO,
-  })
+  /** POST /auth/test-token */
+  @Post('test-token')
+  @HttpCode(HttpStatus.OK)
   async generateTestToken(
-    @Body() body: TestTokenRequestDTO,
+    @Body() dto: TestTokenRequestDTO,
   ): Promise<TestTokenResponseDTO> {
-    if (process.env.NODE_ENV === 'production') {
-      throw new ForbiddenException(
-        'This endpoint is only available in development',
-      );
+    // If they passed email instead of uid, look up the UID
+    let uid = dto.uid;
+    if (!uid && dto.email) {
+      const userRecord = await this.dataService.getUserByEmail(dto.email);
+      uid = userRecord.uid;
     }
 
-    // 1. Create or get test user
-    const user = await this.ensureTestUserExists(body.uid, body.email);
-
-    // 2. Generate ID token
-    const idToken = await this.authService.generateIdToken(
-      user.uid,
-      body.claims,
-    );
-
-    return { token: idToken };
-  }
-
-  private async ensureTestUserExists(
-    uid: string,
-    email?: string,
-  ): Promise<auth.UserRecord> {
-    try {
-      return await this.authService.getUser(uid);
-    } catch (error) {
-      // User doesn't exist, create it
-      return this.authService.createUser({
-        uid,
-        email: email || `${uid}@test.example.com`,
-        password: 'test-password', // Required but won't be used
-        disabled: false,
-      });
-    }
-  }
-
-  private mapToAuthResponse(result: any): AuthResponseDTO {
-    const isLocalAuth =
-      'emailAddress' in result.user || 'emailAddress' in result;
-    const emailAddress = isLocalAuth
-      ? result.user?.emailAddress || result.emailAddress
-      : result.user?.email || result.email;
-
-    return {
-      uid: result.user?.uid || result.uid,
-      emailAddress: result.user?.emailAddress || result.emailAddress,
-      role: result.user?.role?.name || result.role?.name,
-      provider: result.user?.provider || result.provider,
-      tokens: {
-        accessToken: result.token,
-        refreshToken: result.refreshToken,
-      },
-      metadata: {
-        createdAt: result.user?.createdAt || result.createdAt,
-      },
-      authType: result.user?.authType || result.authType,
-    };
+    const token = await this.dataService.generateIdToken(uid, dto.claims);
+    return { token };
   }
 }

@@ -19,6 +19,7 @@ import { LocalAuthVO } from '../vo/auth.local.vo';
 import IAuthDAO from '../dao/auth.dao.interface';
 import { auth } from 'firebase-admin';
 import { IRole } from '../types/role.types';
+import { DataService } from 'src/shared/services/data.service';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -27,6 +28,7 @@ export class AuthService implements IAuthService {
   constructor(
     @Inject('IAuthDAO') private readonly authDAO: IAuthDAO,
     private readonly jwtService: JwtService,
+    private readonly dataService: DataService,
   ) {}
 
   async generateUid(): Promise<string> {
@@ -128,11 +130,42 @@ export class AuthService implements IAuthService {
    * - In real usage, you'd verify the accessToken with the social provider first
    * - Then store OAuthEntity
    */
+
+  /**
+   * Issue your own JWT + refresh, plus a Firebase ID token for client‑side auth
+   */
+  private async generateTokensForOAuth(
+    uid: string,
+    role?: IRole,
+  ): Promise<{
+    accessToken: string;
+    refreshToken: string;
+    firebaseToken: string;
+  }> {
+    // 1) Create your application JWT
+    const payload = { sub: uid, role };
+    const accessToken = this.jwtService.sign(payload);
+
+    // 2) Create a long‑lived refresh token
+    const refreshToken = this.jwtService.sign(
+      { sub: uid },
+      { expiresIn: '7d' },
+    );
+
+    // 3) Persist the refresh token (so you can revoke/rotate later)
+    await this.authDAO.storeRefreshToken(uid, accessToken);
+
+    // 4) Create a Firebase ID token for client‑side signInWithCustomToken()
+    //    DataService.generateIdToken wraps createCustomToken + signInWithCustomToken
+    const firebaseToken = await this.dataService.generateIdToken(uid);
+
+    return { accessToken, refreshToken, firebaseToken };
+  }
   async registerOAuthUser(
     idToken: any,
     provider: string,
     role?: IRole,
-  ): Promise<ResponseObject> {
+  ): Promise<OAuthEntity> {
     const decodedToken = await this.verifyIdToken(idToken);
     if (!decodedToken.email) throw new UnauthorizedException('Invalid token');
 
@@ -140,19 +173,22 @@ export class AuthService implements IAuthService {
       decodedToken.email,
     );
     if (existingUser) {
-      return {
-        status: 'success',
-        code: 201,
-        message: 'User already exists',
-        data: { uid: existingUser.uId },
+      const tok = await this.generateTokensForOAuth(
+        existingUser.uId,
+        existingUser.role,
+      );
+      existingUser.tokens = {
+        accessToken: tok.accessToken,
+        refreshToken: tok.refreshToken,
       };
+      return existingUser;
     }
 
     const oauthEntity = new OAuthEntity(
       decodedToken.uId,
       decodedToken.emailAddress,
       provider,
-      idToken,
+      undefined,
       role,
       new Date(),
       new Date(),
@@ -165,41 +201,49 @@ export class AuthService implements IAuthService {
       await this.authDAO.setCustomUserClaims(decodedToken.uId, { role });
     }
 
-    return {
-      status: 'success',
-      code: 201,
-      message: 'OAuth user registered',
-      data: { uid: decodedToken.uid },
-    };
+    const tokens = await this.generateTokensForOAuth(decodedToken.uid, role);
+    oauthEntity.tokens = tokens;
+
+    return oauthEntity;
   }
 
   /**
-   * Logs in an OAuth user.
-   * - Typically checks if user with UID and provider exists
-   * - Possibly verifies the token with the provider
-   * - Issues a JWT
+   * 1) Verify the provider’s ID token
+   * 2) Fetch the user from Firestore by UID
+   * 3) Issue fresh tokens
+   * 4) Attach them and return the entity
    */
   async loginOAuthUser(
+    idToken: string,
     provider: string,
-    uid: string,
-  ): Promise<{ user: OAuthEntity; token: string }> {
-    // Find user by UID
-    const user = await this.authDAO.findOAuthByUID(uid);
-    if (!user || user.provider !== provider) {
-      throw new UnauthorizedException('User not found or provider mismatch');
+  ): Promise<OAuthEntity> {
+    // a) verify with Firebase Admin
+    const decoded = await this.dataService.verifyIdToken(idToken);
+    if (!decoded.uid || decoded.firebase === undefined) {
+      throw new UnauthorizedException('Invalid OAuth token');
     }
 
-    // Build JWT payload
-    const payload = {
-      sub: user.uId,
-      role: user.role,
-      provider: user.provider,
+    // b) lookup by the verified UID
+    const user = await this.authDAO.findOAuthByUID(decoded.uid);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    if (user.provider !== provider) {
+      throw new UnauthorizedException('Provider mismatch');
+    }
+
+    // c) generate and attach tokens
+    const { accessToken, refreshToken } = await this.generateTokensForOAuth(
+      user.uId,
+      user.role,
+    );
+
+    user.tokens = {
+      accessToken,
+      refreshToken,
     };
 
-    // Issue a JWT
-    const token = this.jwtService.sign(payload);
-
-    return { user, token };
+    return user;
   }
 
   /**

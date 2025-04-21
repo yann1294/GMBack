@@ -16,7 +16,7 @@ export default interface IAuthDAO {
   createOAuthAuth(
     authEntity: OAuthEntity,
     idToken?: string,
-  ): Promise<ResponseObject>;
+  ): Promise<OAuthEntity>;
 
   // Read (Local)
   findLocalAuthByUID(uid: string): Promise<LocalAuthEntity | null>;

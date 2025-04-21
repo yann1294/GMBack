@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { FirebaseRepository } from '../firebase/firebase.service';
 import {
   CollectionReference,
@@ -22,6 +22,7 @@ import { Payment } from 'src/payment/dao/payment.entity';
 import { LocalAuthEntity } from 'src/authentication/dao/localauth.entity';
 import { OAuthEntity } from 'src/authentication/dao/oauth.entity';
 import { auth } from 'firebase-admin';
+import axios from 'axios';
 
 export function errorHandler(e: unknown): ResponseObject {
   const error = e as FirebaseFirestoreError;
@@ -493,6 +494,46 @@ export class DataService {
     // 2. Exchange for ID token
     return this.signInWithCustomToken(customToken);
   }
+
+  /**
+   * Generates a Firebase ID token for a given UID (and optional custom claims)
+   * by:
+   *  1) creating a custom token via the Admin SDK
+   *  2) exchanging it for an ID token with the REST endpoint
+   */
+  // async generateIdToken(
+  //   uid: string,
+  //   claims?: Record<string, any>,
+  // ): Promise<string> {
+  //   // 1) create the custom token
+  //   const customToken = await this.createCustomToken(uid, claims);
+
+  //   // 2) exchange it for an ID token
+  //   const apiKey = process.env.FIREBASE_WEB_API_KEY;
+  //   if (!apiKey) {
+  //     throw new InternalServerErrorException(
+  //       'FIREBASE_WEB_API_KEY environment variable is required',
+  //     );
+  //   }
+
+  //   const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${apiKey}`;
+  //   const response = await axios
+  //     .post<{
+  //       idToken: string;
+  //       refreshToken: string;
+  //       expiresIn: string;
+  //     }>(url, {
+  //       token: customToken,
+  //       returnSecureToken: true,
+  //     })
+  //     .catch((err) => {
+  //       throw new InternalServerErrorException(
+  //         `Failed to exchange custom token: ${err.response?.data?.error?.message || err.message}`,
+  //       );
+  //     });
+
+  //   return response.data.idToken;
+  // }
 
   async revokeRefreshTokens(uid: string): Promise<void> {
     await this.auth.revokeRefreshTokens(uid);

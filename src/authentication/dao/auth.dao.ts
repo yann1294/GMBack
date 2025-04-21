@@ -98,43 +98,32 @@ export class AuthDAO implements IAuthDAO {
 
   /**
    * CREATE (OAuth)
-   * For Google Sign-In, we'll typically verify the ID token first
    */
-  async createOAuthAuth(
-    authEntity: OAuthEntity,
-    idToken?: string,
-  ): Promise<ResponseObject> {
-    try {
-      if (idToken) {
-        // Verify the ID token first
-        const decodedToken = await this.verifyIdToken(idToken);
+  /**
+   * Persist a brand‑new OAuthEntity, then re‑fetch it as an entity to return.
+   */
+  async createOAuthAuth(oauth: OAuthEntity): Promise<OAuthEntity> {
+    // 1) write document under the UID
+    const result = await this.dataService.createDoc(
+      oauth,
+      this.collectionName,
+      true, // use UID as the document ID
+    );
 
-        // Update the authEntity with verified info
-        authEntity.uId = decodedToken.uId;
-        authEntity.emailAddress = decodedToken.email || authEntity.emailAddress;
-      }
-
-      // Create the Firestore record
-      const result = await this.dataService.createDoc(
-        authEntity,
-        this.collectionName,
-        true,
+    if (result.status !== 'success') {
+      throw new InternalServerErrorException(
+        `Could not save OAuth user: ${result.message}`,
       );
-
-      return {
-        status: 'success',
-        code: 201,
-        message: 'OAuth auth created successfully',
-        data: result.data,
-      };
-    } catch (error) {
-      return {
-        status: 'failure',
-        code: error.code,
-        message: error.message,
-        data: null,
-      };
     }
+
+    // 2) re‑fetch so that you convert Timestamps → Dates, etc.
+    const fresh = await this.findOAuthByUID(oauth.uId);
+    if (!fresh) {
+      throw new InternalServerErrorException(
+        `OAuth user ${oauth.uId} disappeared after create`,
+      );
+    }
+    return fresh;
   }
 
   /**
@@ -244,9 +233,11 @@ export class AuthDAO implements IAuthDAO {
       doc.provider,
       doc.token,
       doc.role,
-      doc.createdAt ? new Date(doc.createdAt) : undefined,
-      doc.updatedAt ? new Date(doc.updatedAt) : undefined,
-      doc.lastLoginDate ? new Date(doc.lastLoginDate) : undefined,
+      (doc.createdAt as FSTimestamp).toDate(),
+      (doc.updatedAt as FSTimestamp).toDate(),
+      doc.lastLoginDate
+        ? (doc.lastLoginDate as FSTimestamp).toDate()
+        : undefined,
     );
   }
 

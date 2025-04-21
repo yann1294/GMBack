@@ -7,6 +7,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { AbstractAuthDTO } from './helper.dto';
+import { Type } from 'class-transformer';
 
 /**
  * Used to update authentication details (e.g., password reset or email change).
@@ -25,7 +26,8 @@ export class AuthUpdateDTO extends AbstractAuthDTO {
 
   @IsOptional()
   @IsDateString()
-  lastLoginDate?: string;
+  @Type(() => Date)
+  lastLoginDate?: Date;
 
   @IsOptional()
   @IsInt()

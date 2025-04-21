@@ -1,7 +1,9 @@
 import {
+  ConflictException,
   Inject,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   Req,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -13,11 +15,9 @@ import { LocalAuthEntity } from '../dao/localauth.entity';
 import { OAuthEntity } from '../dao/oauth.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { Role } from '../utils/helper';
 import { LocalAuthVO } from '../vo/auth.local.vo';
 import IAuthDAO from '../dao/auth.dao.interface';
 import { auth } from 'firebase-admin';
-import { AuthResponseDTO } from '../controller/dto/auth.response.dto';
 import { IRole } from '../types/role.types';
 
 @Injectable()
@@ -60,39 +60,12 @@ export class AuthService implements IAuthService {
     try {
       await this.authDAO.createLocalAuth(localEntity, userVo.password);
 
-      // // Generate tokens
-      // const accessToken = this.jwtService.sign({
-      //   sub: userVo.uId,
-      //   role: localEntity.role,
-      //   email: localEntity.emailAddress,
-      // });
-
-      // const refreshToken = this.jwtService.sign(
-      //   { sub: userVo.uId },
-      //   { expiresIn: '7d' },
-      // );
-
-      // // Store refresh token
-      // await this.authDAO.storeRefreshToken(userVo.uId, refreshToken);
-
-      // // Add tokens to the entity
-      // localEntity.tokens = {
-      //   accessToken,
-      //   refreshToken,
-      // };
       // Optionally set custom claims
       if (userVo.role) {
         await this.authDAO.setCustomUserClaims(userVo.uId, {
           role: userVo.role,
         });
       }
-
-      // return {
-      //   status: 'success',
-      //   code: 201,
-      //   message: 'User registered successfully',
-      //   data: { uid: userVo.uId },
-      // };
       return localEntity;
     } catch (error) {
       // Clean up if Firebase Auth fails
@@ -124,7 +97,7 @@ export class AuthService implements IAuthService {
       role: user.role,
       email: user.emailAddress,
     };
-    const accesstoken = this.jwtService.sign(payload);
+    const accessToken = this.jwtService.sign(payload);
 
     const refreshToken = this.jwtService.sign(
       { sub: user.uId },
@@ -132,18 +105,22 @@ export class AuthService implements IAuthService {
     );
 
     // Store refresh token in DB
-    await this.authDAO.storeRefreshToken(user.uId, accesstoken);
+    await this.authDAO.storeRefreshToken(user.uId, accessToken);
 
     // Create Firebase custom token for client-side auth
     const firebaseToken = await this.authDAO.createCustomToken(user.uId);
 
-    user.tokens = {
-      accessToken: accesstoken,
+    const freshUser = await this.authDAO.findLocalAuthByUID(user.uId);
+    if (!freshUser)
+      throw new InternalServerErrorException('User disappeared after signin');
+
+    freshUser.tokens = {
+      accessToken,
       refreshToken,
       firebaseToken,
     };
 
-    return user;
+    return freshUser;
   }
 
   /**
@@ -247,6 +224,90 @@ export class AuthService implements IAuthService {
   // Add this method to the AuthService class
   async signOut(uid: string): Promise<void> {
     await this.authDAO.revokeRefreshTokens(uid);
+  }
+
+  async updateLocalAuth(
+    uid: string,
+    updateVO: LocalAuthVO,
+  ): Promise<LocalAuthEntity> {
+    // 1. Get existing user data
+    const existingEntity = await this.authDAO.findLocalAuthByUID(uid);
+    if (!existingEntity) {
+      throw new NotFoundException('User not found');
+    }
+
+    // 2. Prepare updates
+    const updates: Partial<LocalAuthEntity> = {};
+    let newPassword: string | undefined;
+
+    // Handle email update
+    if (
+      updateVO.emailAddress &&
+      updateVO.emailAddress !== existingEntity.emailAddress
+    ) {
+      const emailExists = await this.authDAO.getUserByEmail(
+        updateVO.emailAddress,
+      );
+      if (emailExists) {
+        throw new ConflictException('Email already in use');
+      }
+      updates.emailAddress = updateVO.emailAddress;
+    }
+
+    // Handle password update
+    if (updateVO.password) {
+      const isSamePassword = await bcrypt.compare(
+        updateVO.password,
+        existingEntity.password,
+      );
+      if (!isSamePassword) {
+        const hashedPassword = await bcrypt.hash(
+          updateVO.password,
+          this.saltRounds,
+        );
+        updates.password = hashedPassword;
+        newPassword = updateVO.password; // Plaintext for Firebase Auth
+      }
+    }
+
+    // Handle other fields
+    if (updateVO.lastLoginDate !== undefined) {
+      updates.lastLoginDate = updateVO.lastLoginDate;
+    }
+
+    if (updateVO.failedLoginAttempts !== undefined) {
+      updates.failedLoginAttempts = updateVO.failedLoginAttempts;
+    }
+
+    // 3. Create updated entity
+    const updatedEntity = new LocalAuthEntity(
+      uid,
+      updates.emailAddress || existingEntity.emailAddress,
+      updates.password || existingEntity.password,
+      existingEntity.role,
+      existingEntity.createdAt,
+      new Date(), // Update the updatedAt timestamp
+      updates.lastLoginDate || existingEntity.lastLoginDate,
+      updates.failedLoginAttempts || existingEntity.failedLoginAttempts,
+    );
+
+    // 4. Perform the update through DAO
+    const result = await this.authDAO.updateLocalAuth(
+      updatedEntity,
+      newPassword,
+    );
+
+    if (result.status !== 'success') {
+      throw new InternalServerErrorException(result.message);
+    }
+
+    // 5. Return the updated entity
+    const freshEntity = await this.authDAO.findLocalAuthByUID(uid);
+    if (!freshEntity) {
+      throw new NotFoundException('User data not available after update');
+    }
+
+    return freshEntity;
   }
 
   /**

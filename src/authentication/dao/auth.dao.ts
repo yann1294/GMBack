@@ -14,6 +14,8 @@ import { DataServiceCondition, ResponseObject } from '../../shared/types';
 import { Role } from '../utils/helper';
 import { auth } from 'firebase-admin';
 import * as admin from 'firebase-admin';
+import { IRole } from '../types/role.types';
+import { Timestamp as FSTimestamp } from 'firebase-admin/firestore';
 
 @Injectable()
 export class AuthDAO implements IAuthDAO {
@@ -159,16 +161,18 @@ export class AuthDAO implements IAuthDAO {
       return null;
     }
 
-    const doc = result.data[0];
+    const doc = result.data[0] as Record<string, unknown>;
     return new LocalAuthEntity(
-      doc.uid,
-      doc.emailAddress,
-      doc.password,
-      doc.role,
-      doc.createdAt ? new Date(doc.createdAt) : new Date(),
-      doc.updatedAt ? new Date(doc.updatedAt) : new Date(),
-      doc.lastLoginDate ? new Date(doc.lastLoginDate) : undefined,
-      doc.failedLoginAttempts,
+      doc.uid as string,
+      doc.emailAddress as string,
+      doc.password as string,
+      doc.role as IRole,
+      (doc.createdAt as FSTimestamp).toDate(), // ← correct
+      (doc.updatedAt as FSTimestamp).toDate(), // ← correct
+      doc.lastLoginDate
+        ? (doc.lastLoginDate as FSTimestamp).toDate() // ← correct
+        : undefined,
+      doc.failedLoginAttempts as number,
     );
   }
 
@@ -201,9 +205,11 @@ export class AuthDAO implements IAuthDAO {
       doc.emailAddress,
       doc.password,
       doc.role,
-      doc.createdAt ? new Date(doc.createdAt) : new Date(),
-      doc.updatedAt ? new Date(doc.updatedAt) : new Date(),
-      doc.lastLoginDate ? new Date(doc.lastLoginDate) : undefined,
+      (doc.createdAt as FSTimestamp).toDate(),
+      (doc.updatedAt as FSTimestamp).toDate(),
+      doc.lastLoginDate
+        ? (doc.lastLoginDate as FSTimestamp).toDate()
+        : undefined,
       doc.failedLoginAttempts,
     );
   }
@@ -299,16 +305,36 @@ export class AuthDAO implements IAuthDAO {
       await this.dataService.updateUser(authEntity.uId, updateRequest);
 
       // Update Firestore data
-      const updatedData = {
-        ...authEntity.toObject(),
+      const updatedData: Partial<Record<string, any>> = {
+        emailAddress: authEntity.emailAddress,
+        updatedAt: FSTimestamp.fromDate(new Date()),
         authType: 'local',
       };
+
+      // Only include password if it changed
+      if (password) {
+        updatedData.password = authEntity.password;
+      }
+
+      // Only include lastLoginDate if set on the VO
+      if (authEntity.lastLoginDate) {
+        updatedData.lastLoginDate = FSTimestamp.fromDate(
+          authEntity.lastLoginDate,
+        );
+      }
+
+      // Only include failedLoginAttempts if it’s a number
+      if (typeof authEntity.failedLoginAttempts === 'number') {
+        updatedData.failedLoginAttempts = authEntity.failedLoginAttempts;
+      }
+
       const result = await this.dataService.updateDoc(
         this.collectionName,
         authEntity.uId,
         updatedData,
       );
 
+      console.log('Updated auth data:', result);
       return result;
     } catch (error) {
       return {

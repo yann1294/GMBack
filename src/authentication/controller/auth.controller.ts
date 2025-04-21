@@ -49,6 +49,7 @@ import {
   TestTokenResponseDTO,
 } from './dto/test-token.dto';
 import { auth } from 'firebase-admin';
+import { AuthUpdateDTO } from './dto/auth.update.dto';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -112,32 +113,78 @@ export class AuthController {
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async localSignin(
     @Body(new AuthValidationPipe(AuthSigninDTO, 'local-signin'))
-    body: LocalAuthVO,
+    dto: AuthSigninDTO,
   ): Promise<AuthResponseDTO> {
     const authResult = await this.authService.loginLocalUser(
-      body.emailAddress,
-      body.password,
+      dto.emailAddress,
+      dto.password,
     );
 
     return AuthMapper.toResponse(authResult);
   }
 
-  // @Patch('me')
-  // @UseGuards(FirebaseAuthGuard)
-  // @ApiBearerAuth()
-  // @ApiOperation({ summary: 'Update authenticated user' })
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'Update successful',
-  //   type: AuthResponseDTO,
-  // })
-  // async updateLocal(
-  //   @CurrentUser() user: DecodedIdToken,
-  //   @Body(new AuthValidationPipe(AuthUpdateDTO, 'update')) body: LocalAuthVO,
-  // ): Promise<AuthResponseDTO> {
-  //   const result = await this.authService.updateLocalAuth(user.uid, body);
-  //   return this.mapToAuthResponse(result);
-  // }
+  @Patch('me')
+  @UseGuards(FirebaseAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update authenticated user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Update successful',
+    type: AuthResponseDTO,
+  })
+  async updateLocal(
+    @CurrentUser() user: DecodedIdToken,
+    @Body(new AuthValidationPipe(AuthUpdateDTO, 'update')) dto: AuthUpdateDTO,
+  ): Promise<AuthResponseDTO> {
+    // now map DTO → VO yourself:
+    const updateVO = new LocalAuthVO(
+      user.uid,
+      dto.emailAddress,
+      dto.password,
+      undefined, // role isn’t updatable here
+      undefined, // createdAt stays untouched
+      new Date(), // updatedAt
+      dto.lastLoginDate ? new Date(dto.lastLoginDate) : undefined,
+      dto.failedLoginAttempts,
+    );
+    const result = await this.authService.updateLocalAuth(user.uid, updateVO);
+    return AuthMapper.toResponse(result);
+  }
+
+  @Post('local/signout')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: 'Sign out user' })
+  @ApiResponse({ status: 200, description: 'Successfully signed out' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async localSignout(
+    @Req() req: { user: { uid: string }; authType: string },
+  ): Promise<{ message: string }> {
+    // Revoke Firebase tokens regardless of auth type
+    await this.authService.signOut(req.user.uid);
+
+    return { message: 'Successfully signed out' };
+  }
+
+  @Get('me')
+  @UseGuards(FirebaseAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current user info' })
+  @ApiResponse({ status: 200, description: 'User info', type: AuthResponseDTO })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async getCurrentUser(
+    @CurrentUser() user: DecodedIdToken,
+  ): Promise<AuthResponseDTO> {
+    console.log('Current user UID:', user.uid);
+
+    const userData = await this.authService.findUserByUID(user.uid);
+    console.log('Found user data:', userData);
+    if (!userData) {
+      console.error(`User ${user.uid} not found in database`);
+      throw new NotFoundException('User not found');
+    }
+    return AuthMapper.toResponse(userData);
+  }
 
   @Post('oauth/signup')
   @UsePipes(new AuthValidationPipe(OAuthSignupDTO, 'oauth-signup'))
@@ -169,26 +216,6 @@ export class AuthController {
       body.accessToken,
     );
     return this.mapToAuthResponse(authResult);
-  }
-
-  @Get('me')
-  @UseGuards(FirebaseAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get current user info' })
-  @ApiResponse({ status: 200, description: 'User info', type: AuthResponseDTO })
-  @ApiResponse({ status: 404, description: 'User not found' })
-  async getCurrentUser(
-    @CurrentUser() user: DecodedIdToken,
-  ): Promise<AuthResponseDTO> {
-    console.log('Current user UID:', user.uid);
-
-    const userData = await this.authService.findUserByUID(user.uid);
-    console.log('Found user data:', userData);
-    if (!userData) {
-      console.error(`User ${user.uid} not found in database`);
-      throw new NotFoundException('User not found');
-    }
-    return AuthMapper.toResponse(userData);
   }
 
   @Post('generate-test-token')
@@ -234,21 +261,6 @@ export class AuthController {
         disabled: false,
       });
     }
-  }
-
-  @Post('local/signout')
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(FirebaseAuthGuard)
-  @ApiOperation({ summary: 'Sign out user' })
-  @ApiResponse({ status: 200, description: 'Successfully signed out' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async localSignout(
-    @Req() req: { user: { uid: string }; authType: string },
-  ): Promise<{ message: string }> {
-    // Revoke Firebase tokens regardless of auth type
-    await this.authService.signOut(req.user.uid);
-
-    return { message: 'Successfully signed out' };
   }
 
   private mapToAuthResponse(result: any): AuthResponseDTO {

@@ -47,6 +47,7 @@ export default interface IAuthService {
   //   updateData: AuthUpdateDTO,
   //   currentPassword?: string,
   // ): Promise<ResponseObject>;
+  updateLocalAuth(uid: string, updateVO: LocalAuthVO): Promise<LocalAuthEntity>;
 
   /**
    * Fetches either a Local or OAuth user by their UID, returning null if not found.

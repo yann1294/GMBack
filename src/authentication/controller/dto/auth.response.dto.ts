@@ -10,6 +10,7 @@ import {
 import { AbstractAuthDTO } from './helper.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { IRole } from 'src/authentication/types/role.types';
+import { Type } from 'class-transformer';
 
 // send authentication details as a response
 
@@ -89,7 +90,8 @@ export class AuthResponseDTO extends AbstractAuthDTO {
   })
   @IsDateString()
   @IsOptional()
-  lastLoginDate?: string;
+  @Type(() => Date)
+  lastLoginDate?: Date;
 
   @ApiProperty({
     required: false,

@@ -1,4 +1,12 @@
-import { IsEmail, IsString, MinLength, IsOptional, IsDateString, IsInt } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  IsOptional,
+  IsDateString,
+  IsInt,
+} from 'class-validator';
 
 export abstract class AbstractAuthDTO {
   @IsEmail()
@@ -12,7 +20,8 @@ export abstract class AbstractAuthDTO {
 
   @IsOptional()
   @IsDateString()
-  lastLoginDate?: string;
+  @Type(() => Date)
+  lastLoginDate?: Date;
 
   @IsOptional()
   @IsInt()

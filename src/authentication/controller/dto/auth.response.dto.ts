@@ -6,6 +6,8 @@ import {
   IsInt,
   IsObject,
   ValidateNested,
+  IsArray,
+  IsBoolean,
 } from 'class-validator';
 import { AbstractAuthDTO } from './helper.dto';
 import { ApiProperty } from '@nestjs/swagger';
@@ -101,4 +103,49 @@ export class AuthResponseDTO extends AbstractAuthDTO {
   @IsInt()
   @IsOptional()
   failedLoginAttempts?: number;
+
+  @ApiProperty({ required: false, description: 'First name' })
+  @IsString()
+  @IsOptional()
+  firstName?: string;
+
+  @ApiProperty({ required: false, description: 'Last name' })
+  @IsString()
+  @IsOptional()
+  lastName?: string;
+
+  @ApiProperty({ required: false, description: 'Phone number' })
+  @IsString()
+  @IsOptional()
+  phoneNumber?: string;
+
+  @ApiProperty({ required: false, description: 'Profile photo URL' })
+  @IsString()
+  @IsOptional()
+  profilePhoto?: string;
+
+  @ApiProperty({ required: false, description: 'Identification file URL' })
+  @IsString()
+  @IsOptional()
+  identificationFile?: string;
+
+  @ApiProperty({ required: false, description: 'Identification type' })
+  @IsString()
+  @IsOptional()
+  identificationType?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'Spoken languages',
+    type: [String],
+  })
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  spokenLanguages?: string[];
+
+  @ApiProperty({ required: false, description: 'Guide availability' })
+  @IsBoolean()
+  @IsOptional()
+  availability?: boolean;
 }

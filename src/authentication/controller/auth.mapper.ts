@@ -7,6 +7,12 @@ import { AuthResponseDTO } from './dto/auth.response.dto';
 export class AuthMapper {
   static toResponse(authData: LocalAuthEntity | OAuthEntity): AuthResponseDTO {
     const isLocalAuth = authData instanceof LocalAuthEntity;
+
+    // grab profile only on local
+    const profile = isLocalAuth
+      ? (authData as LocalAuthEntity).profile
+      : undefined;
+
     const baseResponse = {
       uid: authData.uId,
       emailAddress: isLocalAuth
@@ -24,6 +30,14 @@ export class AuthMapper {
           }
         : undefined,
       provider: !isLocalAuth ? (authData as OAuthEntity).provider : undefined,
+      firstName: profile?.firstName,
+      lastName: profile?.lastName,
+      phoneNumber: profile?.phoneNumber,
+      profilePhoto: profile?.profilePhoto,
+      identificationFile: profile?.identificationFile,
+      identificationType: profile?.identificationType,
+      spokenLanguages: profile?.spokenLanguages,
+      availability: profile?.availability,
     };
 
     // Add provider only for OAuth

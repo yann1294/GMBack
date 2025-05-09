@@ -55,6 +55,17 @@ export class AuthService implements IAuthService {
       userVo.updatedAt,
       userVo.lastLoginDate,
       userVo.failedLoginAttempts,
+      undefined,
+      {
+        firstName: userVo.firstName,
+        lastName: userVo.lastName,
+        phoneNumber: userVo.phoneNumber,
+        profilePhoto: userVo.profilePhoto,
+        identificationFile: userVo.identificationFile,
+        identificationType: userVo.identificationType,
+        spokenLanguages: userVo.spokenLanguages,
+        availability: userVo.availability,
+      },
     );
     console.log('Registering with UID:', userVo.uId);
     console.log('Registering user with email:', userVo.emailAddress);

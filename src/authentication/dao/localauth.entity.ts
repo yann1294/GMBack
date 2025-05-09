@@ -19,6 +19,16 @@ export class LocalAuthEntity implements IAuth {
     refreshToken: string;
     firebaseToken?: string;
   };
+  public profile?: {
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    profilePhoto?: string;
+    identificationFile?: string;
+    identificationType?: string;
+    spokenLanguages?: string[];
+    availability?: boolean;
+  };
   constructor(
     uId: string,
     emailAddress: string,
@@ -33,6 +43,16 @@ export class LocalAuthEntity implements IAuth {
       refreshToken: string;
       firebaseToken?: string;
     },
+    profile?: {
+      firstName?: string;
+      lastName?: string;
+      phoneNumber?: string;
+      profilePhoto?: string;
+      identificationFile?: string;
+      identificationType?: string;
+      spokenLanguages?: string[];
+      availability?: boolean;
+    },
   ) {
     this.uId = uId;
     this.emailAddress = emailAddress;
@@ -43,6 +63,7 @@ export class LocalAuthEntity implements IAuth {
     this.lastLoginDate = lastLoginDate;
     this.failedLoginAttempts = failedLoginAttempts || 0;
     this.tokens = tokens;
+    this.profile = profile;
   }
 
   toObject(): object {
@@ -63,6 +84,7 @@ export class LocalAuthEntity implements IAuth {
             firebaseToken: this.tokens.firebaseToken,
           }
         : undefined,
+      profile: this.profile,
     };
   }
 

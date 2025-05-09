@@ -91,12 +91,16 @@ export class AuthController {
       new Date(), // updatedAt
       undefined, // lastLoginDate
       0, // failedLoginAttempts
+      undefined,
+      body.firstName,
+      body.lastName,
+      body.phoneNumber,
+      body.profilePhoto,
+      body.identificationFile,
+      body.identificationType,
+      body.spokenLanguages,
+      body.availability,
     );
-
-    // Validate the role if provided
-    // if (body.role) {
-    //   this.validateRole(body.role);
-    // }
 
     const result = await this.authService.registerLocalUser(localAuthVO);
     return AuthMapper.toResponse(result);

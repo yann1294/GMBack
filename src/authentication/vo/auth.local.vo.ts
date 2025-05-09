@@ -10,6 +10,14 @@ export class LocalAuthVO implements IAuth {
   private readonly _createdAt?: Date;
   private readonly _updatedAt?: Date;
 
+  private _firstName?: string;
+  private _lastName?: string;
+  private _phoneNumber?: string;
+  private _profilePhoto?: string;
+  private _identificationFile?: string;
+  private _identificationType?: string;
+  private _spokenLanguages?: string[];
+  private _availability?: boolean;
   // Optional mutable fields
 
   private _lastLoginDate?: Date;
@@ -26,6 +34,14 @@ export class LocalAuthVO implements IAuth {
     lastLoginDate?: Date | string,
     failedLoginAttempts?: number,
     authType?: string,
+    firstName?: string,
+    lastName?: string,
+    phoneNumber?: string,
+    profilePhoto?: string,
+    identificationFile?: string,
+    identificationType?: string,
+    spokenLanguages?: string[],
+    availability?: boolean,
   ) {
     this._uId = uId;
     this._emailAddress = emailAddress;
@@ -41,6 +57,14 @@ export class LocalAuthVO implements IAuth {
         : lastLoginDate
       : undefined;
     this._failedLoginAttempts = failedLoginAttempts;
+    this._firstName = firstName;
+    this._lastName = lastName;
+    this._phoneNumber = phoneNumber;
+    this._profilePhoto = profilePhoto;
+    this._identificationFile = identificationFile;
+    this._identificationType = identificationType;
+    this._spokenLanguages = spokenLanguages;
+    this._availability = availability;
   }
 
   // Getters for mandatory fields
@@ -93,6 +117,70 @@ export class LocalAuthVO implements IAuth {
     this._failedLoginAttempts = value;
   }
 
+  get firstName(): string {
+    return this._firstName;
+  }
+
+  set firstName(value: string) {
+    this._firstName = value;
+  }
+
+  get lastName(): string {
+    return this._lastName;
+  }
+
+  set lastName(value: string) {
+    this._lastName = value;
+  }
+
+  get phoneNumber(): string {
+    return this._phoneNumber;
+  }
+
+  set phoneNumber(value: string) {
+    this._phoneNumber = value;
+  }
+
+  get profilePhoto(): string {
+    return this._profilePhoto;
+  }
+
+  set profilePhoto(value: string) {
+    this._profilePhoto = value;
+  }
+
+  get identificationFile(): string {
+    return this._identificationFile;
+  }
+
+  set identificationFile(value: string) {
+    this._identificationFile = value;
+  }
+
+  get identificationType(): string {
+    return this._identificationType;
+  }
+
+  set identificationType(value: string) {
+    this._identificationType = value;
+  }
+
+  get spokenLanguages(): string[] {
+    return this._spokenLanguages;
+  }
+
+  set spokenLanguages(value: string[]) {
+    this._spokenLanguages = value;
+  }
+
+  get availability(): boolean {
+    return this._availability;
+  }
+
+  set availability(value: boolean) {
+    this._availability = value;
+  }
+
   // Convert VO to entity
   toEntity(tokens?: {
     accessToken: string;
@@ -109,6 +197,16 @@ export class LocalAuthVO implements IAuth {
       this._lastLoginDate!,
       this._failedLoginAttempts,
       tokens,
+      {
+        firstName: this._firstName,
+        lastName: this._lastName,
+        phoneNumber: this._phoneNumber,
+        profilePhoto: this._profilePhoto,
+        identificationFile: this._identificationFile,
+        identificationType: this._identificationType,
+        spokenLanguages: this._spokenLanguages,
+        availability: this._availability,
+      },
     );
   }
 }

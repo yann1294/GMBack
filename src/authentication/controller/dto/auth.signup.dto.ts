@@ -7,6 +7,8 @@ import {
   Validate,
   IsNotEmpty,
   IsIP,
+  IsArray,
+  IsBoolean,
 } from 'class-validator';
 import { AbstractAuthDTO } from './helper.dto';
 import { IRole } from 'src/authentication/types/role.types';
@@ -27,4 +29,38 @@ export class AuthSignupDTO extends AbstractAuthDTO {
   @Type(() => RoleDto)
   @ValidateNested()
   role?: RoleDto;
+
+  // New profile fields
+  @IsString()
+  @IsOptional()
+  firstName?: string;
+
+  @IsString()
+  @IsOptional()
+  lastName?: string;
+
+  @IsString()
+  @IsOptional()
+  phoneNumber?: string;
+
+  @IsString()
+  @IsOptional()
+  profilePhoto?: string; // could be a URL
+
+  @IsString()
+  @IsOptional()
+  identificationFile?: string; // could be a URL / storage path
+
+  @IsString()
+  @IsOptional()
+  identificationType?: string;
+
+  @IsArray()
+  @IsOptional()
+  @IsString({ each: true })
+  spokenLanguages?: string[];
+
+  @IsBoolean()
+  @IsOptional()
+  availability?: boolean; // guide-only
 }

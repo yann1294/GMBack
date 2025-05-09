@@ -87,6 +87,15 @@ export class AuthValidationPipe<T> implements PipeTransform {
           now,
           now,
           0,
+          undefined,
+          (dto as AuthSignupDTO).firstName,
+          (dto as AuthSignupDTO).lastName,
+          (dto as AuthSignupDTO).phoneNumber,
+          (dto as AuthSignupDTO).profilePhoto,
+          (dto as AuthSignupDTO).identificationFile,
+          (dto as AuthSignupDTO).identificationType,
+          (dto as AuthSignupDTO).spokenLanguages,
+          (dto as AuthSignupDTO).availability,
         ),
       'local-signin': () =>
         new LocalAuthVO(

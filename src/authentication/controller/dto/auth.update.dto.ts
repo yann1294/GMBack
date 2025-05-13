@@ -1,4 +1,6 @@
 import {
+  IsArray,
+  IsBoolean,
   IsDateString,
   IsEmail,
   IsInt,
@@ -32,4 +34,30 @@ export class AuthUpdateDTO extends AbstractAuthDTO {
   @IsOptional()
   @IsInt()
   failedLoginAttempts?: number;
+  // ─── New profile fields ───────────────────────────
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
+  @IsOptional()
+  @IsString()
+  profilePhoto?: string;
+  @IsOptional()
+  @IsString()
+  identificationFile?: string;
+  @IsOptional()
+  @IsString()
+  identificationType?: string;
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  spokenLanguages?: string[];
+  @IsOptional()
+  @IsBoolean()
+  availability?: boolean;
 }

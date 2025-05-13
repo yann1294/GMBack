@@ -18,8 +18,13 @@ import { JwtService } from '@nestjs/jwt';
 import { LocalAuthVO } from '../vo/auth.local.vo';
 import IAuthDAO from '../dao/auth.dao.interface';
 import { auth } from 'firebase-admin';
-import { IRole } from '../types/role.types';
+import { IRole, RoleName } from '../types/role.types';
 import { DataService } from 'src/shared/services/data.service';
+import * as admin from 'firebase-admin';
+import { Identification } from 'src/user-management/vo/helper.vo';
+import { Admin } from 'src/user-management/dao/admin.entity';
+import { Guide } from 'src/user-management/dao/guide.entity';
+import { Tourist } from 'src/user-management/dao/tourist.entity';
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -79,6 +84,95 @@ export class AuthService implements IAuthService {
           role: userVo.role,
         });
       }
+      // 6) Write the profile into the role-specific collection
+      const collectionMap: Record<RoleName, string> = {
+        tourist: 'tourists',
+        guide: 'guides',
+        admin: 'admins',
+      };
+      const roleName = userVo.role!.name;
+      const profileCollection = collectionMap[roleName];
+
+      // 6) Build the right profile‐entity
+      let profileEntity;
+      const idObj: Identification = {
+        file: userVo.identificationFile!,
+        type: userVo.identificationType!,
+      };
+
+      switch (roleName) {
+        case 'admin':
+          profileEntity = new Admin(
+            localEntity.uId,
+            userVo.firstName!,
+            userVo.lastName!,
+            userVo.phoneNumber!,
+            userVo.emailAddress,
+            userVo.profilePhoto!,
+            userVo.role as any, // Role implements IRole
+            userVo.createdAt,
+            userVo.updatedAt,
+            'active', // default accountStatus
+          );
+          break;
+
+        case 'guide':
+          profileEntity = new Guide(
+            localEntity.uId,
+            userVo.firstName!,
+            userVo.lastName!,
+            userVo.phoneNumber!,
+            userVo.emailAddress,
+            userVo.profilePhoto!,
+            userVo.role as any,
+            userVo.createdAt,
+            userVo.updatedAt,
+            idObj,
+            userVo.spokenLanguages!,
+            userVo.availability!,
+            'active', // default accountStatus
+            'pending', // default approvalStatus
+          );
+          break;
+
+        case 'tourist':
+          profileEntity = new Tourist(
+            localEntity.uId,
+            userVo.firstName!,
+            userVo.lastName!,
+            userVo.phoneNumber!,
+            userVo.emailAddress,
+            userVo.profilePhoto!,
+            userVo.role as any,
+            userVo.createdAt,
+            userVo.updatedAt,
+            idObj,
+            userVo.spokenLanguages!,
+            'active', // default accountStatus
+          );
+          break;
+      }
+
+      // Use DataService to write it under doc ID = uid
+      await this.dataService.createDoc(
+        profileEntity,
+        profileCollection,
+        /* useUidAsId */ true,
+      );
+
+      // 7) (Optional) Store a DocumentReference back in the auth doc
+      const profileRef = admin
+        .firestore()
+        .collection(profileCollection)
+        .doc(localEntity.uId);
+
+      await this.dataService.updateDoc(
+        'authentication', // your auth collection
+        localEntity.uId,
+        { profileRef },
+      );
+
+      // 8) Return the fully-populated entity
       return localEntity;
     } catch (error) {
       // Clean up if Firebase Auth fails
@@ -123,16 +217,42 @@ export class AuthService implements IAuthService {
     // Create Firebase custom token for client-side auth
     const firebaseToken = await this.authDAO.createCustomToken(user.uId);
 
+    // 3) Re-fetch the auth record so we get fresh timestamps, etc.
     const freshUser = await this.authDAO.findLocalAuthByUID(user.uId);
     if (!freshUser)
       throw new InternalServerErrorException('User disappeared after signin');
 
+    // 4) Attach tokens
     freshUser.tokens = {
       accessToken,
       refreshToken,
       firebaseToken,
     };
 
+    // 5) **Load the profile doc** from the right collection
+    const collectionMap: Record<string, string> = {
+      tourist: 'tourists',
+      guide: 'guides',
+      admin: 'admins',
+    };
+    const col = collectionMap[freshUser.role.name];
+    if (col) {
+      const result = await this.dataService.readDoc(col, freshUser.uId);
+      if (result.status === 'success' && result.data) {
+        // cast away Firestore types, then assign:
+        const d = result.data as any;
+        freshUser.profile = {
+          firstName: d.firstName,
+          lastName: d.lastName,
+          phoneNumber: d.phoneNumber,
+          profilePhoto: d.profilePhoto,
+          identificationFile: d.identificationFile,
+          identificationType: d.identificationType,
+          spokenLanguages: d.spokenLanguages,
+          availability: d.availability,
+        };
+      }
+    }
     return freshUser;
   }
 
@@ -344,6 +464,8 @@ export class AuthService implements IAuthService {
       new Date(), // Update the updatedAt timestamp
       updates.lastLoginDate || existingEntity.lastLoginDate,
       updates.failedLoginAttempts || existingEntity.failedLoginAttempts,
+      undefined,
+      existingEntity.profile,
     );
 
     // 4. Perform the update through DAO
@@ -356,10 +478,45 @@ export class AuthService implements IAuthService {
       throw new InternalServerErrorException(result.message);
     }
 
+    // Update the profile document in the right collection
+
+    const roleName = existingEntity.role.name; // 'tourist' | 'guide' | 'admin'
+    const profileCollection = {
+      tourist: 'tourists',
+      guide: 'guides',
+      admin: 'admins',
+    }[roleName];
+
+    // Only include fields that the user passed in
+    const profileUpdates: Partial<Record<string, any>> = {};
+    if (updateVO.firstName) profileUpdates.firstName = updateVO.firstName;
+    if (updateVO.lastName) profileUpdates.lastName = updateVO.lastName;
+    if (updateVO.phoneNumber) profileUpdates.phoneNumber = updateVO.phoneNumber;
+    if (updateVO.profilePhoto)
+      profileUpdates.profilePhoto = updateVO.profilePhoto;
+    if (updateVO.identificationFile)
+      profileUpdates.identificationFile = updateVO.identificationFile;
+    if (updateVO.identificationType)
+      profileUpdates.identificationType = updateVO.identificationType;
+    if (updateVO.spokenLanguages)
+      profileUpdates.spokenLanguages = updateVO.spokenLanguages;
+    if (updateVO.availability !== undefined)
+      profileUpdates.availability = updateVO.availability;
+
+    if (Object.keys(profileUpdates).length) {
+      await this.dataService.updateDoc(profileCollection, uid, profileUpdates);
+    }
+
     // 5. Return the updated entity
     const freshEntity = await this.authDAO.findLocalAuthByUID(uid);
     if (!freshEntity) {
       throw new NotFoundException('User data not available after update');
+    }
+
+    // 6) Load the updated profile back onto the entity
+    const prof = await this.dataService.readDoc(profileCollection, uid);
+    if (prof.status === 'success' && prof.data) {
+      freshEntity.profile = prof.data as any;
     }
 
     return freshEntity;

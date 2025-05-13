@@ -111,6 +111,17 @@ export class AuthValidationPipe<T> implements PipeTransform {
           undefined,
           undefined,
           now,
+          (dto as AuthUpdateDTO).lastLoginDate,
+          (dto as AuthUpdateDTO).failedLoginAttempts,
+          undefined,
+          (dto as AuthUpdateDTO).firstName,
+          (dto as AuthUpdateDTO).lastName,
+          (dto as AuthUpdateDTO).phoneNumber,
+          (dto as AuthUpdateDTO).profilePhoto,
+          (dto as AuthUpdateDTO).identificationFile,
+          (dto as AuthUpdateDTO).identificationType,
+          (dto as AuthUpdateDTO).spokenLanguages,
+          (dto as AuthUpdateDTO).availability,
         ),
       'oauth-signup': () =>
         new OAuthVO(

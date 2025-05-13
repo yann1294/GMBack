@@ -150,6 +150,15 @@ export class AuthController {
       new Date(), // updatedAt
       dto.lastLoginDate ? new Date(dto.lastLoginDate) : undefined,
       dto.failedLoginAttempts,
+      undefined,
+      dto.firstName,
+      dto.lastName,
+      dto.phoneNumber,
+      dto.profilePhoto,
+      dto.identificationFile,
+      dto.identificationType,
+      dto.spokenLanguages,
+      dto.availability,
     );
     const result = await this.authService.updateLocalAuth(user.uid, updateVO);
     return AuthMapper.toResponse(result);

@@ -32,22 +32,24 @@ export class FirebaseAuthGuard implements CanActivate {
   }
 
   private async verifyToken(token: string, request: any): Promise<boolean> {
-    // Try Firebase verification first
+    // 1) Try your own JWT
     try {
-      const decoded = await this.dataService.verifyIdToken(token);
-      request.user = { uid: decoded.uid, ...decoded };
-      request.authType = 'firebase';
+      const payload = this.jwtService.verify(token);
+      if (!payload.sub) throw new Error('JWT missing subject');
+      request.user = { uid: payload.sub, ...payload };
+      request.authType = 'jwt';
       return true;
-    } catch (firebaseError) {
-      // Fallback to JWT verification
+    } catch (jwtErr) {
+      // 2) Fallback to Firebase ID token
       try {
-        const payload = this.jwtService.verify(token);
-        this.validateJwtPayload(payload);
-        request.user = { uid: payload.sub, ...payload };
-        request.authType = 'jwt';
+        const decoded = await this.dataService.verifyIdToken(token);
+        request.user = { uid: decoded.uid, ...decoded };
+        request.authType = 'firebase';
         return true;
-      } catch (jwtError) {
-        throw new AggregateError([firebaseError, jwtError]);
+      } catch (fbErr) {
+        this.logError(jwtErr, token);
+        this.logError(fbErr, token);
+        throw new UnauthorizedException('Invalid authentication token');
       }
     }
   }

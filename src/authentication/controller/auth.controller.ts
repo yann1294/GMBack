@@ -3,15 +3,12 @@ import {
   Controller,
   Post,
   Patch,
-  UsePipes,
-  Param,
   Get,
   HttpCode,
   HttpStatus,
   UseGuards,
   UnprocessableEntityException,
   NotFoundException,
-  ForbiddenException,
   Req,
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
@@ -21,7 +18,6 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
-  ApiParam,
 } from '@nestjs/swagger';
 import { FirebaseAuthGuard } from '../utils/firebase-auth.guard';
 
@@ -36,11 +32,10 @@ import { OAuthSigninDTO } from './dto/oauth.signin.dto';
 
 // Types
 
-import { Auth, DecodedIdToken } from 'firebase-admin/auth';
+import { DecodedIdToken } from 'firebase-admin/auth';
 import { LocalAuthVO } from '../vo/auth.local.vo';
 import { CurrentUser } from "../utils/ current-user.decorator.ts\nimport { createParamDecorator, ExecutionContext } from '@nestjs/common';\n\nexport const CurrentUser = createParamDecorator(\n  (data: unknown, ctx: ExecutionContext) => {\n    const request = ctx.switchToHttp().getRequest();\n    return request.user;\n  }\n/ current-user.decorator.ts\nimport { createParamDecorator, ExecutionContext } from '@nestjs/current-user.decorator";
-import { Role } from '../utils/helper';
-import { IsUUID } from 'class-validator';
+
 import { AuthMapper } from './auth.mapper';
 import { IRole } from '../types/role.types';
 import { DataService } from 'src/shared/services/data.service';
@@ -48,8 +43,11 @@ import {
   TestTokenRequestDTO,
   TestTokenResponseDTO,
 } from './dto/test-token.dto';
-import { auth } from 'firebase-admin';
+
 import { AuthUpdateDTO } from './dto/auth.update.dto';
+import { ImageManager } from 'src/tours/utils/upload-images.util';
+import { FastifyRequest } from 'fastify';
+import { ResponseObject } from 'src/shared/types';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -57,19 +55,8 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly dataService: DataService,
+    private readonly imageManager: ImageManager,
   ) {}
-
-  private readonly validRoles = ['admin', 'tourist', 'guide'];
-
-  private validateRole(role: IRole): void {
-    // Get role name whether it's string or IRole object
-
-    if (!this.validRoles.includes(role.name)) {
-      throw new UnprocessableEntityException(
-        `Invalid role. Valid roles are: ${this.validRoles.join(', ')}`,
-      );
-    }
-  }
 
   @Post('local/signup')
   @HttpCode(HttpStatus.CREATED)
@@ -127,6 +114,21 @@ export class AuthController {
     return AuthMapper.toResponse(authResult);
   }
 
+  @Post('local/signout')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(FirebaseAuthGuard)
+  @ApiOperation({ summary: 'Sign out user' })
+  @ApiResponse({ status: 200, description: 'Successfully signed out' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async localSignout(
+    @Req() req: { user: { uid: string }; authType: string },
+  ): Promise<{ message: string }> {
+    // Revoke Firebase tokens regardless of auth type
+    await this.authService.signOut(req.user.uid);
+
+    return { message: 'Successfully signed out' };
+  }
+
   @Patch('me')
   @UseGuards(FirebaseAuthGuard)
   @ApiBearerAuth()
@@ -164,21 +166,6 @@ export class AuthController {
     return AuthMapper.toResponse(result);
   }
 
-  @Post('local/signout')
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(FirebaseAuthGuard)
-  @ApiOperation({ summary: 'Sign out user' })
-  @ApiResponse({ status: 200, description: 'Successfully signed out' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async localSignout(
-    @Req() req: { user: { uid: string }; authType: string },
-  ): Promise<{ message: string }> {
-    // Revoke Firebase tokens regardless of auth type
-    await this.authService.signOut(req.user.uid);
-
-    return { message: 'Successfully signed out' };
-  }
-
   @Get('me')
   @UseGuards(FirebaseAuthGuard)
   @ApiBearerAuth()
@@ -197,6 +184,16 @@ export class AuthController {
       throw new NotFoundException('User not found');
     }
     return AuthMapper.toResponse(userData);
+  }
+
+  @Post('me/images')
+  @UseGuards(FirebaseAuthGuard)
+  async uploadMyImages(
+    @Req() req: FastifyRequest,
+    @CurrentUser() user: DecodedIdToken,
+  ): Promise<ResponseObject> {
+    // pass resource 'authentication' + overrideId = user.uid
+    return this.imageManager.uploadImages(req, 'authentication', user.uid);
   }
 
   @Post('oauth/signup')

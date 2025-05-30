@@ -6,6 +6,7 @@ import { DataService } from 'src/shared/services/data.service';
 import { FileService } from 'src/shared/services/file.service';
 import { FirebaseModule } from 'src/shared/firebase/firebase.module';
 import { AuthController } from './controller/auth.controller';
+import { ImageManager } from 'src/tours/utils/upload-images.util';
 
 @Module({
   imports: [
@@ -17,7 +18,11 @@ import { AuthController } from './controller/auth.controller';
   ],
   controllers: [AuthController],
   providers: [
-    AuthService, AuthDAO, DataService, FileService,
+    AuthService,
+    AuthDAO,
+    DataService,
+    FileService,
+    ImageManager,
     {
       provide: 'IAuthDAO',
       useClass: AuthDAO,
@@ -25,7 +30,7 @@ import { AuthController } from './controller/auth.controller';
     {
       provide: 'IAuthService',
       useClass: AuthService,
-    }
+    },
   ],
   exports: [AuthService],
 })

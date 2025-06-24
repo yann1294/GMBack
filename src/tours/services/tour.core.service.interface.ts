@@ -9,7 +9,7 @@ import { MultipartFile } from '@fastify/multipart';
 export interface ICoreService {
   // tour functions
   createTour(tourVO: TourVO): Promise<ResponseObject>;
-  updateTour(tourVO: TourVO): Promise<ResponseObject>;
+  updateTour(tourVO: Tour): Promise<ResponseObject>;
   findTourById(tourVO: TourVO): Promise<ResponseObject>;
   findAllTours(): Promise<ResponseObject>;
   deleteTour(tourVO: TourVO): Promise<ResponseObject>;

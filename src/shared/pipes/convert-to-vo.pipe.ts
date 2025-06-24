@@ -23,35 +23,103 @@ import { UpdatePackageDTO } from 'src/tours/controller/dto/package.update.dto';
 import { CONTEXT } from '../utils/context';
 import { errorHandler } from '../services/data.service';
 import { UpdateTourDTO } from 'src/tours/controller/dto/tour.update.dto';
+import { Activity } from 'src/tours/vo/helper.vo';
 
 @Injectable()
 export class ConvertToVoPipe
-  implements PipeTransform<any, Promise<BookingVO | PaymentVO | GuideVO | AdminVO | TouristVO | TourVO | PackageVO>> {
+  implements
+    PipeTransform<
+      any,
+      Promise<
+        | BookingVO
+        | PaymentVO
+        | GuideVO
+        | AdminVO
+        | TouristVO
+        | TourVO
+        | PackageVO
+      >
+    >
+{
   constructor(
     private readonly context: keyof typeof CONTEXT,
     private readonly hasBody: boolean = false,
-    private readonly paramField: string = "id",
-    private readonly action: "update" | "others" = "others",
-  ) { }
+    private readonly paramField: string = 'id',
+    private readonly action: 'update' | 'others' = 'others',
+  ) {}
 
-  async transform(req: FastifyRequest, metadata: ArgumentMetadata): Promise<BookingVO | PaymentVO | GuideVO | AdminVO | TouristVO | TourVO | PackageVO> {
+  async transform(
+    req: FastifyRequest,
+    metadata: ArgumentMetadata,
+  ): Promise<
+    BookingVO | PaymentVO | GuideVO | AdminVO | TouristVO | TourVO | PackageVO
+  > {
     try {
-      let data: object = {};
-
+      // 1) Always pull the URL param (e.g. { id: '...' })
+      let data: any = {};
       data[this.paramField] = req.params[this.paramField];
-
+      // 2) If this route expects a body, merge it in.  Fastify usually has already parsed JSON for us.
       if (this.hasBody) {
-        // parse json data
-        console.log("Body", req.body)
-        let body = JSON.parse(req.body as string);
-        data = { ...data, ...body }
+        let bodyObj: any = {};
+
+        if (typeof req.body === 'string') {
+          // Body arrived as a raw JSON string → parse exactly once
+          bodyObj = JSON.parse(req.body as string);
+        } else {
+          // Fastify already parsed JSON into an object
+          bodyObj = req.body as object;
+        }
+
+        // Merge id + body fields
+        Object.assign(data, bodyObj);
       }
 
-      console.log("Data in convert", data)
+      console.log('Data in convert', data);
 
       // checking whether update has only id field
-      if (this.action === "update" && Object.keys(data).length === 1) {
-        throw new BadRequestException(errorHandler({ code: 503, message: "Body must contain at least two attributes" }));
+      // 3) If this is an “update” action, ensure we have at least two keys (id + something else).
+      if (this.action === 'update' && Object.keys(data).length === 1) {
+        throw new BadRequestException(
+          errorHandler({
+            code: 503,
+            message: 'Body must contain at least two attributes',
+          }),
+        );
+      }
+
+      // ─── 4) SPECIAL: if updating a Tour, convert data.activities into a Map<number,Activity> ──
+      if (this.context === CONTEXT.tour && data.activities !== undefined) {
+        let rawActsObj: Record<string, any>;
+
+        if (typeof data.activities === 'string') {
+          // Case A: client sent "activities" as a JSON‐string
+          rawActsObj = JSON.parse(data.activities);
+        } else if (typeof data.activities === 'object') {
+          // Case B: client sent an actual JS object for "activities"
+          rawActsObj = data.activities as Record<string, any>;
+        } else {
+          throw new BadRequestException(
+            errorHandler({
+              code: 400,
+              message: 'activities must be a JSON object or JSON string',
+            }),
+          );
+        }
+
+        // Convert each entry into an Activity instance, keyed by Number
+        const activityMap = new Map<number, Activity>();
+        for (const [k, obj] of Object.entries(rawActsObj)) {
+          const numericKey = parseInt(k, 10);
+          const actInstance = plainToInstance(Activity, obj, {
+            enableImplicitConversion: true,
+            excludeExtraneousValues: true,
+          });
+          activityMap.set(numericKey, actInstance);
+          console.log('PIPE → Map entry', numericKey, actInstance);
+        }
+
+        data.activities = activityMap;
+        console.log('Converted activities:', data.activities);
       }
 
       const dto = await this.getDTO(data);
@@ -90,7 +158,9 @@ export class ConvertToVoPipe
   private async validateDTO(dto: any): Promise<void> {
     const errors = await validate(dto);
     if (errors.length > 0) {
-      throw new BadRequestException(errorHandler({ message: JSON.stringify(errors), code: 500 }));
+      throw new BadRequestException(
+        errorHandler({ message: JSON.stringify(errors), code: 500 }),
+      );
     }
   }
 
@@ -118,7 +188,9 @@ export class ConvertToVoPipe
   private async validateVO(vo: any): Promise<void> {
     const errors = await validate(vo);
     if (errors.length > 0) {
-      throw new BadRequestException(errorHandler({ message: JSON.stringify(errors), code: 500 }));
+      throw new BadRequestException(
+        errorHandler({ message: JSON.stringify(errors), code: 500 }),
+      );
     }
   }
 }

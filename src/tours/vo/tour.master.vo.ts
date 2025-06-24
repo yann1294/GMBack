@@ -1,7 +1,20 @@
 import { Tour } from '../dao/tour.entity';
-import { Expose, instanceToPlain, Type } from 'class-transformer';
+import {
+  Expose,
+  instanceToPlain,
+  plainToInstance,
+  Transform,
+  Type,
+} from 'class-transformer';
 import { Activity, TourLocation, User } from './helper.vo';
-import { IsArray, IsDateString, IsOptional, IsString, IsNotEmpty, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsDateString,
+  IsOptional,
+  IsString,
+  IsNotEmpty,
+  ValidateNested,
+} from 'class-validator';
 import { FieldValue } from 'firebase-admin/firestore';
 import { IsNotEmptyString } from 'src/user-management/utils/is-not-empty-string.decorator';
 
@@ -22,14 +35,14 @@ export class TourVO {
   @IsOptional()
   private _price: number;
 
-  @Expose({ name: "date" })
+  @Expose({ name: 'date' })
   @IsDateString()
   @IsOptional()
   public _date: string;
 
-  @Expose({ name: "images" })
+  @Expose({ name: 'images' })
   @IsArray()
-  @IsString({each: true})
+  @IsString({ each: true })
   @IsOptional()
   public _images: string[];
 
@@ -60,7 +73,7 @@ export class TourVO {
   private _guide: string;
 
   @Expose({ name: 'activities' })
-  @Type(() => Activity)
+  @Transform(({ value }) => value, { toClassOnly: true })
   @IsOptional()
   private _activities: Map<number, Activity>;
   tourVo: {};
@@ -195,8 +208,8 @@ export class TourVO {
       this._numberOfSeats,
       this._description,
       this._isAvailable,
-      this._activities, 
-      this._date ? new Date(this._date) : undefined, 
+      this._activities,
+      this._date ? new Date(this._date) : undefined,
     );
     tour.guide = this._guide;
     tour.images = this._images;

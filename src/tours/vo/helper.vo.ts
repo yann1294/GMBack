@@ -1,10 +1,11 @@
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import {
   IsDateString,
   IsInt,
   IsNumber,
   IsObject,
-  IsString, IsNotEmpty, 
+  IsString,
+  IsNotEmpty,
   Min,
   ValidateNested,
 } from 'class-validator';
@@ -40,22 +41,27 @@ export class GMGeoPoint implements GeoPoint {
 }
 
 export class ActivityLocation implements IActivityLocation {
+  @Expose()
   @IsString()
   @IsNotEmpty()
   name: string;
 
+  @Expose()
   @IsString()
   @IsNotEmpty()
   city: string;
 
+  @Expose()
   @IsString()
   @IsNotEmpty()
   country: string;
 
+  @Expose()
   @IsString()
   @IsNotEmpty()
   address: string;
 
+  @Expose()
   @IsObject()
   @ValidateNested()
   @Type(() => GMGeoPoint)
@@ -122,12 +128,15 @@ export class PackageLocation implements ILocation {
 }
 
 export class Transportation implements ITransportation {
+  @Expose()
   @IsDateString()
   arrivalTime: Date;
 
+  @Expose()
   @IsDateString()
   departureTime: Date;
 
+  @Expose()
   @IsString()
   @IsNotEmpty()
   type: string;
@@ -143,10 +152,12 @@ export class Transportation implements ITransportation {
 }
 
 export class Accommodation implements IAccommodation {
+  @Expose()
   @IsString()
   @IsNotEmpty()
   type: string;
 
+  @Expose()
   @IsString()
   @IsNotEmpty()
   name: string;
@@ -157,27 +168,33 @@ export class Accommodation implements IAccommodation {
 }
 
 export class Activity implements IActivity {
+  @Expose()
   @IsInt()
   id: number;
 
+  @Expose()
   @IsString()
   @IsNotEmpty()
   name: string;
 
+  @Expose()
   @IsInt()
   @Min(1)
   durationHours: number;
 
+  @Expose()
   @IsObject()
   @ValidateNested()
   @Type(() => ActivityLocation)
   location: ActivityLocation;
 
+  @Expose()
   @IsObject()
   @ValidateNested()
   @Type(() => Transportation)
   transportation: Transportation;
 
+  @Expose()
   @IsObject()
   @ValidateNested()
   @Type(() => Accommodation)

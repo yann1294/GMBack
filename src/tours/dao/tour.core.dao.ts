@@ -9,6 +9,8 @@ import { FileService } from 'src/shared/services/file.service';
 import { FieldValue } from 'firebase-admin/firestore';
 import { plainToInstance } from 'class-transformer';
 
+import * as admin from 'firebase-admin';
+
 @Injectable()
 export class CoreDAO implements CoreDAOInterface {
   private readonly collectionName = 'tours';
@@ -33,7 +35,7 @@ export class CoreDAO implements CoreDAOInterface {
   }
 
   async update(tour: Tour): Promise<any> {
-    // Call the DataService's updateDoc method  
+    // Call the DataService's updateDoc method
     return await this.dataService.updateDoc(
       this.collectionName,
       tour.id,

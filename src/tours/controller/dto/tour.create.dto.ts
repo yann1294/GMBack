@@ -1,7 +1,8 @@
 import { Type } from 'class-transformer';
 import {
   IsNumber,
-  IsString, IsNotEmpty, 
+  IsString,
+  IsNotEmpty,
   ValidateNested,
   Min,
   Max,
@@ -10,6 +11,7 @@ import {
   IsOptional,
   IsDateString,
   IsArray,
+  Allow,
 } from 'class-validator';
 import { TourLocationDTO } from './tour.location.dto';
 import { ActivityDTO } from './tour.activity.dto';
@@ -26,7 +28,7 @@ export class CreateTourDTO {
   public date: Date;
 
   @IsArray()
-  @IsString({each: true})
+  @IsString({ each: true })
   @IsOptional()
   public images: string[];
 
@@ -59,5 +61,6 @@ export class CreateTourDTO {
 
   @ValidateNested()
   @Type(() => ActivityDTO)
+  @Allow() // <- simplest: accept whatever shape
   activities: Map<number, ActivityDTO>;
 }

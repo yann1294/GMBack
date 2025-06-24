@@ -27,27 +27,25 @@ import { FastifyRequest } from 'fastify';
 import { ImageManager } from '../utils/upload-images.util';
 import { FileDTO } from 'src/user-management/controller/dto/helper.dto';
 
-
 @Controller('tours')
 export class TourController {
   collectionName: string = 'tours';
 
   constructor(
     @Inject(CORE_SERVICE_TOKEN) private readonly coreService: ICoreService,
-    private readonly imageManager: ImageManager
-  ) { }
+    private readonly imageManager: ImageManager,
+  ) {}
   @Post('images')
   async uploadImage(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    
     // Uploading images
-    return await this.imageManager.uploadImages(req, "tours");
+    return await this.imageManager.uploadImages(req, 'tours');
   }
 
   @Post()
   async createTour(
     @Body(new TourValidationPipe()) tourVo: TourVO,
   ): Promise<ResponseObject> {
-    console.log("API Entry: POST /tours", { body: tourVo });
+    console.log('API Entry: POST /tours', { body: tourVo });
     return await this.coreService.createTour(tourVo);
   }
 
@@ -62,12 +60,19 @@ export class TourController {
     return await this.coreService.findTourById(tourVo);
   }
 
-  @Patch(":id")
+  @Patch(':id')
   async update(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    console.log("API Entry: PATCH /tours", { params: req.params });
-    const validationPipe = new ConvertToVoPipe("tour", true, "id", "update");
-    const tourVo: TourVO = await validationPipe.transform(req, { type: 'param', metatype: TourVO }) as TourVO;
-    return await this.coreService.updateTour(tourVo);
+    console.log('API Entry: PATCH /tours', { params: req.params });
+    const validationPipe = new ConvertToVoPipe('tour', true, 'id', 'update');
+    const tourVo: TourVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: TourVO,
+    })) as TourVO;
+    // Convert VO→Entity, then log the final plain object:
+    const entity = tourVo.toEntity();
+    console.log('SERVICE → tourEntity.activities', entity.activities);
+    console.log('🔍 will write to Firestore:', entity.toUpdateObject());
+    return await this.coreService.updateTour(entity);
   }
 
   @Get()
@@ -78,9 +83,12 @@ export class TourController {
 
   @Delete(':id')
   async Delete(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    console.log("API Entry: DELETE /tours", { params: req.params });
-    const validationPipe = new ConvertToVoPipe("tour", false, "id");
-    const tourVo: TourVO = await validationPipe.transform(req, { type: 'param', metatype: TourVO }) as TourVO;
+    console.log('API Entry: DELETE /tours', { params: req.params });
+    const validationPipe = new ConvertToVoPipe('tour', false, 'id');
+    const tourVo: TourVO = (await validationPipe.transform(req, {
+      type: 'param',
+      metatype: TourVO,
+    })) as TourVO;
     return await this.coreService.deleteTour(tourVo);
   }
 

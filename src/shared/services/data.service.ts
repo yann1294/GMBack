@@ -341,36 +341,31 @@ export class DataService {
    * @returns A promise resolving to the ID of the updated document or an error on failure.
    */
   async updateDoc(
-    collectionName: string,
-    docId: string,
-    newData: object,
+    collection: string,
+    id: string,
+    data: object,
   ): Promise<ResponseObject> {
+    const ref = this.firestore.collection(collection).doc(id);
     try {
-      // checking whether doc exist
-      let docRef: DocumentReference = await this.firestore
-        .collection(collectionName)
-        .doc(docId);
-
-      // checking whether document exist
-      if (!(await docRef.get()).exists) {
+      await ref.update(data);
+      return { status: 'success', code: 200, message: 'OK', data: null };
+    } catch (e: any) {
+      // If the document doesn’t exist yet, you may choose to fall back to set():
+      if (e.code === 5 /* NOT_FOUND */) {
+        await ref.set(data, { merge: true });
         return {
-          status: 'not-found',
-          code: 404,
-          message: 'Document not found.',
+          status: 'success',
+          code: 200,
+          message: 'OK (created)',
           data: null,
         };
       }
-
-      // update document
-      docRef.set(newData, { merge: true });
-
       return {
-        status: 'success',
-        message: 'Document updated successfully',
-        data: docId,
-      } as ResponseObject;
-    } catch (e) {
-      return errorHandler(e);
+        status: 'failure',
+        code: e.code || 500,
+        message: e.message,
+        data: null,
+      };
     }
   }
 

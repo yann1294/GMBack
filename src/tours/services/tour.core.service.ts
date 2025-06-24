@@ -22,8 +22,8 @@ export class CoreService implements ICoreService {
     return await this.coreDAO.create(tourVo.toEntity());
   }
 
-  async updateTour(tourVo: TourVO): Promise<ResponseObject> {        
-    return await this.coreDAO.update(tourVo.toEntity());
+  async updateTour(tourVo: Tour): Promise<ResponseObject> {
+    return await this.coreDAO.update(tourVo);
   }
 
   async findTourById(tourVo: TourVO): Promise<ResponseObject> {
@@ -46,24 +46,31 @@ export class CoreService implements ICoreService {
 
   // TODO: Algorithm and specifications
   async addActivityToTour(tourVo: TourVO): Promise<ResponseObject> {
-    return await this.coreDAO.update(tourVo.toEntity());
+    const tourEntity = tourVo.toEntity();
+    console.log('SERVICE → tourEntity.activities', tourEntity.activities);
+    return await this.coreDAO.update(tourEntity);
   }
 
   // TODO: Rethink deletes:- Logical delete
   async removeActivityFromTour(tourVo: TourVO): Promise<ResponseObject> {
     for (const activityId in tourVo.activities) {
-        tourVo.activities[activityId] = FieldValue.delete();
+      tourVo.activities[activityId] = FieldValue.delete();
     }
     return await this.coreDAO.delete(tourVo.toEntity());
-}
+  }
 
   async listActivitiesForTour(tourVo: TourVO): Promise<ResponseObject> {
     // fetch tour with id == tourId
-    let response: ResponseObject = await this.coreDAO.findById(tourVo.toEntity());
-    if  (response.status !== 'success') {
+    let response: ResponseObject = await this.coreDAO.findById(
+      tourVo.toEntity(),
+    );
+    if (response.status !== 'success') {
       return response;
     }
-    return {...response, data: response.data['activities'] as Activity[]} as ResponseObject;
+    return {
+      ...response,
+      data: response.data['activities'] as Activity[],
+    } as ResponseObject;
   }
 
   // TODO: Will operate on a booking session and not the entire tour entity

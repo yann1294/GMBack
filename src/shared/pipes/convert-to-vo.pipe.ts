@@ -112,7 +112,7 @@ export class ConvertToVoPipe
           const numericKey = parseInt(k, 10);
           const actInstance = plainToInstance(Activity, obj, {
             enableImplicitConversion: true,
-            excludeExtraneousValues: true,
+            //excludeExtraneousValues: true,
           });
           activityMap.set(numericKey, actInstance);
           console.log('PIPE → Map entry', numericKey, actInstance);
@@ -125,8 +125,12 @@ export class ConvertToVoPipe
       const dto = await this.getDTO(data);
       await this.validateDTO(dto);
       const vo = await this.getVO(dto);
-      await this.validateVO(vo);
 
+      if (this.context === CONTEXT.tour && data.activities instanceof Map) {
+        // ← data.activities is the Map that still contains Activity instances
+        (vo as TourVO).activities = data.activities as Map<number, Activity>;
+      }
+      await this.validateVO(vo);
       return vo;
     } catch (error) {
       // console.error(error)

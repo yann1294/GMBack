@@ -73,7 +73,17 @@ export class TourVO {
   private _guide: string;
 
   @Expose({ name: 'activities' })
-  @Transform(({ value }) => value, { toClassOnly: true })
+  // 1.  Pass the value straight through. If it isn't a Map yet, normalise.
+  @Transform(
+    ({ value }) => {
+      if (value instanceof Map) return value;
+      if (value && typeof value === 'object') {
+        return new Map(Object.entries(value).map(([k, v]) => [Number(k), v]));
+      }
+      return new Map<number, Activity>();
+    },
+    { toClassOnly: true },
+  )
   @IsOptional()
   private _activities: Map<number, Activity>;
   tourVo: {};

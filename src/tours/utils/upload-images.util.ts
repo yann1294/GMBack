@@ -143,24 +143,24 @@ export class ImageManager {
         );
         if (responseObj.status !== 'success') return responseObj;
       } else {
-        let updateData: Package | Tour;
+        //let updateData: Package | Tour;
 
-        if (resource === 'packages') {
-          updateData = plainToInstance(Package, {
-            images: FieldValue.arrayUnion(...imageUrl),
-          });
-        } else {
-          updateData = plainToInstance(Tour, {
-            images: FieldValue.arrayUnion(...imageUrl),
-          });
-        }
+        // if (resource === 'packages') {
+        //   updateData = plainToInstance(Package, {
+        //     images: FieldValue.arrayUnion(...imageUrl),
+        //   });
+        // } else {
+        //   updateData = plainToInstance(Tour, {
+        //     images: FieldValue.arrayUnion(...imageUrl),
+        //   });
+        // }
+        const updateData = { images: FieldValue.arrayUnion(...imageUrl) };
 
         const responseObj: ResponseObject = await this.dataService.updateDoc(
           resource,
           id,
           updateData,
         );
-        // const responseObj: ResponseObject = await this.dataService.updateDoc(resource, id, updateData.toUpdateObject());
 
         if (responseObj.status !== 'success') {
           // Return early if the document update fails

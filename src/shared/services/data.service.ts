@@ -23,6 +23,8 @@ import { LocalAuthEntity } from 'src/authentication/dao/localauth.entity';
 import { OAuthEntity } from 'src/authentication/dao/oauth.entity';
 import { auth } from 'firebase-admin';
 import axios from 'axios';
+import { stripUndefinedDeep } from '../utils/stripUndefined';
+import { instanceToPlain } from 'class-transformer';
 
 export function errorHandler(e: unknown): ResponseObject {
   const error = e as FirebaseFirestoreError;
@@ -34,6 +36,17 @@ export function errorHandler(e: unknown): ResponseObject {
     data: null,
   };
 }
+// tiny helper so we don’t double-plain
+function isPlainJSONish(v: any) {
+  return (
+    v && typeof v === 'object' && Object.getPrototypeOf(v) === Object.prototype
+  );
+}
+const isPlainObject = (val: unknown): val is Record<string, unknown> => {
+  if (Object.prototype.toString.call(val) !== '[object Object]') return false;
+  const proto = Object.getPrototypeOf(val);
+  return proto === Object.prototype || proto === null;
+};
 
 @Injectable()
 export class DataService {
@@ -80,39 +93,52 @@ export class DataService {
       | LocalAuthEntity
       | OAuthEntity,
     collectionName: string,
-    useUid: boolean = false,
+    useUid = false,
   ): Promise<ResponseObject> {
     try {
-      // Convert data to a plain object
-      const plainData = data.toObject();
-      console.log(
-        'Creating auth with UID:',
-        plainData['uid'],
-        typeof plainData['uid'],
-      );
+      // Convert entity to a plain object (no mutation of `data`)
+      const plain =
+        data.toObject?.() ?? (data as unknown as Record<string, unknown>);
 
-      // create doc to auto generate doc id
-      const doc: DocumentReference = useUid
-        ? this.firestore.collection(collectionName).doc(plainData['uid'])
-        : this.firestore.collection(collectionName).doc();
+      const col = this.firestore.collection(collectionName);
 
-      // update data with doc id/uid
-      if (!useUid) {
-        plainData['id'] = doc.id;
+      // Decide the document reference (UID vs auto ID)
+      let doc: DocumentReference;
+      if (useUid) {
+        const uid = String((plain as any).uid ?? '');
+        if (!uid) {
+          return {
+            status: 'failure',
+            code: 400,
+            message: 'Missing uid for createDoc with useUid=true',
+            data: null,
+          };
+        }
+        doc = col.doc(uid);
+      } else {
+        doc = col.doc(); // auto-generate id
       }
 
-      // adding data to doc
-      await doc.set(plainData);
+      // Build payload without mutating original; inject id when not using uid
+      const payloadBase: Record<string, unknown> = {
+        ...plain,
+        ...(useUid ? {} : { id: doc.id }),
+      };
 
-      // return success status
-      // .path -> A string representing the path of the referenced document (relative to the root of the database).
+      // Deep-remove undefined values safely (cycle-safe, preserves non-plain objects)
+      const payload = stripUndefinedDeep(payloadBase);
+
+      // Write
+      await doc.set(payload);
+
+      // Return what we actually wrote (including id/uid)
       return {
         status: 'success',
+        code: 200,
         message: 'Document successfully created.',
-        data: plainData,
-      } as ResponseObject;
-    } catch (e: unknown) {
-      // return error
+        data: payload,
+      };
+    } catch (e) {
       return errorHandler(e);
     }
   }
@@ -124,54 +150,51 @@ export class DataService {
    * @param data[] - A list of data to be stored in each document.
    * @returns A promise that resolves to a ResponseObject containing document IDs or an error message.
    */
+
   async createDocs(
-    data: object[],
+    data: unknown[],
     collectionName: string,
   ): Promise<ResponseObject> {
     try {
-      // instantiate a batch
-      // By using a batch, we can automatically group multiple
-      // operations and execute them as one package thus multiple writes
-      // in a batch will be recognized as a single write operation.
       const batch: WriteBatch = this.firestore.batch();
+      const docRefs: string[] = [];
 
-      // holds document references
-      let docRefs: string[];
-
-      // adding write tasks for each data
-      data.forEach((docData) => {
-        // create a document reference for the current doc
+      data.forEach((raw) => {
         const docRef: DocumentReference = this.firestore
           .collection(collectionName)
-          .doc(); // this generates a unique id
+          .doc();
 
-        // add id to data
-        if (Object.keys(data).includes('uid')) {
-          docData['uid'] = docRef.id;
-        } else {
-          docData['id'] = docRef.id;
-        }
+        // Decide which field to set (uid vs id) based on the shape of the item
+        const hasUidKey =
+          raw &&
+          typeof raw === 'object' &&
+          Object.prototype.hasOwnProperty.call(raw, 'uid');
+        const idField = hasUidKey ? 'uid' : 'id';
 
-        // add document and data to batch
-        batch.set(docRef, docData);
+        // Normalize class instances -> plain, but don’t touch non-plain (FieldValue etc.)
+        const plain = isPlainObject(raw)
+          ? (raw as Record<string, unknown>)
+          : instanceToPlain(raw, { exposeUnsetFields: false });
 
-        // save doc ref
+        // Build the payload without mutating the original
+        const payload = stripUndefinedDeep({
+          ...plain,
+          [idField]: docRef.id, // write back generated id
+        });
+
+        batch.set(docRef, payload);
         docRefs.push(docRef.path);
       });
 
-      // commit batch job: All writes are committed as a single write job
       await batch.commit();
 
-      // return success status
-      // commit(): returns WriteResult which contains only the write time.
-      // To get the document ids, we have to use the WriteBatch object from batch.set().
       return {
         status: 'success',
+        code: 200,
         message: 'Documents created successfully',
-        data: docRefs,
-      } as ResponseObject;
-    } catch (e: unknown) {
-      // return error
+        data: docRefs, // full document paths; switch to docRef.id if you only want IDs
+      };
+    } catch (e) {
       return errorHandler(e);
     }
   }
@@ -343,16 +366,23 @@ export class DataService {
   async updateDoc(
     collection: string,
     id: string,
-    data: object,
+    data: any,
   ): Promise<ResponseObject> {
     const ref = this.firestore.collection(collection).doc(id);
+
+    // 1) normalize class instances → plain
+    const plain = isPlainJSONish(data)
+      ? data
+      : instanceToPlain(data, { exposeUnsetFields: false });
+    // 2) deep-strip undefined safely
+    const cleaned = stripUndefinedDeep(plain);
+
     try {
-      await ref.update(data);
+      await ref.update(cleaned);
       return { status: 'success', code: 200, message: 'OK', data: null };
     } catch (e: any) {
-      // If the document doesn’t exist yet, you may choose to fall back to set():
       if (e.code === 5 /* NOT_FOUND */) {
-        await ref.set(data, { merge: true });
+        await ref.set(cleaned, { merge: true });
         return {
           status: 'success',
           code: 200,

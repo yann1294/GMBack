@@ -21,6 +21,7 @@ import { TourExternalService } from './services/tour-external.service';
 import { UserModule } from 'src/user-management/user.module';
 import { FileService } from 'src/shared/services/file.service';
 import { ImageManager } from './utils/upload-images.util';
+import { SharedModule } from 'src/shared/shared.module';
 
 /**
  * Reason for using the format below in the provider.
@@ -34,11 +35,9 @@ import { ImageManager } from './utils/upload-images.util';
     do not have to use tokens.
  */
 @Module({
-  imports: [FirebaseModule],
+  imports: [FirebaseModule, SharedModule],
   controllers: [TourController, PackageController],
   providers: [
-    DataService,
-    FileService,
     ImageManager,
     {
       provide: CORE_DAO_INTERFACE_TOKEN,

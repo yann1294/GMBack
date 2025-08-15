@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AuthService } from './services/auth.service';
 import { AuthDAO } from './dao/auth.dao';
 import { JwtModule } from '@nestjs/jwt';
@@ -7,10 +7,15 @@ import { FileService } from 'src/shared/services/file.service';
 import { FirebaseModule } from 'src/shared/firebase/firebase.module';
 import { AuthController } from './controller/auth.controller';
 import { ImageManager } from 'src/tours/utils/upload-images.util';
+import { SharedModule } from 'src/shared/shared.module';
+import { AdminGuard } from './utils/guards/admin.guard';
+import { FirebaseAuthGuard } from './utils/firebase-auth.guard';
 
+@Global()
 @Module({
   imports: [
     FirebaseModule,
+    SharedModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'someSecretKey',
       signOptions: { expiresIn: '1h' },
@@ -23,6 +28,8 @@ import { ImageManager } from 'src/tours/utils/upload-images.util';
     DataService,
     FileService,
     ImageManager,
+    FirebaseAuthGuard,
+    AdminGuard,
     {
       provide: 'IAuthDAO',
       useClass: AuthDAO,
@@ -32,6 +39,6 @@ import { ImageManager } from 'src/tours/utils/upload-images.util';
       useClass: AuthService,
     },
   ],
-  exports: [AuthService],
+  exports: [AuthService, FirebaseAuthGuard, AdminGuard, JwtModule],
 })
 export class AuthModule {}

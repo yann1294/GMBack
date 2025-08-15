@@ -1,9 +1,21 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreatePackageDTO } from './package.create.dto';
-import { IsString, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  ArrayNotEmpty,
+  IsArray,
+  IsOptional,
+} from 'class-validator';
 
 export class UpdatePackageDTO extends PartialType(CreatePackageDTO) {
-    @IsString()
+  @IsString()
   @IsNotEmpty()
-    public id: string
+  public id: string;
+
+  // @IsOptional()
+  // @IsArray()
+  // @ArrayNotEmpty()
+  // @IsString({ each: true })
+  // tours?: string[];
 }

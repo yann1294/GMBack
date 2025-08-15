@@ -2,80 +2,63 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
-  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { FastifyRequest } from 'fastify';
 import { DataService } from 'src/shared/services/data.service';
+
+function extractToken(req: FastifyRequest): string | null {
+  // 1) Authorization header
+  const auth =
+    (req.headers['authorization'] as string | undefined) ??
+    (req.headers['Authorization'] as string | undefined);
+  if (auth?.startsWith('Bearer ')) return auth.slice(7);
+
+  // 2) HttpOnly cookie fallback (requires @fastify/cookie)
+  const cookies = (req as any).cookies as Record<string, string> | undefined;
+  if (cookies?.access_token) return cookies.access_token;
+  if (cookies?.idToken) return cookies.idToken;
+
+  return null;
+}
 
 @Injectable()
 export class FirebaseAuthGuard implements CanActivate {
   constructor(
-    private readonly dataService: DataService,
-    private readonly jwtService: JwtService,
+    private readonly dataService: DataService, // for Firebase Admin verifyIdToken
+    private readonly jwtService: JwtService, // local JWT fallback
   ) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
-    const token = this.extractToken(request);
-
+  async canActivate(ctx: ExecutionContext): Promise<boolean> {
+    const req = ctx.switchToHttp().getRequest<FastifyRequest>();
+    const token = extractToken(req);
     if (!token) {
       throw new UnauthorizedException('Authorization token required');
     }
 
-    try {
-      return await this.verifyToken(token, request);
-    } catch (error) {
-      this.logError(error, token);
-      throw new UnauthorizedException('Invalid authentication token');
-    }
-  }
-
-  private async verifyToken(token: string, request: any): Promise<boolean> {
-    // 1) Try your own JWT
+    // 1) Try your local JWT first
     try {
       const payload = this.jwtService.verify(token);
-      if (!payload.sub) throw new Error('JWT missing subject');
-      request.user = { uid: payload.sub, ...payload };
-      request.authType = 'jwt';
+      // Require a subject to bind as user id
+      if (!payload?.sub) throw new Error('JWT missing `sub` claim');
+      (req as any).user = { uid: payload.sub, ...payload };
+      (req as any).authType = 'jwt';
       return true;
-    } catch (jwtErr) {
-      // 2) Fallback to Firebase ID token
-      try {
-        const decoded = await this.dataService.verifyIdToken(token);
-        request.user = { uid: decoded.uid, ...decoded };
-        request.authType = 'firebase';
-        return true;
-      } catch (fbErr) {
-        this.logError(jwtErr, token);
-        this.logError(fbErr, token);
-        throw new UnauthorizedException('Invalid authentication token');
-      }
+    } catch {
+      // fall through to Firebase
     }
-  }
 
-  private validateJwtPayload(payload: any): void {
-    if (!payload.sub) {
-      throw new Error('JWT missing subject (sub) claim');
+    // 2) Fallback to Firebase ID token
+    try {
+      const decoded = await this.dataService.verifyIdToken(token);
+      (req as any).user = { uid: decoded.uid, ...decoded };
+      (req as any).authType = 'firebase';
+      return true;
+    } catch {
+      throw new UnauthorizedException(
+        'Invalid or expired authentication token',
+      );
     }
-  }
-
-  private extractToken(request: Request): string {
-    const [type, token] = request.headers['authorization']?.split(' ') ?? [];
-    if (type !== 'Bearer' || !token) {
-      throw new UnauthorizedException('Invalid authorization header format');
-    }
-    return token;
-  }
-
-  private logError(error: Error, token: string): void {
-    const tokenPreview =
-      token.length > 10 ? `${token.slice(0, 5)}...${token.slice(-5)}` : token;
-
-    Logger.error(
-      `Authentication failed for token: ${tokenPreview}`,
-      error.stack,
-      'FirebaseAuthGuard',
-    );
   }
 }

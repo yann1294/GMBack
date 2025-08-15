@@ -15,6 +15,7 @@ import { userRoles } from '../utils/roles.util';
 import { BookingVO } from 'src/booking/vo/booking.master.vo';
 import { plainToInstance } from 'class-transformer';
 import { Guide } from '../dao/guide.entity';
+import { FieldValue } from 'firebase-admin/firestore';
 
 @Injectable()
 export class GuideService implements IGuideService {
@@ -49,16 +50,25 @@ export class GuideService implements IGuideService {
     return this.tourExternalService.getPackages();
   }
 
-  async approveGuide(guideId: string): Promise<ResponseObject> {
-    return await this.guideDAO.update(plainToInstance(Guide, { uid: guideId, approvalStatus: "approved" }));
+  approveGuide(uid: string): Promise<ResponseObject> {
+    return this.guideDAO.updatePartial(uid, {
+      approvalStatus: 'approved',
+      rejectionReason: null,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
   }
 
-  async rejectGuide(guideId: string): Promise<ResponseObject> {
-    return await this.guideDAO.update(plainToInstance(Guide, { uid: guideId, approvalStatus: "rejected" }));
+  rejectGuide(uid: string): Promise<ResponseObject> {
+    return this.guideDAO.updatePartial(uid, {
+      approvalStatus: 'rejected',
+      updatedAt: FieldValue.serverTimestamp(),
+    });
   }
 
   async deactivateGuide(guideId: string): Promise<ResponseObject> {
-    return await this.guideDAO.update(plainToInstance(Guide, { uid: guideId, accountStatus: "inactive" }));
+    return await this.guideDAO.update(
+      plainToInstance(Guide, { uid: guideId, accountStatus: 'inactive' }),
+    );
   }
   // async readBookings(): Promise<ResponseObject> {
   //   return this.bookingExternalService.readBookings();

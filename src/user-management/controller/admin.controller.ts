@@ -1,5 +1,14 @@
-
-import { Controller, Get, Post, Put, Delete, Param, Body, Inject, Patch } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  Inject,
+  Patch,
+} from '@nestjs/common';
 import { IAdminService } from '../services/admin.service.interface';
 import { ADMIN_SERVICE_TOKEN } from '../utils/token';
 import { AdminVO } from '../vo/admin.vo';
@@ -10,135 +19,152 @@ import { GuideVO } from '../vo/guide.vo';
 
 @Controller('admin')
 export class AdminController {
-constructor(@Inject(ADMIN_SERVICE_TOKEN) private readonly adminService: IAdminService){}
+  constructor(
+    @Inject(ADMIN_SERVICE_TOKEN) private readonly adminService: IAdminService,
+  ) {}
 
-    // Admin related methods
-    @Post()
-    async addAdmin(@Body(new AdminValidationPipe()) adminVO: AdminVO): Promise<ResponseObject> {
-        console.log(adminVO);
-        return this.adminService.addAdmin(adminVO);
-    }
+  // Admin related methods
 
-    @Delete(':uid')
-    async deleteAdmin(@Param('uid') uid: string): Promise<ResponseObject> {
-        return this.adminService.deleteAdmin(uid);
-    }
+  @Get(':uid')
+  async getAdmin(@Param('uid') uid: string): Promise<ResponseObject> {
+    console.log('API Entry: GET /admin/:uid', { uid });
+    return this.adminService.findAdmin(uid);
+  }
 
-    @Patch(':uid')
-    async updateAdmin(@Param('uid') uid: string,
-      @Body(new AdminValidationPipe('update')) adminVO: AdminVO): Promise<ResponseObject> {
-        return this.adminService.updateAdmin(uid, adminVO);
-    }
+  @Post()
+  async addAdmin(
+    @Body(new AdminValidationPipe()) adminVO: AdminVO,
+  ): Promise<ResponseObject> {
+    console.log(adminVO);
+    return this.adminService.addAdmin(adminVO);
+  }
 
-    // Guide related methods
-    @Patch('guides/approve/:uid')
-    async approveGuide(@Param('uid') uid: string): Promise<ResponseObject> {
-        console.log("API Entry: PATCH /admin/guides/approve/:uid", { uid });
-        return this.adminService.approveGuide(uid);
-    }
+  @Delete(':uid')
+  async deleteAdmin(@Param('uid') uid: string): Promise<ResponseObject> {
+    return this.adminService.deleteAdmin(uid);
+  }
 
-    // Guide related methods
-    @Patch('guides/reject/:uid')
-    async rejectGuide(@Param('uid') uid: string): Promise<ResponseObject> {
-        console.log("API Entry: PATCH /admin/guides/reject/:uid", { uid });
-        return this.adminService.rejectGuide(uid);
-    }
+  @Patch(':uid')
+  async updateAdmin(
+    @Param('uid') uid: string,
+    @Body(new AdminValidationPipe('update')) adminVO: AdminVO,
+  ): Promise<ResponseObject> {
+    return this.adminService.updateAdmin(uid, adminVO);
+  }
 
-    // @Delete('guides/:uid')
-    // async deleteGuide(@Param('uid') uid: string): Promise<ResponseObject> {
-    //     return this.adminService.deleteGuide(uid);
-    // }
+  // Guide related methods
+  @Patch('guides/approve/:uid')
+  async approveGuide(@Param('uid') uid: string): Promise<ResponseObject> {
+    console.log('API Entry: PATCH /admin/guides/approve/:uid', { uid });
+    return this.adminService.approveGuide(uid);
+  }
 
-    // @Patch('guides/:uid')
-    // async updateGuide(@Param('uid') uid: string, @Body(new GuideValidationPipe('update')) guideVO: GuideVO): Promise<ResponseObject> {
-    //     return this.adminService.updateGuide(uid, guideVO);
-    // }
+  // Guide related methods
+  @Patch('guides/reject/:uid')
+  async rejectGuide(@Param('uid') uid: string): Promise<ResponseObject> {
+    console.log('API Entry: PATCH /admin/guides/reject/:uid', { uid });
+    return this.adminService.rejectGuide(uid);
+  }
 
-    // @Get('guides/:uid')
-    // async findGuide(@Param('uid') uid: string): Promise<ResponseObject> {
-    //     return this.adminService.findGuide(uid);
-    // }
+  // @Delete('guides/:uid')
+  // async deleteGuide(@Param('uid') uid: string): Promise<ResponseObject> {
+  //     return this.adminService.deleteGuide(uid);
+  // }
 
-    @Get('guides')
-    async getAllGuides(): Promise<ResponseObject> {
-        return this.adminService.getAllGuides();
-    }
+  // @Patch('guides/:uid')
+  // async updateGuide(@Param('uid') uid: string, @Body(new GuideValidationPipe('update')) guideVO: GuideVO): Promise<ResponseObject> {
+  //     return this.adminService.updateGuide(uid, guideVO);
+  // }
 
-    // @Post('tours/:tourId/guides/:guideId')
-    // async assignGuideToTour(@Param('tourId') tourId: string, @Param('guideId') guideId: string): Promise<ResponseObject> {
-    //     return this.adminService.assignGuideToTour(tourId, guideId);
-    // }
+  // @Get('guides/:uid')
+  // async findGuide(@Param('uid') uid: string): Promise<ResponseObject> {
+  //     return this.adminService.findGuide(uid);
+  // }
 
-    // @Patch('packages/:packageId/guides/:guideId')
-    // async assignGuideToPackage(@Param('packageId') packageId: string, @Param('guideId') guideId: string): Promise<ResponseObject> {
-    //     return this.adminService.assignGuideToPackage(packageId, guideId);
-    // }
+  @Get('guides')
+  async getAllGuides(): Promise<ResponseObject> {
+    return this.adminService.getAllGuides();
+  }
 
-    @Patch('account/guides/:uid')
-    async deactivateGuideAccount(@Param('uid') uid: string): Promise<ResponseObject> {
-        return this.adminService.deactivateGuideAccount(uid);
-    }
+  // @Post('tours/:tourId/guides/:guideId')
+  // async assignGuideToTour(@Param('tourId') tourId: string, @Param('guideId') guideId: string): Promise<ResponseObject> {
+  //     return this.adminService.assignGuideToTour(tourId, guideId);
+  // }
 
-    @Patch('account/tourists/:uid')
-    async deactivateTouristAccount(@Body(new GuideValidationPipe) guideVO: GuideVO): Promise<ResponseObject> {
-        return this.adminService.deactivateTouristAccount(guideVO);
-    }
+  // @Patch('packages/:packageId/guides/:guideId')
+  // async assignGuideToPackage(@Param('packageId') packageId: string, @Param('guideId') guideId: string): Promise<ResponseObject> {
+  //     return this.adminService.assignGuideToPackage(packageId, guideId);
+  // }
 
-    // // Tourist related methods
-    // @Get('tourists/:uid')
-    // async findTourist(@Param('uid') uid: string): Promise<ResponseObject> {
-    //     return this.adminService.findTourist(uid);
-    // }
+  @Patch('account/guides/:uid')
+  async deactivateGuideAccount(
+    @Param('uid') uid: string,
+  ): Promise<ResponseObject> {
+    return this.adminService.deactivateGuideAccount(uid);
+  }
 
-    // @Delete('tourists/:uid')
-    // async deleteTourist(@Param('uid') uid: string): Promise<ResponseObject> {
-    //     return this.adminService.deleteTourist(uid);
-    // }
+  @Patch('account/tourists/:uid')
+  async deactivateTouristAccount(
+    @Body(new GuideValidationPipe()) guideVO: GuideVO,
+  ): Promise<ResponseObject> {
+    return this.adminService.deactivateTouristAccount(guideVO);
+  }
 
-    @Get('tourists')
-    async getAllTourists(): Promise<ResponseObject> {
-        return this.adminService.getAllTourists();
-    }
+  // // Tourist related methods
+  // @Get('tourists/:uid')
+  // async findTourist(@Param('uid') uid: string): Promise<ResponseObject> {
+  //     return this.adminService.findTourist(uid);
+  // }
 
-    // Booking related methods
-    @Get('bookings/:uid')
-    async readBooking(@Param('uid') uid: string): Promise<ResponseObject> {
-        return this.adminService.readBooking(uid);
-    }
+  // @Delete('tourists/:uid')
+  // async deleteTourist(@Param('uid') uid: string): Promise<ResponseObject> {
+  //     return this.adminService.deleteTourist(uid);
+  // }
 
-    @Get('bookings')
-    async readBookings(): Promise<ResponseObject> {
-        return this.adminService.readBookings();
-    }
+  @Get('tourists')
+  async getAllTourists(): Promise<ResponseObject> {
+    return this.adminService.getAllTourists();
+  }
 
-    @Get('bills/:uid')
-    async readBill(@Param('uid') uid: string): Promise<ResponseObject> {
-        return this.adminService.readBill(uid);
-    }
+  // Booking related methods
+  @Get('bookings/:uid')
+  async readBooking(@Param('uid') uid: string): Promise<ResponseObject> {
+    return this.adminService.readBooking(uid);
+  }
 
-    @Post('bills')
-    async sendBill(@Body() uid: string): Promise<ResponseObject> {
-        return this.adminService.sendBill(uid);
-    }
+  @Get('bookings')
+  async readBookings(): Promise<ResponseObject> {
+    return this.adminService.readBookings();
+  }
 
-    @Get('complaints')
-    async readComplaints(): Promise<ResponseObject> {
-        return this.adminService.readComplaints();
-    }
+  @Get('bills/:uid')
+  async readBill(@Param('uid') uid: string): Promise<ResponseObject> {
+    return this.adminService.readBill(uid);
+  }
 
-    @Post('complaints/:uid')
-    async respondToComplaints(@Body() uid: string): Promise<ResponseObject> {
-        return this.adminService.respondToComplaints(uid);
-    }
+  @Post('bills')
+  async sendBill(@Body() uid: string): Promise<ResponseObject> {
+    return this.adminService.sendBill(uid);
+  }
 
-    // Tour related methods
-    @Get('tours')
-    async getTours(): Promise<ResponseObject> {
-        return this.adminService.getTours();
-    }
+  @Get('complaints')
+  async readComplaints(): Promise<ResponseObject> {
+    return this.adminService.readComplaints();
+  }
 
-    @Get('packages')
-    async getPackages(): Promise<ResponseObject> {
-        return this.adminService.getPackages();
-    }
+  @Post('complaints/:uid')
+  async respondToComplaints(@Body() uid: string): Promise<ResponseObject> {
+    return this.adminService.respondToComplaints(uid);
+  }
+
+  // Tour related methods
+  @Get('tours')
+  async getTours(): Promise<ResponseObject> {
+    return this.adminService.getTours();
+  }
+
+  @Get('packages')
+  async getPackages(): Promise<ResponseObject> {
+    return this.adminService.getPackages();
+  }
 }

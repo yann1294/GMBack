@@ -22,21 +22,21 @@ import { HasAttribute } from 'src/shared/pipes/has-attribute.pipe';
 import { ConvertToVoPipe } from 'src/shared/pipes/convert-to-vo.pipe';
 import { FastifyRequest } from 'fastify';
 import { ImageManager } from '../utils/upload-images.util';
+import { CONTEXT } from 'src/shared/utils/context';
 
 @Controller('packages')
 export class PackageController {
   constructor(
     @Inject(PACKAGE_SERVICE_TOKEN)
     private readonly packageService: IPackageService,
-  private readonly imageManager: ImageManager
-   ) { }
-   @Post('images')
-   async uploadImage(@Req() req: FastifyRequest): Promise<ResponseObject> {
-     
-     // Uploading images
-     return await this.imageManager.uploadImages(req, "packages");
-   }
- 
+    private readonly imageManager: ImageManager,
+  ) {}
+  @Post('images')
+  async uploadImage(@Req() req: FastifyRequest): Promise<ResponseObject> {
+    // Uploading images
+    return await this.imageManager.uploadImages(req, 'packages');
+  }
+
   @Get()
   async findAll(): Promise<ResponseObject> {
     return await this.packageService.findAllPackages();
@@ -57,9 +57,19 @@ export class PackageController {
     return this.packageService.createPackage(packageVo);
   }
 
+  // @Patch(':id')
+  // update(@Body(new PackageValidationPipe('update')) packageVo: PackageVO) {
+  //   return this.packageService.updatePackage(packageVo);
+  // }
+
   @Patch(':id')
-  update(@Body(new PackageValidationPipe('update')) packageVo: PackageVO) {
-    return this.packageService.updatePackage(packageVo);
+  async update(@Req() req: FastifyRequest) {
+    const pipe = new ConvertToVoPipe('package', true, 'id', 'updateDetails');
+    const vo = (await pipe.transform(req, {
+      type: 'param',
+      metatype: PackageVO,
+    })) as PackageVO;
+    return this.packageService.updatePackage(vo);
   }
 
   @Delete(':id')
@@ -87,7 +97,12 @@ export class PackageController {
 
   @Patch(':id/tours')
   async addTourToPackage(@Req() req: FastifyRequest): Promise<ResponseObject> {
-    const validationPipe = new ConvertToVoPipe('package', true, 'id');
+    const validationPipe = new ConvertToVoPipe(
+      'package',
+      true,
+      'id',
+      'updateTours',
+    );
     const packageVo: PackageVO = (await validationPipe.transform(req, {
       type: 'param',
       metatype: PackageVO,

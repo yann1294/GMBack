@@ -24,6 +24,10 @@ import { CONTEXT } from '../utils/context';
 import { errorHandler } from '../services/data.service';
 import { UpdateTourDTO } from 'src/tours/controller/dto/tour.update.dto';
 import { Activity } from 'src/tours/vo/helper.vo';
+import { UpdatePackageToursDTO } from 'src/tours/controller/dto/package.update-tours.dto';
+import { UpdatePackageDetailsDTO } from 'src/tours/controller/dto/package.update-details.dto';
+
+type PipeAction = 'update' | 'updateTours' | 'others' | 'updateDetails';
 
 @Injectable()
 export class ConvertToVoPipe
@@ -45,7 +49,7 @@ export class ConvertToVoPipe
     private readonly context: keyof typeof CONTEXT,
     private readonly hasBody: boolean = false,
     private readonly paramField: string = 'id',
-    private readonly action: 'update' | 'others' = 'others',
+    private readonly action: PipeAction = 'others',
   ) {}
 
   async transform(
@@ -86,7 +90,34 @@ export class ConvertToVoPipe
           }),
         );
       }
+      // 🔎 Debug (temporary)
+      console.log('Data in convert', data, {
+        hasTours: Object.prototype.hasOwnProperty.call(data, 'tours'),
+        toursType: typeof data.tours,
+        toursIsArray: Array.isArray(data.tours),
+      });
 
+      // 🔒 If we're updating PACKAGE DETAILS, never let "tours" reach validation
+      if (
+        this.context === CONTEXT.package &&
+        (this.action === 'update' || this.action === 'updateDetails') &&
+        'tours' in data
+      ) {
+        delete (data as any).tours;
+      }
+      if (
+        this.context === CONTEXT.package &&
+        this.action === 'updateTours' &&
+        'tours' in data
+      ) {
+        if (typeof data.tours === 'string') {
+          try {
+            data.tours = JSON.parse(data.tours);
+          } catch {
+            /* let validator throw */
+          }
+        }
+      }
       // ─── 4) SPECIAL: if updating a Tour, convert data.activities into a Map<number,Activity> ──
       if (this.context === CONTEXT.tour && data.activities !== undefined) {
         let rawActsObj: Record<string, any>;
@@ -152,8 +183,13 @@ export class ConvertToVoPipe
         return plainToInstance(UpdateTouristDTO, data);
       case CONTEXT.tour:
         return plainToInstance(UpdateTourDTO, data);
-      case CONTEXT.package:
-        return plainToInstance(UpdatePackageDTO, data);
+      case CONTEXT.package: {
+        // 👇 Use the correct DTO per action
+        if (this.action === 'updateTours') {
+          return plainToInstance(UpdatePackageToursDTO, data);
+        }
+        return plainToInstance(UpdatePackageDetailsDTO, data);
+      }
       default:
         throw new BadRequestException(`Invalid context "${this.context}"`);
     }
@@ -190,7 +226,10 @@ export class ConvertToVoPipe
   }
 
   private async validateVO(vo: any): Promise<void> {
-    const errors = await validate(vo);
+    const errors = await validate(vo, {
+      skipMissingProperties: true,
+      whitelist: true,
+    });
     if (errors.length > 0) {
       throw new BadRequestException(
         errorHandler({ message: JSON.stringify(errors), code: 500 }),

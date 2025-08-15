@@ -11,21 +11,25 @@ import { FileService } from 'src/shared/services/file.service';
 import { UserManagementExternalService } from './services/user-management-external.service';
 import { TourModule } from 'src/tours/tour.module';
 import { BookingModule } from 'src/booking/booking.module';
-import { ADMIN_DAO_TOKEN, ADMIN_SERVICE_TOKEN, GUIDE_DAO_TOKEN,
+import {
+  ADMIN_DAO_TOKEN,
+  ADMIN_SERVICE_TOKEN,
+  GUIDE_DAO_TOKEN,
   GUIDE_SERVICE_TOKEN,
   TOURIST_DAO_TOKEN,
   TOURIST_SERVICE_TOKEN,
-  USER_MANAGEMENT_EXTERNAL_SERVICE_INTERFACE, } from './utils/token';
+  USER_MANAGEMENT_EXTERNAL_SERVICE_INTERFACE,
+} from './utils/token';
 import { AdminDAO } from './dao/admin.dao';
 import { AdminService } from './services/admin.service';
 import { AdminController } from './controller/admin.controller';
+import { SharedModule } from 'src/shared/shared.module';
+import { AuthModule } from 'src/authentication/auth.module';
 
 @Module({
-  imports: [FirebaseModule, TourModule],
+  imports: [FirebaseModule, TourModule, SharedModule, AuthModule],
   controllers: [GuideController, TouristController, AdminController],
   providers: [
-    DataService,
-    FileService,
     {
       provide: ADMIN_DAO_TOKEN,
       useClass: AdminDAO,

@@ -1,6 +1,6 @@
-import { ResponseObject } from "src/shared/types";
-import { GuideVO } from "../vo/guide.vo";
-import { BookingVO } from "src/booking/vo/booking.master.vo";
+import { ResponseObject } from 'src/shared/types';
+import { GuideVO } from '../vo/guide.vo';
+import { BookingVO } from 'src/booking/vo/booking.master.vo';
 
 export interface IGuideService {
   addGuide(guideVo: GuideVO): Promise<ResponseObject>;

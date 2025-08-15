@@ -6,6 +6,7 @@ export interface PackageDAOInterface {
   findById(packageEntity: Package): Promise<ResponseObject>;
   create(packageEntity: Package): Promise<ResponseObject>;
   update(packageEntity: Package): Promise<ResponseObject>;
+  updatePartial(id: string, patch: object): Promise<ResponseObject>;
   delete(packageEntity: Package): Promise<ResponseObject>;
   readTours(packageEntity: Package): Promise<ResponseObject>;
 }

@@ -55,10 +55,10 @@ export class AdminService implements IAdminService {
   //     return this.guideService.updateGuide(uid, guideVO);
   // }
 
-  // findGuide(uid: string): Promise<ResponseObject> {
-  //     // takes the uid and passes it to the DAO
-  //     return this.guideService.findGuide(uid);
-  // }
+  findGuide(uid: string): Promise<ResponseObject> {
+      // takes the uid and passes it to the DAO
+      return this.guideService.findGuide(uid);
+  }
 
   getAllGuides(): Promise<ResponseObject> {
     // calls the DAO to get all guides

@@ -7,15 +7,18 @@ import { plainToInstance } from 'class-transformer';
 import IBookingService from './booking.service.interface';
 import { Booking } from '../dao/booking.entity';
 import { BookingVO } from '../vo/booking.master.vo';
-import { BOOKING_DAO_INTERFACE_TOKEN, TOUR_EXTERNAL_SERVICE_INTERFACE } from '../token';
+import {
+  BOOKING_DAO_INTERFACE_TOKEN,
+  TOUR_EXTERNAL_SERVICE_INTERFACE,
+} from '../token';
 import IBookingDAO from '../dao/booking.dao.interface';
 import { Tourist } from '../vo/helper.vo';
 import { BookingMessageService } from './booking.message-broker.service';
 import { TouristVO } from 'src/user-management/vo/tourist.vo';
 import { GuideVO } from 'src/user-management/vo/guide.vo';
 
-import {InventoryManagement} from '../utils/inventory.management';
-import {PaymentInfoVo} from 'src/booking/vo/payment-info.vo';
+import { InventoryManagement } from '../utils/inventory.management';
+import { PaymentInfoVo } from 'src/booking/vo/payment-info.vo';
 import { ITourExternalService } from 'src/tours/services/tour-external.service.interface';
 
 @Injectable()
@@ -59,32 +62,31 @@ export class BookingService implements IBookingService {
         'booking.payment', // Name of chanel
         paymentData,
       );
-
     }
     return makeBookingResponse;
   }
 
-  async transformBookingDataToPaymentData(bookingVo: BookingVO):Promise<PaymentInfoVo> {
+  async transformBookingDataToPaymentData(
+    bookingVo: BookingVO,
+  ): Promise<PaymentInfoVo> {
     //const tourId = await this.tourExternalService.getTourSelected(bookingVo.getTour()).data['id'];
     const tourId = '1';
 
     // touristID will be obtained from the ID of the person making the booking. i.e from authentication module
 
-    const paymentData: PaymentInfoVo = {
-      tourId: tourId,
-      totalAmount: this.inventoryManagement.computePrice(),
-      touristId: 'touristId',
-      name: 'The name of the tour',
-    };
-    return paymentData;
+    // const paymentData: PaymentInfoVo = {
+    //   // tourId: tourId,
+    //   // totalAmount: this.inventoryManagement.computePrice(),
+    //   // touristId: 'touristId',
+    //   // name: 'The name of the tour',
+    // };
+    //return paymentData;
+    return null;
   }
 
- async makePayment(): Promise<PaymentInfoVo>{
-
-
+  async makePayment(): Promise<PaymentInfoVo> {
     return null;
- }
-
+  }
 
   async displayBooking(bookingVo: BookingVO): Promise<ResponseObject> {
     return await this.bookingDAO.findById(bookingVo.toEntity());
@@ -98,6 +100,4 @@ export class BookingService implements IBookingService {
     // Assuming `toEntity()` is a valid method that converts the instance to the desired entity
     return await this.bookingDAO.delete(bookingVo.toEntity());
   }
-
-  
 }

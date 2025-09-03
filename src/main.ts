@@ -21,7 +21,12 @@ async function bootstrap() {
   app.register(multipart as any);
 
   // enable cors
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:3000', // Your frontend URL
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  });
 
   //  enable global validation & transformation
   app.useGlobalPipes(

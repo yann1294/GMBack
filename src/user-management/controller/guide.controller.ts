@@ -93,7 +93,6 @@ export class GuideController {
     return this.guideService.rejectGuide(uid);
   }
 
-  @AdminOnly()
   @Get(':uid')
   async findGuide(@Param('uid') uid: string): Promise<ResponseObject> {
     console.log('API Entry: GET /guides/:uid', { uid });

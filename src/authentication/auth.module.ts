@@ -18,7 +18,7 @@ import { FirebaseAuthGuard } from './utils/firebase-auth.guard';
     SharedModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'someSecretKey',
-      signOptions: { expiresIn: '1h' },
+      signOptions: { algorithm: 'HS256', expiresIn: '1h' },
     }),
   ],
   controllers: [AuthController],

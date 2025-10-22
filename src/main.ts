@@ -33,6 +33,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true, // strip properties not in the DTO
       forbidNonWhitelisted: true, // throw on unknown properties
+      skipMissingProperties: true, // Skips validation on undefined (missing) properties
       transform: true, // auto-convert payloads to DTO types
     }),
   );

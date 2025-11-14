@@ -1,3 +1,5 @@
+// Tokens used to register and inject "interface-like" providers in Nest's DI container.
+// Interfaces do not exist at runtime, so we use string tokens instead.
 export const CORE_DAO_INTERFACE_TOKEN = 'CoreDAOInterfaceToken';
 export const PACKAGE_DAO_INTERFACE_TOKEN = 'PackageDAOInterface';
 export const PACKAGE_SERVICE_TOKEN = 'IPackageService';

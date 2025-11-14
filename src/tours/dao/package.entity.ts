@@ -1,6 +1,11 @@
 import { Timestamp } from 'firebase-admin/firestore';
 import { PackageLocation, User } from '../vo/helper.vo';
 
+/**
+ * Package entity
+ * - Represents how a Package is stored in Firestore.
+ * - Handles conversion to plain object (with Firestore Timestamp).
+ */
 export class Package {
   constructor(
     public id: string,
@@ -18,6 +23,12 @@ export class Package {
     public tours?: string[],
   ) {}
 
+  /**
+   * Convert the entity to a Firestore-ready object.
+   * - location flattened with Object.assign
+   * - date converted to Timestamp if defined
+   * - images / tours default to empty arrays if undefined
+   */
   toObject(): object {
     return {
       id: this.id,
@@ -32,10 +43,13 @@ export class Package {
       date: this.date ? Timestamp.fromDate(new Date(this.date)) : this.date,
       guide: this.guide,
       images: this.images ?? [],
-      tours: this.tours ?? []
+      tours: this.tours ?? [],
     };
   }
 
+  /**
+   * Shallow copy used for full updates/merges where the DAO handles conversion.
+   */
   toUpdateObject(): object {
     return { ...this };
   }

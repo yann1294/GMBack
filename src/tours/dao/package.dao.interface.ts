@@ -1,6 +1,10 @@
 import { ResponseObject } from 'src/shared/types';
 import { Package } from './package.entity';
 
+/**
+ * DAO contract for the Package aggregate.
+ * Abstracts Firestore/DataService details away from higher layers.
+ */
 export interface PackageDAOInterface {
   findAll(): Promise<ResponseObject>;
   findById(packageEntity: Package): Promise<ResponseObject>;

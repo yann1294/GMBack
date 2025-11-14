@@ -22,6 +22,11 @@ export class PackageDAO implements PackageDAOInterface {
     private readonly dataService: DataService,
     private readonly fileService: FileService,
   ) {}
+  /**
+   * Read all tours referenced by a package.
+   * Normalises the stored "tours" field (array or object) into an array of tour IDs
+   * and performs a Firestore "in" query on the "tours" collection.
+   */
   async readTours(packageEntity: Package): Promise<ResponseObject> {
     // read tour details
     // // 1) Fetch the package document itself
@@ -29,7 +34,7 @@ export class PackageDAO implements PackageDAOInterface {
     if (response.status !== 'success') {
       return response;
     }
-    /* 2) Normalise the tours field into an array ------------- */
+    // 2) Normalise the "tours" field to an array of string IDs
     let tourIds: string[] = [];
 
     const toursField = response.data['tours'];
@@ -37,10 +42,10 @@ export class PackageDAO implements PackageDAOInterface {
     if (Array.isArray(toursField)) {
       tourIds = toursField; // ✅ correct shape
     } else if (toursField && typeof toursField === 'object') {
-      // older docs saved an object ⇒ convert to array of values (or keys)
+      // Legacy format: tours stored as object -> convert to array of values
       tourIds = Object.values(toursField); // ['T1','T2',…]
     }
-    /* 3) If there is nothing to fetch, return early ---------- */
+    // 3) If no tours are attached, return an empty list
     if (tourIds.length === 0) {
       return {
         status: 'success',
@@ -49,8 +54,7 @@ export class PackageDAO implements PackageDAOInterface {
         data: [],
       };
     }
-    /* 4) Otherwise run the IN query -------------------------- */
-    // read tour documents
+    // 4) Query the "tours" collection for all matching IDs
     return await this.dataService.readDocsWithConditions('tours', {
       fieldPath: 'id',
       operationString: 'in',
@@ -58,10 +62,16 @@ export class PackageDAO implements PackageDAOInterface {
     } as DataServiceCondition);
   }
 
+  /**
+   * Return all package documents.
+   */
   async findAll(): Promise<ResponseObject> {
     return await this.dataService.readAllDocs(this.collectionName);
   }
 
+  /**
+   * Find a single package by its id.
+   */
   async findById(packageEntity: Package): Promise<ResponseObject> {
     return await this.dataService.readDoc(
       this.collectionName,
@@ -69,10 +79,17 @@ export class PackageDAO implements PackageDAOInterface {
     );
   }
 
+  /**
+   * Create a new package document in Firestore.
+   */
   async create(packageEntity: Package): Promise<ResponseObject> {
     return this.dataService.createDoc(packageEntity, this.collectionName);
   }
 
+  /**
+   * Full update of a package document.
+   * Uses Package.toObject(), then strips undefined values to avoid writing them.
+   */
   async update(packageEntity: Package): Promise<ResponseObject> {
     // Call the DataService's updateDoc method
     console.log('Updating packageEntity', packageEntity);
@@ -84,13 +101,19 @@ export class PackageDAO implements PackageDAOInterface {
     );
   }
 
-  // package.dao.ts
+  /**
+   * Partial update by id.
+   * Accepts a patch object and persists only the provided fields.
+   */
   async updatePartial(id: string, patch: object): Promise<ResponseObject> {
     const payload = stripUndefinedDeep(patch); // ✅ clean
     await this.dataService.updateDoc(this.collectionName, id, payload);
     return { status: 'success', code: 200, message: 'OK', data: null };
   }
 
+  /**
+   * Delete a package document.
+   */
   async delete(packageEntity: Package): Promise<ResponseObject> {
     return await this.dataService.deleteDoc(
       this.collectionName,

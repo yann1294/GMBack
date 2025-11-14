@@ -86,6 +86,11 @@ import {
 } from '../vo/helper.vo';
 import { instanceToPlain } from 'class-transformer';
 
+/**
+ * Tour entity
+ * - Represents how a Tour is stored in Firestore.
+ * - Handles conversion of nested Activity Map into Firestore-friendly objects.
+ */
 export class Tour {
   constructor(
     public id: string,
@@ -103,7 +108,12 @@ export class Tour {
     public guide?: string,
   ) {}
 
-  // Convert to object representation
+  /**
+   * Convert full Tour object to Firestore-ready representation.
+   * - Flattens location
+   * - Converts date to Timestamp
+   * - Normalises activities Map to plain nested object
+   */
   toObject(): object {
     return {
       id: this.id,
@@ -162,25 +172,12 @@ export class Tour {
     };
   }
 
-  // toUpdateObject(): object {
-  //   // Using instanceToPlain(this) will convert the Map into an array of entries.
-  //   // Instead, explicitly convert the Map so Firestore can accept it as nested fields:
-  //   const plain: any = instanceToPlain(this);
-
-  //   if (this.activities instanceof Map) {
-  //     // Replace the “activities” key with a plain object:
-  //     const obj: Record<string, any> = {};
-  //     for (const [k, act] of this.activities.entries()) {
-  //       obj[String(k)] = act; // each “act” is already a plain Activity VO
-  //     }
-  //     plain.activities = obj;
-  //   }
-
-  //   return plain;
-  // }
   /**
-   * Convert this VO→Entity into a plain object that Firestore can merge/update.
-   * We must explicitly turn each Activity instance into a plain JS object via instanceToPlain(...).
+   * Build a Firestore "update" payload:
+   * - Copies scalar fields (except id/activities) as-is.
+   * - Normalises activities (Map or object) -> plain object keyed by string index.
+   * - Converts nested dates into Timestamps.
+   * Intended for partial updates/merges where activities may be changed.
    */
   toUpdateObject(): object {
     console.log('▶ toUpdateObject — activities value →', this.activities);
@@ -199,12 +196,14 @@ export class Tour {
       }
     }
 
-    // ── normalise activities to a Map first ────────────────────────
+    // Normalise activities into a Map<number, Activity>
     let actsMap: Map<number, Activity> | null = null;
 
+    // Build Firestore-ready activities object if we have any activities
     if (this.activities instanceof Map) {
       actsMap = this.activities;
     } else if (this.activities && typeof this.activities === 'object') {
+      // Remove entries where value is null/undefined
       actsMap = new Map(
         Object.entries(this.activities as Record<string, any>).map(([k, v]) => [
           Number(k),
@@ -268,6 +267,7 @@ export class Tour {
       plain.activities = activitiesObj; // ← finally present
     }
 
+    // Normalise date field if present
     if (this.date) {
       plain.date = Timestamp.fromDate(new Date(this.date));
     }
@@ -275,6 +275,9 @@ export class Tour {
     return plain;
   }
 
+  /**
+   * Basic shallow copy used for delete operations or raw merges.
+   */
   toDeleteObject(): object {
     return { ...this };
   }

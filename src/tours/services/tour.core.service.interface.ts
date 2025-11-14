@@ -6,6 +6,10 @@ import { TourVO } from '../vo/tour.master.vo';
 import { ResponseObject } from 'src/shared/types';
 import { MultipartFile } from '@fastify/multipart';
 
+/**
+ * Contract for the core tour service.
+ * Groups all operations related to tours and their activities.
+ */
 export interface ICoreService {
   // tour functions
   createTour(tourVO: TourVO): Promise<ResponseObject>;

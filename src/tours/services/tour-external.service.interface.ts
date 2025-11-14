@@ -2,6 +2,10 @@ import CreateBookingDTO from 'src/booking/controller/dto/booking.create.dto';
 import { ResponseObject } from 'src/shared/types';
 import { TourVO } from '../vo/tour.master.vo';
 
+/**
+ * Contract for the external Tours service.
+ * Defines what other modules can call without depending on internal details.
+ */
 export interface ITourExternalService {
   /**
    * Preconditions: The tourId must exist in the 'tours' collection.

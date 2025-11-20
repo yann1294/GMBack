@@ -6,15 +6,17 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 
+/**
+ * Custom class-validator constraint to ensure *only one* of
+ * two mutually exclusive fields is present (e.g. tour or tourPackage).
+ */
 @ValidatorConstraint({ name: 'ExclusiveFields', async: false })
-class ExclusiveFieldsValidator
-  implements ValidatorConstraintInterface
-{
+class ExclusiveFieldsValidator implements ValidatorConstraintInterface {
   validate(value: any, args: ValidationArguments): boolean {
     const object = args.object as any;
     const tour = object.tour;
     const tourPackage = object.tourPackage;
-    return !(tour && tourPackage); // Ensure only one of the fields is defined
+    return !(tour && tourPackage); // Valid if NOT (both defined) → at most one field set
   }
 
   defaultMessage(args: ValidationArguments): string {
@@ -22,6 +24,10 @@ class ExclusiveFieldsValidator
   }
 }
 
+/**
+ * Decorator factory to apply the ExclusiveFieldsValidator
+ * on a DTO property (usually a dummy property).
+ */
 export function IsExclusiveFields(validationOptions?: ValidationOptions) {
   return function (object: Object, propertyName: string) {
     registerDecorator({

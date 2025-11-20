@@ -6,21 +6,32 @@ import { Booking } from './booking.entity';
 import { Tourist } from 'src/user-management/dao/tourist.entity';
 import { Guide } from 'src/user-management/dao/guide.entity';
 
+/**
+ * BookingDAO
+ * - Low-level persistence adapter for the `bookings` collection.
+ * - Delegates all Firestore operations to DataService.
+ */
 @Injectable()
 export class BookingDAO implements IBookingDAO {
   private readonly collectionName = 'bookings';
 
-  constructor(private readonly dataService: DataService) { }
+  constructor(private readonly dataService: DataService) {}
 
+  /**
+   * Return all bookings.
+   */
   async findAll(): Promise<ResponseObject> {
     return await this.dataService.readAllDocs(this.collectionName);
   }
 
+  /**
+   * Create a new booking or append tourists to an existing "in-process" booking
+   * for the same resourceId.
+   */
   async create(booking: Booking): Promise<ResponseObject> {
     // checking whether booking for resource id already exist
-    let response: ResponseObject = await this.dataService.readDocsWithConditions(
-      this.collectionName,
-      [
+    let response: ResponseObject =
+      await this.dataService.readDocsWithConditions(this.collectionName, [
         // filters by resource Id
         {
           fieldPath: 'resourceId',
@@ -33,8 +44,7 @@ export class BookingDAO implements IBookingDAO {
           operationString: '==',
           value: 'in-process',
         },
-      ] as DataServiceCondition[],
-    );
+      ] as DataServiceCondition[]);
 
     // check whether resource was found
     if ((response.data as object[]).length !== 0) {
@@ -52,6 +62,9 @@ export class BookingDAO implements IBookingDAO {
     return await this.dataService.createDoc(booking, this.collectionName);
   }
 
+  /**
+   * Find bookings for a specific resource (tour/package) by resourceId.
+   */
   async findByResourceId(booking: Booking): Promise<ResponseObject> {
     return await this.dataService.readDocsWithConditions(this.collectionName, {
       fieldPath: 'resourceId',
@@ -60,6 +73,9 @@ export class BookingDAO implements IBookingDAO {
     } as DataServiceCondition);
   }
 
+  /**
+   * Return all bookings where the given tourist has a non-null bookedOn field.
+   */
   async findAllByTourist(tourist: Tourist): Promise<ResponseObject> {
     return await this.dataService.readDocsWithConditions(this.collectionName, {
       fieldPath: `tourists.${tourist.uid}.bookedOn`,
@@ -68,6 +84,9 @@ export class BookingDAO implements IBookingDAO {
     } as DataServiceCondition);
   }
 
+  /**
+   * Fetch all bookings for tours/packages guided by a given guide.
+   */
   async findAllByGuide(guide: Guide): Promise<ResponseObject> {
     // retrieving all tours guided by guide id
     let tours: ResponseObject = (await this.dataService.readDocsWithConditions(
@@ -111,10 +130,16 @@ export class BookingDAO implements IBookingDAO {
     } as DataServiceCondition);
   }
 
+  /**
+   * Read a booking by id.
+   */
   async findById(booking: Booking): Promise<ResponseObject> {
     return await this.dataService.readDoc(this.collectionName, booking.id);
   }
 
+  /**
+   * Persist updates for a booking.
+   */
   async update(booking: Booking): Promise<ResponseObject> {
     // Call the DataService's updateDoc method
     return await this.dataService.updateDoc(
@@ -124,16 +149,34 @@ export class BookingDAO implements IBookingDAO {
     );
   }
 
+  /**
+   * Delete a booking document.
+   */
   async delete(booking: Booking): Promise<ResponseObject> {
     // Call the DataService's deleteDoc method
     return await this.dataService.deleteDoc(this.collectionName, booking.id);
   }
 
-  async findByCondition(condition: DataServiceCondition | DataServiceCondition[]): Promise<ResponseObject> {
-    return await this.dataService.readDocsWithConditions(this.collectionName, condition);
+  /**
+   * Flexible entry to query bookings with arbitrary condition(s).
+   */
+  async findByCondition(
+    condition: DataServiceCondition | DataServiceCondition[],
+  ): Promise<ResponseObject> {
+    return await this.dataService.readDocsWithConditions(
+      this.collectionName,
+      condition,
+    );
   }
 
-  async findResource(resourceType: string, resourceId: string): Promise<ResponseObject> {
+  /**
+   * Lookup a resource (tour/package) by its collection name and id.
+   * Used by pricing/availability logic.
+   */
+  async findResource(
+    resourceType: string,
+    resourceId: string,
+  ): Promise<ResponseObject> {
     return await this.dataService.readDoc(resourceType, resourceId);
   }
 }

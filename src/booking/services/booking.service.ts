@@ -21,6 +21,11 @@ import { InventoryManagement } from '../utils/inventory.management';
 import { PaymentInfoVo } from 'src/booking/vo/payment-info.vo';
 import { ITourExternalService } from 'src/tours/services/tour-external.service.interface';
 
+/**
+ * BookingService
+ * - Core application service for booking operations.
+ * - Orchestrates DAO access and integration with messaging and tours.
+ */
 @Injectable()
 export class BookingService implements IBookingService {
   private readonly collectionName = 'bookings';
@@ -34,30 +39,45 @@ export class BookingService implements IBookingService {
     private readonly tourExternalService: ITourExternalService,
   ) {}
 
+  /**
+   * Fetch all bookings.
+   */
   async getAllBookings(): Promise<ResponseObject> {
     return await this.bookingDAO.findAll();
   }
+  /**
+   * Fetch all bookings associated with a particular resource
+   * (tour or package) based on the BookingVO.
+   */
   async getBookingsForResource(bookingVo: BookingVO): Promise<ResponseObject> {
     return await this.bookingDAO.findByResourceId(bookingVo.toEntity());
   }
 
+  /**
+   * Retrieve historical bookings for a given tourist.
+   */
   async displayTouristBookingHistory(
     touristVo: TouristVO,
   ): Promise<ResponseObject> {
     return await this.bookingDAO.findAllByTourist(touristVo.toEntity());
   }
-
+  /**
+   * Retrieve historical bookings for a given guide (across tours/packages).
+   */
   async displayGuideBookingHistory(guideVo: GuideVO): Promise<ResponseObject> {
     return await this.bookingDAO.findAllByGuide(guideVo.toEntity());
   }
 
+  /**
+   * Create or update a booking and notify payment container if successful.
+   */
   async makeBooking(bookingVo: BookingVO): Promise<ResponseObject> {
     const makeBookingResponse = await this.bookingDAO.create(
       bookingVo.toEntity(),
     );
     if (makeBookingResponse.status === 'success') {
       const paymentData = this.transformBookingDataToPaymentData(bookingVo);
-      // the name of the chanel can be put in a properties file
+      // Name of the NATS subject/channel used for payment
       this.bookingMessageBroker.sendDataToPayment(
         'booking.payment', // Name of chanel
         paymentData,
@@ -65,11 +85,14 @@ export class BookingService implements IBookingService {
     }
     return makeBookingResponse;
   }
-
+  /**
+   * Map booking information to PaymentInfoVo.
+   * NOTE: Currently stubbed, returning null.
+   */
   async transformBookingDataToPaymentData(
     bookingVo: BookingVO,
   ): Promise<PaymentInfoVo> {
-    //const tourId = await this.tourExternalService.getTourSelected(bookingVo.getTour()).data['id'];
+    // Example: const tourId = await this.tourExternalService.getTourSelected(bookingVo.getTour()).data['id'];
     const tourId = '1';
 
     // touristID will be obtained from the ID of the person making the booking. i.e from authentication module
@@ -81,21 +104,33 @@ export class BookingService implements IBookingService {
     //   // name: 'The name of the tour',
     // };
     //return paymentData;
+
+    // TODO: build a real PaymentInfoVo from booking + pricing.
     return null;
   }
 
+  /**
+   * Placeholder for payment initiation logic once the contract is defined.
+   */
   async makePayment(): Promise<PaymentInfoVo> {
     return null;
   }
 
+  /**
+   * Read a single booking by id.
+   */
   async displayBooking(bookingVo: BookingVO): Promise<ResponseObject> {
     return await this.bookingDAO.findById(bookingVo.toEntity());
   }
-
+  /**
+   * Update an existing booking.
+   */
   async modifyBooking(bookingVo: BookingVO): Promise<ResponseObject> {
     return await this.bookingDAO.update(bookingVo.toEntity());
   }
-
+  /**
+   * Cancel/remove a booking from persistence.
+   */
   async cancelBooking(bookingVo: BookingVO) {
     // Assuming `toEntity()` is a valid method that converts the instance to the desired entity
     return await this.bookingDAO.delete(bookingVo.toEntity());

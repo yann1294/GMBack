@@ -33,21 +33,35 @@ import { TouristVO } from 'src/user-management/vo/tourist.vo';
 import { BookingWorkflow } from '../utils/booking.workflow';
 
 @Controller('bookings')
+/**
+ * HTTP controller for Booking domain.
+ * - Exposes booking CRUD and query endpoints.
+ * - Delegates orchestration to BookingService and BookingWorkflow.
+ * - Also exposes tour-related helper endpoints via TourExternalService.
+ */
 export class BookingController {
+  // Collection name mainly used for context/logging
   collectionName: string = 'bookings';
 
   constructor(
+    // Core booking application service
     @Inject(BOOKING_SERVICE_TOKEN)
     private readonly bookingService: IBookingService,
-    // private readonly externalTourService: TourExternalService,
+    // External tour service (from Tours module)
     @Inject(TOUR_EXTERNAL_SERVICE_INTERFACE)
     private readonly externalTourService: ITourExternalService,
-    // @Inject(USER_MANAGEMENT_EXTERNAL_SERVICE_INTERFACE)
-    // private readonly externalUserManagementService: IUserManagementExternalService,
+    // Booking workflow orchestrator (availability + price + payment)
     private readonly bookingWorkflow: BookingWorkflow,
   ) {}
 
-  // create new booking
+  /**
+   * POST /bookings
+   * Create a new booking and run the booking workflow:
+   * - check availability
+   * - compute price
+   * - persist booking
+   * - trigger payment workflow
+   */
   @Post()
   async makeBooking(
     @Body(new BookingValidationPipe()) bookingVo: BookingVO,
@@ -57,7 +71,10 @@ export class BookingController {
     return await this.bookingWorkflow.executeBooking(bookingVo);
   }
 
-  // update an existing booking
+  /**
+   * PATCH /bookings/:id
+   * Update an existing booking (basic modification).
+   */
   @Patch(':id')
   async modifyBooking(
     @Body(new BookingValidationPipe('update')) bookingVo: BookingVO,
@@ -65,7 +82,11 @@ export class BookingController {
     return await this.bookingService.modifyBooking(bookingVo);
   }
 
-  // delete an existing booking
+  /**
+   * DELETE /bookings/:id
+   * Cancel/remove a booking.
+   * - Uses ConvertToVoPipe to build a BookingVO from request data.
+   */
   @Delete(':id')
   async cancelBooking(@Req() req: FastifyRequest) {
     const validationPipe = new ConvertToVoPipe('booking', true);
@@ -76,7 +97,10 @@ export class BookingController {
     return await this.bookingService.cancelBooking(bookingVo);
   }
 
-  // get a booking by id
+  /**
+   * GET /bookings/:id
+   * Retrieve an individual booking by id.
+   */
   @Get(':id')
   async displayBooking(@Req() req: FastifyRequest) {
     const validationPipe = new ConvertToVoPipe('booking');
@@ -88,7 +112,10 @@ export class BookingController {
     return await this.bookingService.displayBooking(bookingVo);
   }
 
-  // get booking history for a specific guide
+  /**
+   * GET /bookings/guide/:uid/history
+   * Return all bookings related to tours/packages guided by the given guide.
+   */
   @Get('guide/:uid/history')
   async displayGuideBookingHistory(@Req() req: FastifyRequest) {
     const validationPipe = new ConvertToVoPipe('guide', false, 'uid');
@@ -99,7 +126,10 @@ export class BookingController {
     return await this.bookingService.displayGuideBookingHistory(guideVo);
   }
 
-  // get booking history for a specific tourist
+  /**
+   * GET /bookings/tourist/:uid/history
+   * Return all bookings created by the given tourist.
+   */
   @Get('tourist/:uid/history')
   async displayTouristBookingHistory(@Req() req: FastifyRequest) {
     const validationPipe = new ConvertToVoPipe('tourist', false, 'uid');
@@ -110,13 +140,20 @@ export class BookingController {
     return await this.bookingService.displayTouristBookingHistory(touristVo);
   }
 
-  // get all bookings
+  /**
+   * GET /bookings
+   * List all bookings in the system.
+   */
   @Get()
   async getAllBooking(@Req() req: FastifyRequest) {
     return await this.bookingService.getAllBookings();
   }
 
-  // get bookings for a specific tour
+  /**
+   * GET /bookings/tours/:tour
+   * List bookings for a specific tour (resourceId = tour id).
+   * - Uses ConvertToVoPipe with "tour" context to map route param.
+   */
   @Get('tours/:tour')
   async getBookingByTour(@Req() req: FastifyRequest) {
     req.body = { id: 'none' };
@@ -128,7 +165,10 @@ export class BookingController {
     return await this.bookingService.getBookingsForResource(bookingVo);
   }
 
-  // get bookings for a specific package
+  /**
+   * GET /bookings/packages/:tourPackage
+   * List bookings for a specific package (resourceId = package id).
+   */
   @Get('packages/:tourPackage')
   async getBookingByPackage(@Req() req: FastifyRequest) {
     req.body = { id: 'none' };
@@ -140,20 +180,33 @@ export class BookingController {
     return await this.bookingService.getBookingsForResource(bookingVo);
   }
 
-  // TOUR MANAGEMENT SERVICES START
+  // ────────────── TOUR MANAGEMENT INTEGRATION ENDPOINTS ──────────────
 
+  /**
+   * GET /bookings/tour/:tourId
+   * Proxy to Tours module: check tour availability by id.
+   */
   @Get('tour/:tourId')
   async getTourAvailability(@Param('tourId') tourId: string) {
     console.log('Get tour availability');
     return await this.externalTourService.getTourAvailability(tourId);
   }
 
+  /**
+   * GET /bookings/tour/selected/:tourSelected
+   * Proxy to Tours module: fetch a tour by name (selected tour).
+   */
   @Get('tour/selected/:tourSelected')
   async getTourSelected(@Param('tourSelected') tourSelected: string) {
     console.log('Get tour selected');
     return await this.externalTourService.getTourSelected(tourSelected);
   }
 
+  /**
+   * PATCH /bookings/availability
+   * Proxy to Tours module: update tour availability.
+   * Currently returns null until the external service API is finalised.
+   */
   @Patch('availability')
   async updateTourAvailability(
     @Body(new HasAttribute(['isAvailable', 'tourId']))
@@ -169,6 +222,10 @@ export class BookingController {
     return null;
   }
 
+  /**
+   * GET /bookings/assigned-guide
+   * Proxy to Tours module: derive the guide assigned to the booking's tour/package.
+   */
   @Get('assigned-guide/')
   async getAssignedGuide(@Query() currentBooking: CreateBookingDTO) {
     return await this.externalTourService.getAssignedGuide(currentBooking);

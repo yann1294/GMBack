@@ -4,6 +4,11 @@ import { IsIn, IsOptional, ValidateNested } from 'class-validator';
 import { Tourist } from './helper.vo';
 import { BookingStatus, status } from '../utils/consts.utils';
 
+/**
+ * BookingVO
+ * - Value Object for booking operations at the boundary (controller/service).
+ * - Handles validation and conversion to Booking entity.
+ */
 export class BookingVO {
   @Expose({ name: 'id' })
   @IsOptional()
@@ -15,18 +20,21 @@ export class BookingVO {
   @Expose({ name: 'bookedOn' })
   @IsOptional()
   private _bookedOn: Date;
+  // Map keyed by tourist id → Tourist
   @Expose({ name: 'tourist' })
   @IsOptional()
   @Type(() => Tourist)
   @ValidateNested()
   private _tourist: Map<string, Tourist>;
+  // If present, booking is for a single tour
   @Expose({ name: 'tour' })
   @IsOptional()
   private _tour?: string;
+  // If present, booking is for a package
   @Expose({ name: 'tourPackage' })
   @IsOptional()
   private _tourPackage?: string;
-
+  // Getters / setters expose the internal fields in a controlled way
   @Expose()
   getId(): string {
     return this._id;
@@ -86,6 +94,11 @@ export class BookingVO {
     this._tourPackage = tourPackage;
   }
 
+  /**
+   * Convert VO → Booking entity.
+   * - Derives booking type from whether tour or tourPackage is set.
+   * - Chooses appropriate resource id (tour or package).
+   */
   toEntity(): Booking {
     return new Booking(
       this._id,
@@ -96,7 +109,9 @@ export class BookingVO {
       this._tour ?? this._tourPackage,
     );
   }
-
+  /**
+   * Convert VO to a plain JS object (for logging or serialization).
+   */
   toObject(): object {
     return instanceToPlain(this);
   }

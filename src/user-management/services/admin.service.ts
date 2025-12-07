@@ -11,6 +11,7 @@ import { IAdminDAO } from '../dao/admin.dao.interface';
 import { AdminVO } from '../vo/admin.vo';
 import { IGuideService } from './guide.service.interface';
 import { ITouristService } from './tourist.service.interface';
+import { AdminOnly } from 'src/authentication/utils/decoractors/admin-only.decorator';
 
 @Injectable()
 export class AdminService implements IAdminService {
@@ -55,16 +56,17 @@ export class AdminService implements IAdminService {
   //     return this.guideService.updateGuide(uid, guideVO);
   // }
 
-  // findGuide(uid: string): Promise<ResponseObject> {
-  //     // takes the uid and passes it to the DAO
-  //     return this.guideService.findGuide(uid);
-  // }
+  findGuide(uid: string): Promise<ResponseObject> {
+    // takes the uid and passes it to the DAO
+    return this.guideService.findGuide(uid);
+  }
 
   getAllGuides(): Promise<ResponseObject> {
     // calls the DAO to get all guides
     return this.guideService.getAllGuides();
   }
   // TODO
+  @AdminOnly()
   async approveGuide(uid: string): Promise<ResponseObject> {
     // This is the last part of the guide creation process
     return await this.guideService.approveGuide(uid);

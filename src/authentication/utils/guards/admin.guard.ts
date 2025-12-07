@@ -14,9 +14,16 @@ export class AdminGuard implements CanActivate {
     const user = (req as any).user; // from FirebaseAuthGuard
     if (!user) throw new UnauthorizedException();
 
+    const roleName =
+      typeof user.role === 'string'
+        ? user.role
+        : typeof user.role?.name === 'string'
+          ? user.role.name
+          : undefined;
+
     // Accept either structured role or boolean flag
     const isAdmin =
-      user.role === 'admin' ||
+      roleName === 'admin' ||
       user.admin === true ||
       (user.customClaims && user.customClaims.role === 'admin');
     if (!isAdmin) throw new ForbiddenException('Admins only');

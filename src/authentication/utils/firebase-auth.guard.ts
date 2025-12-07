@@ -45,8 +45,13 @@ export class FirebaseAuthGuard implements CanActivate {
       (req as any).user = { uid: payload.sub, ...payload };
       (req as any).authType = 'jwt';
       return true;
-    } catch {
+    } catch (e) {
       // fall through to Firebase
+      console.error(
+        '[guard] JWT verify failed:',
+        (e as any).name,
+        (e as any).message,
+      );
     }
 
     // 2) Fallback to Firebase ID token
@@ -55,7 +60,12 @@ export class FirebaseAuthGuard implements CanActivate {
       (req as any).user = { uid: decoded.uid, ...decoded };
       (req as any).authType = 'firebase';
       return true;
-    } catch {
+    } catch (e) {
+      console.error(
+        '[guard] Firebase verify failed:',
+        (e as any).name,
+        (e as any).message,
+      );
       throw new UnauthorizedException(
         'Invalid or expired authentication token',
       );

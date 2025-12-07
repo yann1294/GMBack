@@ -8,7 +8,13 @@ import {
   IsOptional,
 } from 'class-validator';
 
+/**
+ * DTO for general package updates.
+ * - Based on CreatePackageDTO but all fields are optional.
+ * - Adds a required id field to identify the document.
+ */
 export class UpdatePackageDTO extends PartialType(CreatePackageDTO) {
+  // Package identifier to update (required)
   @IsString()
   @IsNotEmpty()
   public id: string;

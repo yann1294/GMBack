@@ -10,6 +10,11 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { FileDTO } from 'src/user-management/controller/dto/helper.dto';
 import { FastifyRequest } from 'fastify';
 
+/**
+ * ImageManager
+ * - Handles multipart uploads of images for tours, packages, and authentication.
+ * - Stores files via FileService and updates the corresponding Firestore documents via DataService.
+ */
 @Injectable()
 export class ImageManager {
   constructor(
@@ -17,6 +22,16 @@ export class ImageManager {
     private readonly dataService: DataService,
   ) {}
 
+  /**
+   * Handles image uploads for:
+   *  - packages/{id}
+   *  - tours/{id}
+   *  - authentication/{id} (special mapping to profilePhoto/identificationFile)
+   *
+   * @param req       FastifyRequest with multipart body
+   * @param resource  Collection name ('packages' | 'tours' | 'authentication')
+   * @param overrideId Optional explicit id, instead of reading it from multipart fields
+   */
   async uploadImages(
     req: FastifyRequest,
     resource: 'packages' | 'tours' | 'authentication',
@@ -26,16 +41,19 @@ export class ImageManager {
     console.log('🚀 multipart content-type:', req.headers['content-type']);
 
     // Checking whether request is multipart
+    // Ensure that the request is multipart/form-data
     if (!req.isMultipart()) {
       throw new BadRequestException('Request must be multipart');
     }
 
+    // Resource/document id, either from argument or from multipart fields
     let id: string = overrideId ?? null;
     const uploadedFiles: FileDTO[] = [];
 
     let hasFiles = false;
 
     // checking whether file exceeds the limit
+    // Iterate through multipart parts and collect files + id field
     try {
       // Iterate over multipart parts
       for await (const part of req.parts({
@@ -47,6 +65,7 @@ export class ImageManager {
           hasFiles = true;
           let fileBuffer: Buffer = await part.toBuffer();
 
+          // Wrap metadata into a FileDTO for the FileService
           uploadedFiles.push(
             new FileDTO(
               part.fieldname,
@@ -62,10 +81,12 @@ export class ImageManager {
           part.type === 'field' &&
           part.fieldname === 'id'
         ) {
+          // Read the resource id from form field if not explicitly provided
           id = part.value as string;
         }
       }
     } catch (error) {
+      // Handle file size limit errors explicitly
       if (error.message === 'request file too large') {
         return {
           status: 'failure',
@@ -81,6 +102,7 @@ export class ImageManager {
     console.log('ID', id);
     console.log('Uploaded Files', uploadedFiles);
 
+    // Validation: at least one file must be present
     if (!hasFiles) {
       return {
         status: 'failure',
@@ -90,6 +112,7 @@ export class ImageManager {
       };
     }
 
+    // Validation: resource id must be provided
     if (!id) {
       return {
         status: 'failure',
@@ -101,13 +124,16 @@ export class ImageManager {
 
     console.log('Inside uploadImages');
     // Determine the destination path for uploaded files
+    // The storage folder path, e.g. "tours/{id}" or "packages/{id}"
     const destination = `${resource}/${id}`;
     const imageUrl: string[] = [];
 
     try {
       // Upload files asynchronously and collect their URLs
+      // Upload files sequentially and collect their public URLs
       for (const image of uploadedFiles) {
         // build a unique path
+        // Build a unique path per file to avoid collisions
         const safeName = `${image.fieldName}-${Date.now()}-${image.fileName}`;
         const fullPath = `${destination}/${safeName}`;
 
@@ -125,8 +151,10 @@ export class ImageManager {
       //   { images: FieldValue.arrayUnion(...imageUrl) }
       // )
 
+      // After upload, update the corresponding Firestore document with image URLs
       if (resource === 'authentication') {
         // match filenames to fields
+        // For authentication, map URLs to specific fields on the user document
         const updates: any = {};
         uploadedFiles.forEach((f, i) => {
           if (f.fieldName === 'profilePhoto') {
@@ -136,6 +164,7 @@ export class ImageManager {
           }
         });
         // persist to /authentication/{uid}
+        // Persist changes in "authentication/{uid}"
         const responseObj = await this.dataService.updateDoc(
           'authentication',
           id,
@@ -154,6 +183,8 @@ export class ImageManager {
         //     images: FieldValue.arrayUnion(...imageUrl),
         //   });
         // }
+
+        // For packages/tours, append URLs to the "images" array in the document
         const updateData = { images: FieldValue.arrayUnion(...imageUrl) };
 
         const responseObj: ResponseObject = await this.dataService.updateDoc(
@@ -161,13 +192,14 @@ export class ImageManager {
           id,
           updateData,
         );
-
+        // Short-circuit if database update failed
         if (responseObj.status !== 'success') {
           // Return early if the document update fails
           return responseObj;
         }
       }
       // Return success response
+      // Success response with list of uploaded URLs
       return {
         status: 'success',
         code: 200,
@@ -175,6 +207,7 @@ export class ImageManager {
         message: 'Files uploaded successfully',
       };
     } catch (error) {
+      // Catch-all error handler for file upload or database issues
       // Handle errors gracefully
       return {
         status: 'failure',
@@ -185,6 +218,8 @@ export class ImageManager {
     }
   }
 
+  // Example delete method kept as reference.
+  // It shows how to combine FileService deletion and Firestore update.
   // async deleteImage(resourceId: string, image: string, resource: 'packages' | 'tours'): Promise<ResponseObject> {
 
   //     // delete image from storage

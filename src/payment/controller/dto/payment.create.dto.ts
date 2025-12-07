@@ -1,59 +1,82 @@
-import { IsString, IsNotEmpty,  IsNumber, IsIn, IsUUID, IsDateString, IsOptional, IsUrl } from 'class-validator';
+import { Type } from 'class-transformer';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsIn,
+  IsUUID,
+  IsDateString,
+  IsOptional,
+  IsUrl,
+  IsDefined,
+  isDefined,
+} from 'class-validator';
 
 export class CreatePaymentDTO {
+  @IsDefined()
   @IsString()
   @IsNotEmpty()
   @IsIn(['stripe', 'paypal'])
   gateway: string;
-  
-  @IsString()
-  @IsNotEmpty()
-  @IsOptional()
-  sessionId: string;
 
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
-  paymentId: string;
+  sessionId?: string;
 
+  @IsString()
+  @IsNotEmpty()
+  paymentId?: string;
+
+  @IsDefined()
   @IsString()
   @IsNotEmpty()
   resourceId: string;
 
+  @IsDefined()
   @IsString()
   @IsNotEmpty()
   resourceType: string;
 
+  @Type(() => Number)
+  @IsDefined()
   @IsNumber()
   amount: number;
 
+  @IsDefined()
   @IsString()
   @IsNotEmpty()
   currency: string;
 
   @IsString()
   @IsNotEmpty()
-  @IsIn(['pending', 'completed', 'canceled', 'refunded', 'refund-in-progress', 'in-progress'])
-  @IsOptional()
-  status: string = "in-progress";
+  @IsIn([
+    'pending',
+    'completed',
+    'canceled',
+    'refunded',
+    'refund-in-progress',
+    'in-progress',
+  ])
+  status?: string = 'in-progress';
 
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
-  bookingId: string;
+  bookingId?: string;
 
+  @IsDefined()
   @IsString()
   @IsNotEmpty()
   userId: string;
-  
+
   @IsUrl()
   @IsNotEmpty()
-  @IsOptional()
   receipt: string;
 
+  @IsDefined()
   @IsDateString()
   createdAt: string;
 
+  @IsDefined()
   @IsDateString()
   updatedAt: string;
 }

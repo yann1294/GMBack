@@ -20,6 +20,9 @@ import {
   ITransportation,
 } from 'src/shared/types';
 
+/**
+ * Wrapper around Firestore's GeoPoint that can participate in class-validator.
+ */
 export class GMGeoPoint implements GeoPoint {
   @IsNumber()
   latitude: number;
@@ -31,6 +34,7 @@ export class GMGeoPoint implements GeoPoint {
     this.longitude = longitude;
   }
 
+  // Simple equality check by coordinates
   isEqual(other: GeoPoint): boolean {
     return this.latitude == other.latitude && this.longitude == other.longitude;
   }
@@ -40,6 +44,9 @@ export class GMGeoPoint implements GeoPoint {
   }
 }
 
+/**
+ * Location details for a specific activity within a tour.
+ */
 export class ActivityLocation implements IActivityLocation {
   @Expose()
   @IsString()
@@ -79,6 +86,9 @@ export class ActivityLocation implements IActivityLocation {
   }
 }
 
+/**
+ * High-level tour location (city/country scope, no exact coordinates).
+ */
 export class TourLocation implements ILocation {
   @IsString()
   @IsNotEmpty()
@@ -103,6 +113,9 @@ export class TourLocation implements ILocation {
   }
 }
 
+/**
+ * Location of a package (aggregated tours) – structurally similar to TourLocation.
+ */
 export class PackageLocation implements ILocation {
   @IsString()
   @IsNotEmpty()
@@ -127,6 +140,9 @@ export class PackageLocation implements ILocation {
   }
 }
 
+/**
+ * Transport leg associated with an activity or tour segment.
+ */
 export class Transportation implements ITransportation {
   @Expose()
   @IsDateString()
@@ -151,6 +167,9 @@ export class Transportation implements ITransportation {
   }
 }
 
+/**
+ * Accommodation information for a given activity or tour leg.
+ */
 export class Accommodation implements IAccommodation {
   @Expose()
   @IsString()
@@ -167,6 +186,9 @@ export class Accommodation implements IAccommodation {
   }
 }
 
+/**
+ * Activity value object that holds detailed info for one activity in a tour.
+ */
 export class Activity implements IActivity {
   @Expose()
   @IsInt()
@@ -213,6 +235,10 @@ export class Activity implements IActivity {
   }
 }
 
+/**
+ * Minimal user representation used in the Tours context.
+ * Backed by an interface from shared types.
+ */
 export class User implements IUser {
   @IsString()
   @IsNotEmpty()

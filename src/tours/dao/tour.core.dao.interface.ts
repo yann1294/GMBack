@@ -2,6 +2,9 @@ import { ResponseObject } from 'src/shared/types';
 import { Tour } from './tour.entity';
 import { MultipartFile } from '@fastify/multipart';
 
+/**
+ * DAO contract for core Tour persistence operations.
+ */
 export interface CoreDAOInterface {
   findAll(): Promise<ResponseObject>;
   findById(data: Tour): Promise<ResponseObject>;

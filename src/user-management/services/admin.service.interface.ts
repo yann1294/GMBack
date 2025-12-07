@@ -14,7 +14,7 @@ export interface IAdminService {
   rejectGuide(uid: string): Promise<ResponseObject>;
   // deleteGuide(uid: string): Promise<ResponseObject>;
   // updateGuide(uid: string, guideVO: GuideVO): Promise<ResponseObject>;
-  // findGuide(uid: string): Promise<ResponseObject>;
+  findGuide(uid: string): Promise<ResponseObject>;
   getAllGuides(): Promise<ResponseObject>; // List<Guide>
   // assignGuideToTour(tourId: string, guideId: string): Promise<ResponseObject>;
   // assignGuideToPackage(packageId: string, guideId: string): Promise<ResponseObject>;

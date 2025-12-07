@@ -55,6 +55,7 @@ export class AdminController {
   // Guide related methods
   @Patch('guides/approve/:uid')
   async approveGuide(@Param('uid') uid: string): Promise<ResponseObject> {
+    console.log("DATA HAS BEEN APPROVED");
     console.log('API Entry: PATCH /admin/guides/approve/:uid', { uid });
     return this.adminService.approveGuide(uid);
   }
@@ -76,10 +77,11 @@ export class AdminController {
   //     return this.adminService.updateGuide(uid, guideVO);
   // }
 
-  // @Get('guides/:uid')
-  // async findGuide(@Param('uid') uid: string): Promise<ResponseObject> {
-  //     return this.adminService.findGuide(uid);
-  // }
+  @Get('guides/:uid')
+  async findGuide(@Param('uid') uid: string): Promise<ResponseObject> {
+    console.log("Are you getting here ??");
+      return this.adminService.findGuide(uid);
+  }
 
   @Get('guides')
   async getAllGuides(): Promise<ResponseObject> {

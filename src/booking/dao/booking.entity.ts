@@ -2,6 +2,11 @@ import { instanceToPlain } from 'class-transformer';
 import { Timestamp } from 'firebase-admin/firestore';
 import { Tourist } from '../vo/helper.vo';
 
+/**
+ * Booking entity
+ * - Domain representation of a booking in persistence layer.
+ * - Contains Firestore-specific conversion helpers.
+ */
 export class Booking {
   constructor(
     public id: string,
@@ -10,9 +15,13 @@ export class Booking {
     public tourists: Map<String, Tourist>,
     public bookingType: string,
     public resourceId: string,
-  ) { }
+  ) {}
 
-  // Convert to object representation
+  /**
+   * Convert full Booking entity to Firestore-ready object:
+   * - Converts bookedOn to Timestamp if present.
+   * - Converts tourists Map<string, Tourist> to a plain object.
+   */
   toObject(): object {
     return {
       id: this.id,
@@ -22,20 +31,27 @@ export class Booking {
           ? this.bookedOn
           : Timestamp.fromDate(this.bookedOn),
       tourists: Object.fromEntries(
-              Array.from(this.tourists).map(([key, tourist]) => [
-                key,
-                tourist.toObject()
-              ]),
-            ),
+        Array.from(this.tourists).map(([key, tourist]) => [
+          key,
+          tourist.toObject(),
+        ]),
+      ),
       resourceId: this.resourceId,
       bookingType: this.bookingType,
     };
   }
 
+  /**
+   * Generic update payload using class-transformer.
+   * Suitable for merge/update operations.
+   */
   toUpdateObject(): object {
     return instanceToPlain(this);
   }
 
+  /**
+   * Basic shallow copy for delete/logging scenarios.
+   */
   toDeleteObject(): object {
     return { ...this };
   }

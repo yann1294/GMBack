@@ -27,17 +27,13 @@ async function bootstrap() {
 
   // Enable Cross-Origin Resource Sharing (CORS) so the frontend (e.g. Next.js at :3000)
   // can call this backend API from a different origin
-  const allowedOrigins = ['http://localhost:3000', process.env.FRONTEND_URL];
+  const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:3006',
+    process.env.FRONTEND_URL,
+  ];
   app.enableCors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-        return callback(null, true);
-      }
-
-      return callback(new Error('Not allowed by CORS'), false);
-    }, // Your frontend URL
+    origin: true, // Your frontend URL
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -61,9 +57,11 @@ async function bootstrap() {
   // natsConfig should define the NATS connection options & transport settings
   const mService = app.connectMicroservice(natsConfig);
   // Start all configured microservices (e.g. NATS listeners)
-  await app.startAllMicroservices();
+  await app
+    .startAllMicroservices()
+    .catch((err) => console.error('NATS failed to start:', err));
   // Start the main HTTP server, using the PORT env variable or fallback to 3001
-  await app.listen(process.env.PORT ?? 3001);
+  await app.listen(process.env.PORT ?? 3001, '0.0.0.0');
 }
 // Entry point of the NestJS application
 bootstrap();

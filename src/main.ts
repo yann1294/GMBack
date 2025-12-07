@@ -27,8 +27,17 @@ async function bootstrap() {
 
   // Enable Cross-Origin Resource Sharing (CORS) so the frontend (e.g. Next.js at :3000)
   // can call this backend API from a different origin
+  const allowedOrigins = ['http://localhost:3000', process.env.FRONTEND_URL];
   app.enableCors({
-    origin: 'http://localhost:3000', // Your frontend URL
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('Not allowed by CORS'), false);
+    }, // Your frontend URL
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

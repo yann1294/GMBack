@@ -27,7 +27,7 @@ export default class CreateBookingDTO {
   // Map of tourists participating in this booking, keyed by user id.
   @Type(() => Tourist)
   @ValidateNested()
-  public readonly tourist: Map<string, Tourist>;
+  public readonly tourist: Record<string, Tourist>;
 
   // ID of the booked tour (mutually exclusive with tourPackage).
   @IsString()

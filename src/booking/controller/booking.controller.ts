@@ -31,6 +31,7 @@ import { CONTEXT } from 'src/shared/utils/context';
 import { GuideVO } from 'src/user-management/vo/guide.vo';
 import { TouristVO } from 'src/user-management/vo/tourist.vo';
 import { BookingWorkflow } from '../utils/booking.workflow';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('bookings')
 /**
@@ -64,10 +65,12 @@ export class BookingController {
    */
   @Post()
   async makeBooking(
-    @Body(new BookingValidationPipe()) bookingVo: BookingVO,
+    @Body() dto: CreateBookingDTO, // ✅ let global ValidationPipe validate this
   ): Promise<ResponseObject> {
     // TODO: code to send the data to the payment module should come after confirmation of successfull booking.
     // i.e here
+    // Map DTO → VO after validation succeeds
+    const bookingVo = plainToInstance(BookingVO, dto);
     return await this.bookingWorkflow.executeBooking(bookingVo);
   }
 

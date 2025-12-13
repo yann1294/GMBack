@@ -55,7 +55,7 @@ export class BookingWorkflow {
     // Step 4: Call payment workflow (delegated to Payment container)
     // // NOTE: PaymentVO is currently instantiated empty and should be
     // populated with `price` and booking info as implementation evolves.
-    const payment = await this.payment.executePayment(new PaymentVO());
+    //const payment = await this.payment.executePayment(new PaymentVO());
 
     // Final response combining booking + payment results
     return {
@@ -64,7 +64,7 @@ export class BookingWorkflow {
       message: 'Booking successfully completed',
       data: {
         booking,
-        payment,
+        payment: null,
       },
     };
   }

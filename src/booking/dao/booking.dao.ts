@@ -47,15 +47,32 @@ export class BookingDAO implements IBookingDAO {
       ] as DataServiceCondition[]);
 
     // check whether resource was found
+    // If an "in-process" booking already exists -> append tourists
     if ((response.data as object[]).length !== 0) {
+      const existingId = response.data[0]['id'];
+
+      // 🔹 Ensure `tourists` is a plain JS object before sending to Firestore
+      let touristsPlain: Record<string, any> = {};
+
+      const tourists: any = (booking as any).tourists;
+
+      if (tourists instanceof Map) {
+        // Map<string, Tourist-like> -> { key: value, ... }
+        touristsPlain = Object.fromEntries(
+          Array.from(tourists.entries()).map(([key, value]) => [
+            key,
+            // if value is a class instance, spread its own props into a plain object
+            typeof (value as any) === 'object' ? { ...(value as any) } : value,
+          ]),
+        );
+      } else if (typeof tourists === 'object' && tourists !== null) {
+        // already a plain object
+        touristsPlain = { ...tourists };
+      }
       // update tourist in booking
-      return await this.dataService.updateDoc(
-        this.collectionName,
-        response.data[0]['id'],
-        {
-          tourists: booking.tourists,
-        },
-      );
+      return await this.dataService.updateDoc(this.collectionName, existingId, {
+        tourists: touristsPlain,
+      });
     }
 
     // create new booking

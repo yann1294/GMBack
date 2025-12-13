@@ -67,8 +67,8 @@ export class BookingController {
   async makeBooking(
     @Body() dto: CreateBookingDTO, // ✅ let global ValidationPipe validate this
   ): Promise<ResponseObject> {
-    // TODO: code to send the data to the payment module should come after confirmation of successfull booking.
-    // i.e here
+    /** TODO: code to send the data to the payment module should come after confirmation of successfull  booking.
+    i.e here **/
     // Map DTO → VO after validation succeeds
     const bookingVo = plainToInstance(BookingVO, dto);
     return await this.bookingWorkflow.executeBooking(bookingVo);

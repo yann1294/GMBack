@@ -59,6 +59,7 @@ export class BookingDAO implements IBookingDAO {
     }
 
     // create new booking
+    console.log('Data to enter into the DB ', booking);
     return await this.dataService.createDoc(booking, this.collectionName);
   }
 

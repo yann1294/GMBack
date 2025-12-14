@@ -70,7 +70,7 @@ export class CreatePaymentDTO {
 
   @IsUrl()
   @IsNotEmpty()
-  receipt: string;
+  receipt?: string; // optional because at creation time, you often don’t have a real receipt URL yet.
 
   @IsDefined()
   @IsDateString()

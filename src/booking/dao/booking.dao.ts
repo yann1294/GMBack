@@ -49,6 +49,7 @@ export class BookingDAO implements IBookingDAO {
     // check whether resource was found
     // If an "in-process" booking already exists -> append tourists
     if ((response.data as object[]).length !== 0) {
+      // 🔹 Append/merge tourists on existing booking
       const existingId = response.data[0]['id'];
 
       // 🔹 Ensure `tourists` is a plain JS object before sending to Firestore
@@ -69,10 +70,25 @@ export class BookingDAO implements IBookingDAO {
         // already a plain object
         touristsPlain = { ...tourists };
       }
-      // update tourist in booking
-      return await this.dataService.updateDoc(this.collectionName, existingId, {
-        tourists: touristsPlain,
-      });
+      // update tourist in booking / Update the existing booking
+      const updateRes = await this.dataService.updateDoc(
+        this.collectionName,
+        existingId,
+        {
+          tourists: touristsPlain,
+        },
+      );
+      if (updateRes.status !== 'success') {
+        // propagate error as-is
+        return updateRes;
+      }
+
+      // 3) Read back the updated document so we can return it in `data`
+      const refreshed = await this.dataService.readDoc(
+        this.collectionName,
+        existingId,
+      );
+      return refreshed; // ➜ refreshed.data is the booking doc with id
     }
 
     // create new booking

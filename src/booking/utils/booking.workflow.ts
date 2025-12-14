@@ -52,10 +52,18 @@ export class BookingWorkflow {
     // Step 3: Persist the booking entity using BookingService
     const booking = await this.bookingService.makeBooking(bookingVo);
 
+    if (booking.status !== 'success') {
+      // propagate booking error as-is
+      return booking;
+    }
+
+    // 🔹 bookingRes.data is now the saved booking document (with id)
+    const bookingDoc = booking.data;
+
     // Step 4: Call payment workflow (delegated to Payment container)
     // // NOTE: PaymentVO is currently instantiated empty and should be
     // populated with `price` and booking info as implementation evolves.
-    const payment = await this.payment.executePayment(new PaymentVO());
+    //const payment = await this.payment.executePayment(new PaymentVO());
 
     // Final response combining booking + payment results
     return {
@@ -63,8 +71,8 @@ export class BookingWorkflow {
       code: 200,
       message: 'Booking successfully completed',
       data: {
-        booking,
-        payment,
+        booking: bookingDoc,
+        payment: null,
       },
     };
   }

@@ -15,6 +15,7 @@ import Stripe from 'stripe';
 import * as express from 'express';
 import { PaymentWorkflow } from '../utils/payment.workflow';
 import { plainToInstance } from 'class-transformer';
+import { CreatePaymentDTO } from './dto/payment.create.dto';
 
 @Controller('payments')
 export class PaymentController {
@@ -35,9 +36,12 @@ export class PaymentController {
 
   @Post()
   async makePayment(
-    @Body(new PaymentValidationPipe()) payment: PaymentVO,
+    @Body()
+    dto: CreatePaymentDTO /*  ✅ let global ValidationPipe handle this DTO*/,
   ): Promise<any> {
     // Cicéron: Payment service receives data from booking container (booking workflow)
+    // Map DTO → VO after validation succeeds
+    const payment = plainToInstance(PaymentVO, dto);
     return await this.paymentWorkflow.executePayment(payment);
   }
 

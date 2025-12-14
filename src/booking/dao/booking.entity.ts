@@ -10,10 +10,12 @@ import { Tourist } from '../vo/helper.vo';
 export class Booking {
   constructor(
     public id: string,
+    // Status: can be ACTIVE, CANCELED, PENDING
     public status: string,
     public bookedOn: Date,
     public tourists: Map<String, Tourist>,
     public bookingType: string,
+    // This resourceId is the id of a  tour or of a package
     public resourceId: string,
   ) {}
 

@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsDateString,
   IsOptional,
@@ -25,8 +25,12 @@ export default class CreateBookingDTO {
   public readonly bookedOn: string;
 
   // Map of tourists participating in this booking, keyed by user id.
+  // Map of tourists participating in this booking, keyed by user id / alias.
+  @Transform(({ value }) => new Map(Object.entries(value ?? {})), {
+    toClassOnly: true,
+  })
+  @ValidateNested({ each: true })
   @Type(() => Tourist)
-  @ValidateNested()
   public readonly tourist: Map<string, Tourist>;
 
   // ID of the booked tour (mutually exclusive with tourPackage).
